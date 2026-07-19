@@ -1,0 +1,72 @@
+@use '../../../../styles/abstracts/variables' as v;
+
+mat-form-field,
+app-multi-select {
+  width: 100%;
+}
+
+.filter-btn {
+  height: 56px;
+  padding: 0 v.$spacing-lg;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.dashboard__card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: v.$radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .card-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 2px;
+  }
+
+  .card-value {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    white-space: nowrap;
+
+    &--count  { font-size: 1.75rem; }
+    &--negative { color: var(--mat-sys-error); }
+  }
+
+  &--receita .card-icon {
+    background: color-mix(in srgb, var(--mat-sys-tertiary) 15%, transparent);
+    color: var(--mat-sys-tertiary);
+  }
+
+  &--despesa .card-icon {
+    background: color-mix(in srgb, var(--mat-sys-error) 15%, transparent);
+    color: var(--mat-sys-error);
+  }
+
+  &--saldo .card-icon {
+    background: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);
+    color: var(--mat-sys-primary);
+  }
+
+  &--quantidade .card-icon {
+    background: color-mix(in srgb, var(--mat-sys-secondary) 15%, transparent);
+    color: var(--mat-sys-secondary);
+  }
+}

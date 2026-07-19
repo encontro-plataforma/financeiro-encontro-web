@@ -1,0 +1,49 @@
+<mat-card class="top-finalidades-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Top 5 Finalidades</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content class="top-finalidades-content">
+    @if (loading) {
+      <div class="chart-loading">
+        <mat-spinner diameter="40" />
+      </div>
+    } @else {
+      <div class="charts-grid">
+
+        <!-- Receitas -->
+        <div class="chart-col">
+          <h4 class="chart-col-title chart-col-title--receita">Top 5 Receitas</h4>
+          <div class="chart-wrapper">
+            @if (receitaData.labels?.length === 0) {
+              <div class="chart-empty">Sem dados.</div>
+            } @else {
+              <canvas baseChart
+                [data]="receitaData"
+                [type]="chartType"
+                [options]="receitaOptions">
+              </canvas>
+            }
+          </div>
+        </div>
+
+        <!-- Despesas -->
+        <div class="chart-col">
+          <h4 class="chart-col-title chart-col-title--despesa">Top 5 Despesas</h4>
+          <div class="chart-wrapper">
+            @if (despesaData.labels?.length === 0) {
+              <div class="chart-empty">Sem dados.</div>
+            } @else {
+              <canvas baseChart
+                [data]="despesaData"
+                [type]="chartType"
+                [options]="despesaOptions">
+              </canvas>
+            }
+          </div>
+        </div>
+
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

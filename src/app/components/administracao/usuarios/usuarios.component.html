@@ -1,0 +1,144 @@
+<div class="p-6">
+  <!-- ─── Header ─────────────────────────────────────────────────────────────── -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-medium text-on-surface">Usuários</h1>
+    <button mat-flat-button color="primary" class="btn btn--icon-left" (click)="criar()">
+      <mat-icon>add</mat-icon>
+      Criar
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <mat-card class="mb-4" appearance="outlined">
+    <mat-card-content class="!pb-0">
+      <div class="grid grid-cols-12 gap-x-4 items-start">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-4"
+        >
+          <mat-label>Buscar por nome ou e-mail</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            [(ngModel)]="search"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Nome ou e-mail..."
+          />
+          @if (search) {
+            <button matSuffix mat-icon-button (click)="search = ''; onSearchChange()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
+          <mat-label>Perfil</mat-label>
+          <mat-select [(ngModel)]="perfilFiltro" (ngModelChange)="onPerfilChange()">
+            @for (op of PerfilUsuario.optionsAll; track op.value) {
+              <mat-option [value]="op.value">{{ op.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="statusFiltro" (ngModelChange)="onStatusChange()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option [value]="true">Ativo</mat-option>
+            <mat-option [value]="false">Inativo</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ─── Tabela ──────────────────────────────────────────────────────────────── -->
+  <mat-card appearance="outlined">
+    <mat-card-content class="!p-0">
+      @if (loading) {
+        <mat-progress-bar mode="indeterminate" />
+      }
+
+      <mat-table [dataSource]="result.items">
+        <ng-container matColumnDef="nome">
+          <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="flex items-center gap-2">
+              <mat-icon class="text-gray-400 text-base">person</mat-icon>
+              {{ row.nome }}
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <mat-header-cell *matHeaderCellDef>E-mail</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.email }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="perfil">
+          <mat-header-cell *matHeaderCellDef>Perfil</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ PerfilUsuario.getDescription(row.perfil) }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <span
+              class="status-chip"
+              [class.status-chip--conciliado]="row.ativo"
+              [class.status-chip--nao-conciliado]="!row.ativo"
+            >
+              {{ row.ativo ? 'Ativo' : 'Inativo' }}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <button mat-icon-button color="primary" matTooltip="Editar" (click)="editar(row.id)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              matTooltip="Excluir"
+              [disabled]="!podeDeletar(row)"
+              (click)="deletar(row)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns" />
+        <mat-row *matRowDef="let row; columns: displayedColumns" />
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
+            <mat-icon>group</mat-icon>
+            <span>Nenhum usuário encontrado</span>
+          </td>
+        </tr>
+      </mat-table>
+
+      <mat-paginator
+        [length]="result.total"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[10, 25, 50]"
+        (page)="onPage($event)"
+        showFirstLastButtons
+      />
+    </mat-card-content>
+  </mat-card>
+</div>

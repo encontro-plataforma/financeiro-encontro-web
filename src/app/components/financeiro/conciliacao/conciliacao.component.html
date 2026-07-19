@@ -1,0 +1,54 @@
+<div class="conciliacao-page">
+
+  <!-- cabeçalho com botão para ir à tela de conciliar -->
+  <div class="page-header">
+    <div class="header-info">
+      <h1 class="page-title">Conciliação</h1>
+      <p class="page-subtitle">Importe o extrato do Banco Inter para registrar lançamentos</p>
+    </div>
+    <button mat-stroked-button color="primary" class="btn" (click)="irParaConciliar()">
+      <mat-icon>sync_alt</mat-icon>
+      Conciliar Lançamentos
+    </button>
+  </div>
+
+  <!-- área de upload -->
+  <div
+    class="drop-zone"
+    [class.drag-over]="dragOver"
+    [class.uploading]="uploading"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="!uploading && abrirSeletor()">
+
+    <input
+      #fileInput
+      type="file"
+      accept=".csv"
+      style="display:none"
+      (change)="onFileSelected($event)" />
+
+    @if (uploading) {
+      <div class="drop-content">
+        <mat-spinner diameter="52"></mat-spinner>
+        <p class="drop-title">Processando arquivo...</p>
+        <p class="drop-sub">Aguarde enquanto importamos os lançamentos</p>
+      </div>
+    } @else {
+      <div class="drop-content">
+        <mat-icon class="drop-icon">{{ dragOver ? 'file_download' : 'upload_file' }}</mat-icon>
+        <p class="drop-title">
+          {{ dragOver ? 'Solte o arquivo aqui' : 'Arraste seu arquivo CSV aqui' }}
+        </p>
+        <p class="drop-sub">ou</p>
+        <button mat-flat-button color="primary" class="btn" (click)="$event.stopPropagation(); abrirSeletor()">
+          <mat-icon>folder_open</mat-icon>
+          Selecionar arquivo
+        </button>
+        <p class="drop-hint">Formato aceito: .csv (Banco Inter) &nbsp;·&nbsp; Tamanho máximo: 3 MB</p>
+      </div>
+    }
+  </div>
+
+</div>

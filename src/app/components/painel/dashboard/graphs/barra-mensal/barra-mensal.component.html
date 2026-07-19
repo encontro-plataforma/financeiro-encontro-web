@@ -1,0 +1,19 @@
+<mat-card class="barra-mensal-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Receitas e Despesas por Mês</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content class="barra-mensal-content">
+    @if (loading) {
+      <div class="chart-loading">
+        <mat-spinner diameter="40" />
+      </div>
+    } @else {
+      <canvas baseChart
+        [data]="chartData"
+        [type]="chartType"
+        [options]="chartOptions">
+      </canvas>
+    }
+  </mat-card-content>
+</mat-card>

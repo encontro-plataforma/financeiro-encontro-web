@@ -1,0 +1,57 @@
+.finalidades-table {
+
+  .mat-column-tipo {
+    max-width: 110px;
+  }
+
+  .mat-column-nome {
+    max-width: 220px;
+    font-weight: 500;
+  }
+
+  .mat-column-descricao {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+  }
+
+  .mat-column-acoes {
+    max-width: 100px;
+    justify-content: flex-end;
+    white-space: nowrap;
+  }
+
+  .empty-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 3rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+
+    mat-icon {
+      opacity: 0.4;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+// ─── Chips de tipo ────────────────────────────────────────────────────────────
+
+.chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  &.chip-receita { background: #e8f5e9; color: #2e7d32; }
+  &.chip-despesa { background: #fce4ec; color: #c62828; }
+}

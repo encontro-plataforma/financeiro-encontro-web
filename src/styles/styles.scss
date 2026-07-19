@@ -1,0 +1,36 @@
+// ─── Themes (deve vir primeiro — contém @use internamente) ───────────────────
+@use 'themes/custom-theme';
+
+// ─── Abstracts (definições puras — sem output CSS) ────────────────────────────
+@use 'abstracts/variables';
+@use 'abstracts/functions';
+@use 'abstracts/mixins';
+@use 'abstracts/placeholders';
+@use 'abstracts/colors';
+
+// ─── Base ─────────────────────────────────────────────────────────────────────
+@use 'base/reset';
+@use 'base/main';
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+@use 'layout/text';
+@use 'layout/validation';
+
+// ─── Components ───────────────────────────────────────────────────────────────
+@use 'components/card';
+@use 'components/div';
+@use 'components/divisor';
+@use 'components/side-menu';
+@use 'components/btn';
+@use 'components/spinner';
+
+
+.mat-mdc-dialog-surface, .mdc-dialog__surface {
+    border-radius: 8px !important;
+}
+
+/* Força o reset específico para os elementos internos do spinner do Angular Material */
+mat-spinner svg, 
+mat-progress-spinner svg {
+  max-width: none !important; /* Impede o Tailwind de achatar o SVG */
+}

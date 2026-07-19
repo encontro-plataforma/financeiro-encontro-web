@@ -1,0 +1,16 @@
+// ─── Converte px para rem ─────────────────────────────────────────────────────
+@function rem($px) {
+  @return #{calc($px / 16)}rem;
+}
+
+// ─── Converte px para em ──────────────────────────────────────────────────────
+@function em($px, $base: 16) {
+  @return #{calc($px / $base)}em;
+}
+
+// ─── Clamp responsivo (min, preferred, max) ───────────────────────────────────
+@function fluid($min, $max, $min-vw: 375, $max-vw: 1280) {
+  $slope: calc(($max - $min) / ($max-vw - $min-vw));
+  $intercept: calc($min - $slope * $min-vw);
+  @return clamp(#{$min}px, calc(#{$slope * 100}vw + #{$intercept}px), #{$max}px);
+}

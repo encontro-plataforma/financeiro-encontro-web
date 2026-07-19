@@ -1,0 +1,92 @@
+.multi-select {
+  width: 100%;
+}
+
+.ms-placeholder {
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}
+
+
+
+
+// O painel do mat-select é renderizado fora do componente (no body via CDK overlay),
+// por isso os estilos precisam piercing com ::ng-deep, escopo pelo panelClass.
+/* stylelint-disable selector-pseudo-element-no-unknown */
+::ng-deep .multi-select-panel {
+
+  // ─── Barra de busca (sticky) ──────────────────────────────────────────────
+
+  .ms-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container-low);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    &__icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: var(--mat-sys-on-surface-variant);
+      flex-shrink: 0;
+    }
+
+    &__input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      color: var(--mat-sys-on-surface);
+      min-width: 0;
+
+      &::placeholder {
+        color: var(--mat-sys-on-surface-variant);
+      }
+    }
+
+    &__btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 8px !important;
+      color: var(--mat-sys-on-surface-variant);
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &:hover {
+        background: var(--mat-sys-surface-container);
+        color: var(--mat-sys-on-surface);
+      }
+    }
+  }
+
+  // ─── Opções filtradas por CSS (mantidas no DOM para preservar seleção) ────
+
+  .ms-hidden {
+    display: none !important;
+  }
+
+  // ─── Estado vazio ─────────────────────────────────────────────────────────
+
+  .ms-empty {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+    font-style: italic;
+  }
+}

@@ -1,0 +1,58 @@
+@use 'sass:map';
+
+// ─── Mapa de status ───────────────────────────────────────────────────────────
+// Variantes: bg (fundo), text (texto), accent (borda/destaque)
+// Consumido por: toast, chips de status, badges de conciliação
+
+$_status: (
+  success: ( bg: #d4edda, text: #155724, accent: #28a745 ),
+  error:   ( bg: #f8d7da, text: #721c24, accent: #dc3545 ),
+  warning: ( bg: #fff3cd, text: #856404, accent: #ffc107 ),
+);
+
+// ─── Cores de domínio ─────────────────────────────────────────────────────────
+$color-receita:    #2e7d32;
+$color-conciliado: #2e7d32;
+
+// ─── Function ─────────────────────────────────────────────────────────────────
+// Retorna um valor individual do mapa de status.
+// Uso: status-color('success', 'accent') → #28a745
+@function status-color($type, $variant) {
+  $entry: map.get($_status, $type);
+  @if not $entry { @error "status-color: tipo '#{$type}' não existe. Use: success | error | warning"; }
+  $val: map.get($entry, $variant);
+  @if not $val { @error "status-color: variante '#{$variant}' não existe. Use: bg | text | accent"; }
+  @return $val;
+}
+
+// ─── Mixin: tema completo (toast, alertas) ────────────────────────────────────
+// Aplica bg + color + border-left colorida.
+// Uso: @include status-theme('success');
+@mixin status-theme($type, $border-width: 4px) {
+  background:  status-color($type, 'bg');
+  color:       status-color($type, 'text');
+  border-left: $border-width solid status-color($type, 'accent');
+}
+
+// ─── Mixin: chip / badge (fundo translúcido) ──────────────────────────────────
+// Aplica fundo com 15% de opacidade + cor de texto.
+// Uso: @include status-chip('error');
+@mixin status-chip($type) {
+  background: color-mix(in srgb, status-color($type, 'accent') 15%, transparent);
+  color:      status-color($type, 'text');
+}
+
+// ─── CSS custom properties ────────────────────────────────────────────────────
+// Disponíveis globalmente, inclusive em estilos inline de componentes Angular.
+// Ex: background: var(--status-success-bg);
+
+:root {
+  @each $type, $variants in $_status {
+    @each $variant, $value in $variants {
+      --status-#{$type}-#{$variant}: #{$value};
+    }
+  }
+
+  --color-receita:    #{$color-receita};
+  --color-conciliado: #{$color-conciliado};
+}

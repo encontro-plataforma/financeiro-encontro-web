@@ -1,0 +1,69 @@
+<mat-card class="conciliacao-card">
+  <mat-card-content>
+    <!-- chips de tipo e forma de pagamento -->
+    <div class="card-chips">
+      <span class="chip" [ngClass]="getTipoClass()">
+        {{ lancamento.tipo === TipoLancamento.RECEITA ? 'Receita' : 'Despesa' }}
+      </span>
+      <span class="chip chip-forma">{{ getFormaPagamentoLabel() }}</span>
+    </div>
+
+    <!-- data -->
+    <div class="card-data">
+      <mat-icon>calendar_today</mat-icon>
+      <span>{{ lancamento.data_pagamento | date: 'dd/MM/yyyy' }}</span>
+    </div>
+
+    <!-- descrição e valor -->
+    <div class="card-header-info">
+      <span class="descricao">{{ getDescricaoLabel() }}</span>
+      <span
+        class="valor"
+        [ngClass]="lancamento.tipo === TipoLancamento.RECEITA ? 'valor-receita' : 'valor-despesa'"
+      >
+        {{ lancamento.valor | currencyBR }}
+      </span>
+    </div>
+
+    <mat-divider class="divider"></mat-divider>
+
+    <!-- seção de conciliação -->
+    <div class="conciliar-section">
+      <mat-form-field appearance="outline" class="field-full">
+        <mat-label>Finalidade</mat-label>
+        <mat-select [(ngModel)]="selectedFinalidadeId">
+          @for (f of finalidadesFiltradas; track f.id) {
+            <mat-option [value]="f.id">{{ f.nome }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-full">
+        <mat-label>Observação (opcional)</mat-label>
+        <textarea
+          matInput
+          [(ngModel)]="observacaoConciliar"
+          rows="2"
+          placeholder="Adicione uma observação..."
+        ></textarea>
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        color="primary"
+        class="btn-conciliar"
+        [disabled]="conciliando || !selectedFinalidadeId"
+        (click)="conciliar()"
+      >
+        @if (conciliando) {
+          <mat-spinner diameter="32"></mat-spinner>
+        } @else {
+          <span>
+            <mat-icon>check_circle</mat-icon>
+            CONCILIAR
+          </span>
+        }
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

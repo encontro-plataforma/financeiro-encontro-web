@@ -1,0 +1,57 @@
+<mat-form-field appearance="outline" class="multi-select" floatLabel="always">
+  <mat-label>{{ label }}</mat-label>
+
+  <mat-select
+    multiple
+    [value]="selectedIds"
+    (selectionChange)="onSelectionChange($event.value)"
+    (openedChange)="onPanelOpenChange($event)"
+    placeholder="Selecione um valor..."
+    panelClass="multi-select-panel">
+
+    <!-- Trigger customizado: mostra valor ou placeholder -->
+    <mat-select-trigger>
+      @if (selectedIds.length === 1) {
+        {{ getLabelById(selectedIds[0]) }}
+      } @else if (selectedIds.length > 1) {
+        {{ selectedIds.length }} selecionados
+      }
+    </mat-select-trigger>
+
+    <!-- Barra de busca (sticky no topo do painel) -->
+    <div class="ms-search"
+         (click)="$event.stopPropagation()"
+         (mousedown)="$event.stopPropagation()">
+      <mat-icon class="ms-search__icon">search</mat-icon>
+      <input
+        class="ms-search__input"
+        [(ngModel)]="searchText"
+        (input)="updateVisible()"
+        (keydown)="$event.stopPropagation()"
+        placeholder="Buscar...">
+      @if (searchText) {
+        <button class="ms-search__btn" title="Limpar busca"
+                (mousedown)="clearSearch(); $event.stopPropagation()">
+          <mat-icon>close</mat-icon>
+        </button>
+      } @else if (selectedIds.length > 0) {
+        <button class="ms-search__btn" title="Limpar seleção"
+                (mousedown)="clearAll($event)">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
+
+    <!-- Opções (todas no DOM — filtradas por CSS para preservar seleção) -->
+    @for (item of items; track item.id) {
+      <mat-option [value]="item.id" [class.ms-hidden]="!isVisible(item.id)">
+        {{ item.label }}
+      </mat-option>
+    }
+
+    @if (!hasVisibleItems) {
+      <mat-option disabled class="ms-empty">Nenhum resultado</mat-option>
+    }
+
+  </mat-select>
+</mat-form-field>

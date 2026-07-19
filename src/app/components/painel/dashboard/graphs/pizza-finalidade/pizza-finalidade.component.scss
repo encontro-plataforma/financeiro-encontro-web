@@ -1,0 +1,109 @@
+.pizza-card {
+  margin-bottom: 16px;
+}
+
+.pizza-card-content {
+  display: flex;
+  gap: 16px;
+  height: 420px;
+  padding: 8px 16px 0 !important;
+}
+
+// ── Coluna esquerda (cabeçalho + gráfico) ────────────────────────────────────
+.chart-column {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chart-header {
+  flex-shrink: 0;
+
+  .pizza-title {
+    font-size: 1rem;
+    font-weight: 600;
+    display: block;
+  }
+
+  // Área de filtro: espaço sempre reservado para evitar salto de layout
+  .filtro-ativo {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 6px;
+    visibility: hidden;
+
+    .filtro-nome {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #01579b;
+      padding: 0 8px;
+    }
+
+    .filtro-clear {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 50%;
+      color: #01579b;
+      line-height: 1;
+      transition: background 0.15s;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+
+      &:hover {
+        background: rgba(1, 87, 155, 0.12);
+      }
+    }
+
+    // Quando há filtro: torna visível e aplica estilo celeste
+    &--visible {
+      visibility: visible;
+      background: #e1f5fe;
+    }
+  }
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+
+  canvas {
+    max-height: 100%;
+  }
+}
+
+// ── Coluna direita (lista) ────────────────────────────────────────────────────
+.list-area {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  padding-left: 8px;
+}
+
+.chart-loading,
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 0.85rem;
+}

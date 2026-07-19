@@ -1,0 +1,31 @@
+.spinner {
+  // ─── Overlay cobrindo toda a tela ─────────────────────────────────────────
+  &--overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(2px);
+    z-index: 300;
+  }
+
+  // ─── Centralizado dentro de um container ──────────────────────────────────
+  &--center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 2rem 0;
+  }
+
+  // ─── Inline junto ao texto ────────────────────────────────────────────────
+  &--inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

@@ -1,0 +1,104 @@
+.arquivos-page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.search-field {
+  width: 300px;
+  min-width: 200px;
+}
+
+mat-progress-bar {
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+// ─── Tabela ──────────────────────────────────────────────────────────────────
+
+.arquivos-table {
+
+  .mat-column-nome_arquivo {
+    // tamanho livre — ocupa o espaço restante
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mat-column-processado_em {
+    max-width: 160px;
+  }
+
+  .mat-column-tamanho {
+    max-width: 100px;
+  }
+
+  .mat-column-acoes {
+    max-width: 120px;
+    justify-content: flex-end;
+    white-space: nowrap;
+  }
+
+  // ─── Nome com ícone ──────────────────────────────────────────────────────
+
+  .arquivo-nome {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: var(--mat-sys-on-surface-variant);
+      flex-shrink: 0;
+    }
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  // ─── Empty state ─────────────────────────────────────────────────────────
+
+  .empty-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 3rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+
+    mat-icon {
+      opacity: 0.4;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

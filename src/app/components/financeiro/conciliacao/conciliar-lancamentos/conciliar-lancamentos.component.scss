@@ -1,0 +1,102 @@
+.conciliar-page {
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.search-field {
+  width: 320px;
+  min-width: 200px;
+}
+
+.loading-container,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 300px;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    opacity: 0.35;
+  }
+
+  h2 { margin: 0; font-size: 1.25rem; font-weight: 500; }
+  p  { margin: 0; opacity: 0.7; }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  // gap: 16px;
+  align-items: start;
+}
+
+/* ── animação de saída do card ── */
+.card-wrapper {
+  overflow: hidden;
+  max-height: 600px;
+  opacity: 1;
+  transition:
+    max-height 350ms ease-in-out,
+    opacity    200ms ease-in-out,
+    margin     350ms ease-in-out,
+    padding    350ms ease-in-out;
+
+  &.card-leaving {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+  }
+}
+
+.loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.9rem;
+}
+
+.all-loaded {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.85rem;
+  opacity: 0.7;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}

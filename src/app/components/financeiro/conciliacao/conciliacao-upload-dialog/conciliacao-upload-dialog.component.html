@@ -1,0 +1,39 @@
+<div class="upload-dialog">
+
+  <div class="dialog-icon">
+    <mat-icon>cloud_done</mat-icon>
+  </div>
+
+  <h2 mat-dialog-title>Upload realizado com sucesso</h2>
+
+  <mat-dialog-content>
+    <p class="arquivo-nome">
+      <mat-icon>description</mat-icon>
+      {{ data.nomeArquivo }}
+    </p>
+
+    <div class="resultado-grid">
+      <div class="resultado-item inseridos">
+        <span class="resultado-valor">{{ data.inseridos }}</span>
+        <span class="resultado-label">Inseridos</span>
+      </div>
+      <div class="resultado-item duplicados">
+        <span class="resultado-valor">{{ data.duplicados }}</span>
+        <span class="resultado-label">Duplicados</span>
+      </div>
+      <div class="resultado-item erros">
+        <span class="resultado-valor">{{ data.erros }}</span>
+        <span class="resultado-label">Erros</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="fechar()">FECHAR</button>
+    <button mat-flat-button color="primary" (click)="conciliarLancamentos()">
+      <mat-icon>sync_alt</mat-icon>
+      CONCILIAR LANÇAMENTOS
+    </button>
+  </mat-dialog-actions>
+
+</div>

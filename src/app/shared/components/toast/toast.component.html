@@ -1,0 +1,11 @@
+<div class="toast-container">
+  @for (t of toastSvc.toasts$ | async; track t.id) {
+    <div class="toast toast--{{ t.type }}">
+      <mat-icon class="toast__icon">{{ iconOf(t.type) }}</mat-icon>
+      <span class="toast__msg">{{ t.message }}</span>
+      <button mat-icon-button class="toast__close" (click)="toastSvc.dismiss(t.id)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,123 @@
+<div class="p-6">
+
+  <!-- ─── Header ─────────────────────────────────────────────────────────────── -->
+  <div class="flex items-center gap-3 mb-6">
+    <button mat-icon-button (click)="voltar()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-2xl font-medium text-on-surface">
+      {{ updatePage ? 'Editar Usuário' : 'Novo Usuário' }}
+    </h1>
+  </div>
+
+  <!-- ─── Loading ───────────────────────────────────────────────────────────── -->
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" class="mb-4" />
+  }
+
+  <!-- ─── Formulário ──────────────────────────────────────────────────────────── -->
+  <mat-card appearance="outlined">
+    <mat-card-content class="pt-4">
+      <form [formGroup]="form" (ngSubmit)="salvar()" class="grid grid-cols-12 gap-4">
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Nome completo" />
+          @if (form.get('nome')?.hasError('required') && form.get('nome')?.touched) {
+            <mat-error>Nome é obrigatório</mat-error>
+          }
+          @if (form.get('nome')?.hasError('maxlength') && form.get('nome')?.touched) {
+            <mat-error>Nome deve ter no máximo 50 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+          <mat-label>E-mail</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="email@exemplo.com" />
+          @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+            <mat-error>E-mail é obrigatório</mat-error>
+          }
+          @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+            <mat-error>E-mail inválido</mat-error>
+          }
+          @if (form.get('email')?.hasError('maxlength') && form.get('email')?.touched) {
+            <mat-error>E-mail deve ter no máximo 50 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+          <mat-label>Perfil</mat-label>
+          <mat-select formControlName="perfil">
+            @for (op of perfilOpcoes; track op.value) {
+              <mat-option [value]="op.value">{{ op.name }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('perfil')?.hasError('required') && form.get('perfil')?.touched) {
+            <mat-error>Perfil é obrigatório</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
+          <mat-label>Senha</mat-label>
+          <input matInput formControlName="senha"
+                 [type]="senhaVisivel ? 'text' : 'password'"
+                 [placeholder]="updatePage ? 'Deixe em branco para manter a senha' : 'Senha de acesso'" />
+          <button mat-icon-button matSuffix type="button" (click)="senhaVisivel = !senhaVisivel">
+            <mat-icon>{{ senhaVisivel ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.get('senha')?.hasError('required') && form.get('senha')?.touched) {
+            <mat-error>Senha é obrigatória</mat-error>
+          }
+          @if (form.get('senha')?.hasError('maxlength') && form.get('senha')?.touched) {
+            <mat-error>Senha deve ter no máximo 12 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
+          <mat-label>Repetir senha</mat-label>
+          <input matInput formControlName="senhaConfirmacao"
+                 [type]="senhaVisivel ? 'text' : 'password'"
+                 placeholder="Repita a senha" />
+          <button mat-icon-button matSuffix type="button" (click)="senhaVisivel = !senhaVisivel">
+            <mat-icon>{{ senhaVisivel ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.get('senhaConfirmacao')?.hasError('required') && form.get('senhaConfirmacao')?.touched) {
+            <mat-error>Confirmação de senha é obrigatória</mat-error>
+          }
+          @if (form.get('senhaConfirmacao')?.hasError('senhaMismatch') && form.get('senhaConfirmacao')?.touched) {
+            <mat-error>As senhas precisam ser iguais</mat-error>
+          }
+          @if (form.get('senhaConfirmacao')?.hasError('maxlength') && form.get('senhaConfirmacao')?.touched) {
+            <mat-error>Senha deve ter no máximo 12 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="col-span-12" *ngIf="updatePage">
+          <div class="flex items-center gap-2 mb-2">
+            <mat-slide-toggle formControlName="ativo" color="primary" [disabled]="readonlyAdmin">
+              Usuário ativo
+            </mat-slide-toggle>
+          </div>
+  
+          <div class="flex justify-end gap-3 mt-2">
+            <button mat-stroked-button type="button" (click)="voltar()" class="btn">Cancelar</button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving || loading || readonlyAdmin" class="btn btn--icon-left">
+              @if (saving) {
+              <mat-spinner diameter="18" class="btn__spinner" />
+              } @else {
+                <mat-icon>save</mat-icon>
+              }
+              
+              {{ updatePage ? 'Salvar alterações' : 'Criar usuário' }}
+            </button>
+          </div>
+        </div>
+        <div class="col-span-12" *ngIf="readonlyAdmin">
+          <p class="text-sm text-muted">O usuário administrador não pode ser editado.</p>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+</div>

@@ -1,0 +1,11 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Cards — Componentes de cartão com sombra para melhor percepção visual
+// ─────────────────────────────────────────────────────────────────────────────
+
+mat-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+
+  &[appearance='outlined'] {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+}

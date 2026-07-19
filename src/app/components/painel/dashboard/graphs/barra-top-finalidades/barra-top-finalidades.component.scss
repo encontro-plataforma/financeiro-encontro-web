@@ -1,0 +1,54 @@
+.top-finalidades-card {
+  margin-bottom: 16px;
+}
+
+.top-finalidades-content {
+  padding-top: 8px !important;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.chart-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .chart-col-title {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    &--receita { color: #2e7d32; }
+    &--despesa { color: #c62828; }
+  }
+
+  .chart-wrapper {
+    height: 220px;
+    position: relative;
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+}
+
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 260px;
+}
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 0.8rem;
+}

@@ -1,0 +1,114 @@
+<div class="p-6">
+
+  <!-- ─── Header ───────────────────────────────────────────────────────────── -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-medium text-on-surface">Finalidades</h1>
+    <button mat-flat-button color="primary" class="btn btn--icon-left" (click)="criar()">
+      <mat-icon>add</mat-icon>
+      Criar
+    </button>
+  </div>
+
+  <!-- ─── Filtros ───────────────────────────────────────────────────────────── -->
+  <mat-card class="mb-6" appearance="outlined">
+    <mat-card-content class="!pb-0">
+      <div class="grid grid-cols-12 gap-x-4 items-start">
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-4">
+          <mat-label>Buscar por nome</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Nome da finalidade..." />
+          @if (search) {
+            <button matSuffix mat-icon-button (click)="search = ''; onSearchChange()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+          <mat-label>Tipo</mat-label>
+          <mat-select [(ngModel)]="tipoFiltro" (ngModelChange)="onTipoChange()">
+            <mat-option value="">Todos</mat-option>
+            @for (op of tipoOpcoes; track op.value) {
+              <mat-option [value]="op.value">{{ op.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ─── Tabela ────────────────────────────────────────────────────────────── -->
+  <mat-card appearance="outlined">
+    <mat-card-content class="!p-0">
+
+      @if (loading) {
+        <mat-progress-bar mode="indeterminate" />
+      }
+
+      <mat-table [dataSource]="result.items" class="finalidades-table">
+
+        <!-- Tipo -->
+        <ng-container matColumnDef="tipo">
+          <mat-header-cell *matHeaderCellDef>Tipo</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <span class="chip" [ngClass]="getTipoClass(row.tipo)">
+              {{ getTipoLabel(row.tipo) }}
+            </span>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Nome -->
+        <ng-container matColumnDef="nome">
+          <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.nome }}</mat-cell>
+        </ng-container>
+
+        <!-- Descrição -->
+        <ng-container matColumnDef="descricao">
+          <mat-header-cell *matHeaderCellDef>Descrição</mat-header-cell>
+          <mat-cell *matCellDef="let row" [matTooltip]="row.descricao ?? ''">
+            {{ row.descricao ?? '—' }}
+          </mat-cell>
+        </ng-container>
+
+        <!-- Ações -->
+        <ng-container matColumnDef="acoes">
+          <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <button mat-icon-button color="primary" matTooltip="Editar" (click)="editar(row.id)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Excluir" (click)="deletar(row)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns" />
+        <mat-row *matRowDef="let row; columns: displayedColumns;" />
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
+            @if (!loading) {
+              <mat-icon>label_off</mat-icon>
+              <span>Nenhuma finalidade encontrada</span>
+            }
+          </td>
+        </tr>
+
+      </mat-table>
+
+      <mat-paginator
+        [length]="result.total"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[10, 25, 50]"
+        (page)="onPage($event)"
+        showFirstLastButtons />
+
+    </mat-card-content>
+  </mat-card>
+
+</div>

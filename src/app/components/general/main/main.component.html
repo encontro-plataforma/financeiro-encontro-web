@@ -1,0 +1,66 @@
+<div class="main-layout">
+
+  <!-- ─── Side Menu ─────────────────────────────────────────────────────── -->
+  <aside class="side-menu" [class.side-menu--collapsed]="collapsed()">
+
+    <!-- Header: logo + título + botão colapsar -->
+    <div class="side-menu__header">
+      @if (!collapsed()) {
+        <div class="side-menu__logo">F</div>
+        <span class="side-menu__title">Financeiro Encontro</span>
+      }
+      <button mat-icon-button
+              class="side-menu__toggle"
+              (click)="toggleMenu()"
+              [matTooltip]="collapsed() ? 'Expandir menu' : 'Recolher menu'"
+              matTooltipPosition="right">
+        <mat-icon>{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+    </div>
+
+    <!-- Nav -->
+    <nav class="side-menu__nav">
+      @for (section of navSections; track section.title) {
+        @if (!collapsed()) {
+          <span class="side-menu__section-title">{{ section.title }}</span>
+        }
+
+        @for (item of section.items; track item.route) {
+          <a class="side-menu__item"
+             [routerLink]="item.route"
+             routerLinkActive="side-menu__item--active"
+             [matTooltip]="collapsed() ? item.label : ''"
+             matTooltipPosition="right">
+            <mat-icon class="side-menu__icon">{{ item.icon }}</mat-icon>
+            <span class="side-menu__label">{{ collapsed() ? '' : item.label }}</span>
+          </a>
+        }
+      }
+    </nav>
+
+    <!-- Footer: usuário + logout -->
+    <div class="side-menu__footer">
+      @if (!collapsed()) {
+        <div class="side-menu__user-info">
+          @if (usuario) {
+              <span class="side-menu__user-name">{{ nomeExibido }}</span>
+              <span class="side-menu__user-email">{{ usuario.email }}</span>
+          }
+        </div>
+      }
+
+      <button class="side-menu__logout" (click)="logout()">
+        <mat-icon class="side-menu__icon">logout</mat-icon>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ─── Conteúdo principal ─────────────────────────────────────────────── -->
+  <main class="main-content">
+    <router-outlet />
+  </main>
+
+</div>
+
+<app-toast />

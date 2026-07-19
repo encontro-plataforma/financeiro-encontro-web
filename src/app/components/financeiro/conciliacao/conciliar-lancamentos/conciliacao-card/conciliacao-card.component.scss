@@ -1,0 +1,111 @@
+.conciliacao-card {
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin: 8px;
+  min-width: 365px;
+
+  mat-card-content {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.card-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  &.chip-receita  { background: #e8f5e9; color: #2e7d32; }
+  &.chip-despesa  { background: #fce4ec; color: #c62828; }
+  &.chip-forma    { background: var(--mat-sys-surface-variant); color: var(--mat-sys-on-surface-variant); }
+}
+
+.card-header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.descricao {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  flex: 1;
+  line-height: 1.4;
+}
+
+.valor {
+  font-size: 1.05rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &.valor-receita { color: #2e7d32; }
+  &.valor-despesa { color: #c62828; }
+}
+
+.card-data,
+.card-obs {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+}
+
+.divider {
+  margin: 4px 0;
+}
+
+.conciliar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.field-full {
+  width: 100%;
+}
+
+.btn-conciliar {
+  height: 42px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,73 @@
+<div class="p-6">
+
+  <!-- ─── Header ───────────────────────────────────────────────────────────── -->
+  <div class="flex items-center gap-3 mb-6">
+    <button mat-icon-button (click)="voltar()" matTooltip="Voltar">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-2xl font-medium text-on-surface">
+      {{ updatePage ? 'Editar Finalidade' : 'Nova Finalidade' }}
+    </h1>
+  </div>
+
+  <!-- ─── Loading ───────────────────────────────────────────────────────────── -->
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" class="mb-4" />
+  }
+
+  <!-- ─── Formulário ────────────────────────────────────────────────────────── -->
+  <mat-card appearance="outlined">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="salvar()" class="grid grid-cols-12 gap-4">
+
+        <!-- Tipo -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="tipo">
+            @for (op of tipoOpcoes; track op.value) {
+              <mat-option [value]="op.value">{{ op.name }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('tipo')?.hasError('required') && form.get('tipo')?.touched) {
+            <mat-error>Tipo é obrigatório</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Nome -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-8">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Ex: OFERTA, COMBUSTÍVEL..." />
+          @if (form.get('nome')?.hasError('required') && form.get('nome')?.touched) {
+            <mat-error>Nome é obrigatório</mat-error>
+          }
+          @if (form.get('nome')?.hasError('maxlength') && form.get('nome')?.touched) {
+            <mat-error>Máximo de 100 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Descrição -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12">
+          <mat-label>Descrição</mat-label>
+          <textarea matInput formControlName="descricao" rows="2" placeholder="Opcional..."></textarea>
+        </mat-form-field>
+
+        <!-- Ações -->
+        <div class="col-span-12 flex justify-end gap-3 pt-2">
+          <button mat-stroked-button type="button" (click)="voltar()" [disabled]="saving" class="btn">
+            Cancelar
+          </button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="saving || loading" class="btn btn--icon-left">
+            @if (saving) {
+              <mat-spinner diameter="18" class="btn__spinner" />
+            } @else {
+              <mat-icon>save</mat-icon>
+            }
+            {{ updatePage ? 'Salvar alterações' : 'Criar finalidade' }}
+          </button>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+</div>

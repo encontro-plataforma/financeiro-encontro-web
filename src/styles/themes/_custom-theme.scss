@@ -1,0 +1,29 @@
+@use '@angular/material' as mat;
+
+// ─── Paleta M3 — Financeiro Encontro ─────────────────────────────────────────
+//
+//  PRIMARY  → verde   (mat.$green-palette)
+//    Transmite confiança, crescimento e saúde financeira.
+//    Usado em: botões principais, links ativos, ícones de receita.
+//
+//  TERTIARY → laranja (mat.$orange-palette)
+//    Transmite energia, urgência e destaque positivo.
+//    Usado em: badges de atenção, gráficos de despesa, FAB.
+//
+//  SURFACE  → branco / neutros (gerado automaticamente via theme-type: light)
+//    Superfícies limpas que valorizam os dados financeiros.
+//
+//  O M3 gera automaticamente todas as variantes de cor (container, on-*, etc.)
+//  e as expõe como CSS custom properties (--mat-sys-*) usadas em todo o projeto.
+// ─────────────────────────────────────────────────────────────────────────────
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary:  mat.$green-palette,
+      tertiary: mat.$orange-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}

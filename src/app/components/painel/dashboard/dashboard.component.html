@@ -1,0 +1,130 @@
+<div class="p-6">
+
+  <h1 class="text-2xl font-medium mb-6 text-on-surface">Dashboard</h1>
+
+  <!-- ─── Filtros ──────────────────────────────────────────────────────────── -->
+  <mat-card class="mb-6" appearance="outlined">
+    <mat-card-content class="!pb-0">
+      <form [formGroup]="formFilters" (ngSubmit)="buscar()" class="grid grid-cols-12 gap-x-4 items-start">
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+          <mat-label>Data início</mat-label>
+          <input matInput [matDatepicker]="pickerInicio" formControlName="data_inicio" placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerInicio" />
+          <mat-datepicker #pickerInicio />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+          <mat-label>Data fim</mat-label>
+          <input matInput [matDatepicker]="pickerFim" formControlName="data_fim" placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerFim" />
+          <mat-datepicker #pickerFim />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="tipo">
+            @for (op of tipoOpcoes; track op.value) {
+              <mat-option [value]="op.value">{{ op.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            @for (op of statusOpcoes; track op.value) {
+              <mat-option [value]="op.value">{{ op.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <app-multi-select class="col-span-12 md:col-span-6 lg:col-span-4"
+          [items]="formasPagamento"
+          [selectedIds]="formFilters.get('forma_pagamento')?.value || []"
+          (selectionChange)="formFilters.patchValue({ forma_pagamento: $event })"
+          label="Forma de Pagamento">
+        </app-multi-select>
+
+        <app-multi-select class="col-span-12 md:col-span-6 lg:col-span-4"
+          [items]="finalidades"
+          [selectedIds]="formFilters.get('finalidade_id')?.value || []"
+          (selectionChange)="formFilters.patchValue({ finalidade_id: $event })"
+          label="Finalidade">
+        </app-multi-select>
+
+        <div class="col-end-13 !pb-2 flex items-start justify-end">
+          <button mat-flat-button color="primary" type="submit" [disabled]="loading" class="filter-btn">
+            <mat-icon>search</mat-icon>
+            Buscar
+          </button>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ─── Cards de totais ──────────────────────────────────────────────────── -->
+  @if (loading) {
+    <div class="flex justify-center py-12">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+
+      <mat-card class="dashboard__card dashboard__card--receita" appearance="outlined">
+        <mat-card-content>
+          <div class="flex items-center gap-4 py-1">
+            <div class="card-icon"><mat-icon>trending_up</mat-icon></div>
+            <div class="flex flex-col min-w-0">
+              <span class="card-label">Receitas</span>
+              <span class="card-value">
+                {{ (totais?.total_receitas ?? 0) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="dashboard__card dashboard__card--despesa" appearance="outlined">
+        <mat-card-content>
+          <div class="flex items-center gap-4 py-1">
+            <div class="card-icon"><mat-icon>trending_down</mat-icon></div>
+            <div class="flex flex-col min-w-0">
+              <span class="card-label">Despesas</span>
+              <span class="card-value">
+                {{ (totais?.total_despesas ?? 0) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="dashboard__card dashboard__card--saldo" appearance="outlined">
+        <mat-card-content>
+          <div class="flex items-center gap-4 py-1">
+            <div class="card-icon"><mat-icon>account_balance_wallet</mat-icon></div>
+            <div class="flex flex-col min-w-0">
+              <span class="card-label">Saldo</span>
+              <span class="card-value" [class.card-value--negative]="(totais?.saldo ?? 0) < 0">
+                {{ (totais?.saldo ?? 0) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  }
+
+  <!-- ─── Gráficos de pizza ─────────────────────────────────────────────────── -->
+  <app-pizza-finalidade [filtros]="filtrosAtivos" tipo="RECEITA" />
+  <app-pizza-finalidade [filtros]="filtrosAtivos" tipo="DESPESA" />
+
+  <!-- ─── Barras mensais ───────────────────────────────────────────────────── -->
+  <app-barra-mensal [filtros]="filtrosAtivos" />
+
+  <!-- ─── Top 5 finalidades ────────────────────────────────────────────────── -->
+  <app-barra-top-finalidades [filtros]="filtrosAtivos" />
+
+</div>

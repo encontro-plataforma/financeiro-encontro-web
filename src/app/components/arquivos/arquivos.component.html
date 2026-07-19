@@ -1,0 +1,104 @@
+<div class="arquivos-page">
+
+  <div class="page-header">
+    <h1 class="page-title">Arquivos Enviados</h1>
+
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar por nome</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Nome do arquivo..." />
+      @if (search) {
+        <button matSuffix mat-icon-button (click)="search = ''; onSearchChange()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  </div>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  <mat-card appearance="outlined" class="table-card">
+    <mat-table [dataSource]="result.items" class="arquivos-table">
+
+      <!-- Data de processamento -->
+      <ng-container matColumnDef="processado_em">
+        <mat-header-cell *matHeaderCellDef>Importado em</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{ row.processado_em | date:'dd/MM/yyyy HH:mm' }}
+        </mat-cell>
+      </ng-container>
+
+      <!-- Nome do arquivo -->
+      <ng-container matColumnDef="nome_arquivo">
+        <mat-header-cell *matHeaderCellDef>Arquivo</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <div class="arquivo-nome">
+            <mat-icon>description</mat-icon>
+            <span>{{ row.nome_arquivo }}</span>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Tamanho -->
+      <ng-container matColumnDef="tamanho">
+        <mat-header-cell *matHeaderCellDef>Tamanho</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{ formatBytes(row.tamanho_bytes) }}
+        </mat-cell>
+      </ng-container>
+
+      <!-- Ações -->
+      <ng-container matColumnDef="acoes">
+        <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <button
+            mat-icon-button
+            matTooltip="Baixar arquivo"
+            [disabled]="isDownloading(row.id)"
+            (click)="download(row)">
+            @if (isDownloading(row.id)) {
+              <mat-spinner diameter="20" />
+            } @else {
+              <mat-icon>download</mat-icon>
+            }
+          </button>
+
+          <button
+            mat-icon-button
+            matTooltip="Excluir arquivo"
+            color="warn"
+            (click)="deletar(row)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns" />
+      <mat-row *matRowDef="let row; columns: displayedColumns;" />
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [colSpan]="displayedColumns.length">
+          @if (!loading) {
+            <div class="empty-row">
+              <mat-icon>folder_open</mat-icon>
+              <span>Nenhum arquivo encontrado</span>
+            </div>
+          }
+        </td>
+      </tr>
+
+    </mat-table>
+
+    <mat-paginator
+      [length]="result.total"
+      [pageIndex]="pageIndex"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[10, 25, 50]"
+      showFirstLastButtons
+      (page)="onPage($event)">
+    </mat-paginator>
+  </mat-card>
+
+</div>

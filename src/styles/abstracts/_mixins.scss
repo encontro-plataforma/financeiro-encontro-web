@@ -1,0 +1,50 @@
+@use 'variables' as v;
+
+// ─── Flex helpers ─────────────────────────────────────────────────────────────
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// ─── Responsividade ───────────────────────────────────────────────────────────
+@mixin respond-to($bp) {
+  @if $bp == sm    { @media (min-width: v.$bp-sm)  { @content; } }
+  @else if $bp == md  { @media (min-width: v.$bp-md)  { @content; } }
+  @else if $bp == lg  { @media (min-width: v.$bp-lg)  { @content; } }
+  @else if $bp == xl  { @media (min-width: v.$bp-xl)  { @content; } }
+  @else if $bp == 2xl { @media (min-width: v.$bp-2xl) { @content; } }
+}
+
+// ─── Truncar texto ────────────────────────────────────────────────────────────
+@mixin truncate($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// ─── Elevação customizada ─────────────────────────────────────────────────────
+@mixin elevation($level: 1) {
+  @if $level == 1 { box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06); }
+  @else if $level == 2 { box-shadow: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06); }
+  @else if $level == 3 { box-shadow: 0 10px 15px rgba(0,0,0,.07), 0 4px 6px rgba(0,0,0,.05); }
+  @else if $level == 4 { box-shadow: 0 20px 25px rgba(0,0,0,.07), 0 10px 10px rgba(0,0,0,.04); }
+}

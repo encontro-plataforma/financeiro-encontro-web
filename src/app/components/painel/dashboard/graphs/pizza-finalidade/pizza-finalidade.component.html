@@ -1,0 +1,42 @@
+<mat-card class="pizza-card" appearance="outlined">
+  <mat-card-content class="pizza-card-content">
+
+    <!-- Coluna esquerda: cabeçalho + filtro ativo + gráfico -->
+    <div class="chart-column">
+      <div class="chart-header">
+        <span class="pizza-title">{{ tipoLabel }} por Finalidade</span>
+        <div class="filtro-ativo" [class.filtro-ativo--visible]="finalidadeSelecionada !== null">
+          <span class="filtro-nome">{{ selectedLabel }}</span>
+          <button class="filtro-clear" (click)="clearSelection()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="chart-area">
+        @if (loading) {
+          <div class="chart-loading"><mat-spinner diameter="40" /></div>
+        } @else if (dados.length === 0) {
+          <div class="chart-empty">Sem dados para o período.</div>
+        } @else {
+          <canvas baseChart
+            [data]="chartData"
+            [type]="chartType"
+            [options]="chartOptions"
+            (chartClick)="onChartClick($event)">
+          </canvas>
+        }
+      </div>
+    </div>
+
+    <!-- Coluna direita: lista de lançamentos (ocupa todo o lado direito) -->
+    <div class="list-area">
+      <app-lista-lancamentos-graph
+        [filtros]="filtros"
+        [tipo]="tipo"
+        [finalidadeId]="finalidadeSelecionada">
+      </app-lista-lancamentos-graph>
+    </div>
+
+  </mat-card-content>
+</mat-card>

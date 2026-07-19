@@ -1,0 +1,66 @@
+.access-denied {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 64px);
+  padding: 2rem;
+  text-align: center;
+  background: var(--mat-sys-surface);
+
+  // ─── Arte ────────────────────────────────────────────────────────────────
+
+  &__art {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.2));
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  // ─── Textos ───────────────────────────────────────────────────────────────
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.6;
+    margin: 0 0 2rem;
+  }
+
+  // ─── Botão ────────────────────────────────────────────────────────────────
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+// ─── Animação cadeado ────────────────────────────────────────────────────────
+
+.lock-shackle {
+  transform-origin: 78px 110px;
+  animation: rattle 3.5s ease-in-out infinite;
+}
+
+@keyframes rattle {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  63%  { transform: rotate(-9deg); }
+  66%  { transform: rotate(9deg); }
+  69%  { transform: rotate(-6deg); }
+  72%  { transform: rotate(6deg); }
+  75%  { transform: rotate(-3deg); }
+  78%  { transform: rotate(3deg); }
+  81%  { transform: rotate(0deg); }
+}

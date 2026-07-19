@@ -1,0 +1,147 @@
+<div class="p-6">
+
+  <!-- ─── Header ───────────────────────────────────────────────────────────── -->
+  <div class="flex items-center gap-3 mb-6">
+    <button mat-icon-button (click)="voltar()" matTooltip="Voltar">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-2xl font-medium text-on-surface">
+      {{ updatePage ? 'Editar Lançamento' : 'Novo Lançamento' }}
+    </h1>
+
+    @if (updatePage) {
+      <div class="flex-1 flex justify-end gap-2">
+        @if (isConciliado) {
+          <button mat-stroked-button color="warn" (click)="desconciliar()" [disabled]="loading">
+            <mat-icon>sync_disabled</mat-icon>
+            Desconciliar
+          </button>
+        } @else {
+          <button mat-flat-button color="accent" class="btn" (click)="conciliar()" [disabled]="loading">
+            <mat-icon>check_circle</mat-icon>
+            Conciliar
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- ─── Status badge (edit mode) ─────────────────────────────────────────── -->
+  @if (updatePage && lancamento) {
+    <div class="mb-4">
+      <span class="status-badge"
+            [class.status-badge--conciliado]="isConciliado"
+            [class.status-badge--nao-conciliado]="!isConciliado">
+        <mat-icon>{{ isConciliado ? 'check_circle' : 'pending' }}</mat-icon>
+        {{ isConciliado ? 'Conciliado' : 'Não Conciliado' }}
+      </span>
+    </div>
+  }
+
+  <!-- ─── Loading ───────────────────────────────────────────────────────────── -->
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" class="mb-4" />
+  }
+
+  <!-- ─── Formulário ────────────────────────────────────────────────────────── -->
+  <mat-card appearance="outlined">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="salvar()" class="grid grid-cols-12 gap-4">
+
+        <!-- Data de Pagamento -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-5 lg:col-span-3">
+          <mat-label>Data de Pagamento</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="data_pagamento" placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="picker" />
+          <mat-datepicker #picker />
+          @if (form.get('data_pagamento')?.hasError('required') && form.get('data_pagamento')?.touched) {
+            <mat-error>Data é obrigatória</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Descrição (full width) -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-7 lg:col-span-6">
+          <mat-label>Descrição</mat-label>
+          <input matInput formControlName="descricao" placeholder="Ex: Mensalidade, Dízimo...">
+          @if (form.get('descricao')?.hasError('required') && form.get('descricao')?.touched) {
+            <mat-error>Descrição é obrigatória</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Valor -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+          <mat-label>Valor (R$)</mat-label>
+          <input matInput type="number" step="0.01" min="0.01" formControlName="valor" placeholder="0,00">
+          @if (form.get('valor')?.hasError('required') && form.get('valor')?.touched) {
+            <mat-error>Valor é obrigatório</mat-error>
+          }
+          @if (form.get('valor')?.hasError('min') && form.get('valor')?.touched) {
+            <mat-error>Valor deve ser maior que zero</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Tipo -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-4">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="tipo">
+            @for (op of tipoOpcoes; track op.value) {
+              <mat-option [value]="op.value">{{ op.name }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('tipo')?.hasError('required') && form.get('tipo')?.touched) {
+            <mat-error>Tipo é obrigatório</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Forma de Pagamento -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-4">
+          <mat-label>Forma de Pagamento</mat-label>
+          <mat-select formControlName="forma_pagamento">
+            @for (op of formaPagamentoOpcoes; track op.value) {
+              <mat-option [value]="op.value">{{ op.name }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('forma_pagamento')?.hasError('required') && form.get('forma_pagamento')?.touched) {
+            <mat-error>Forma de pagamento é obrigatória</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Finalidade -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-4">
+          <mat-label>Finalidade</mat-label>
+          <mat-select formControlName="finalidade_id">
+            @for (f of finalidadesFiltradas; track f.id) {
+              <mat-option [value]="f.id">{{ f.nome }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('finalidade_id')?.hasError('required') && form.get('finalidade_id')?.touched) {
+            <mat-error>Finalidade é obrigatória</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Observação -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12">
+          <mat-label>Observação</mat-label>
+          <textarea matInput formControlName="observacao" rows="1" placeholder="Opcional..."></textarea>
+        </mat-form-field>
+
+        <!-- Ações -->
+        <div class="col-span-12 flex justify-end gap-3 pt-2">
+          <button mat-stroked-button type="button" (click)="voltar()" [disabled]="saving" class="btn">
+            Cancelar
+          </button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="saving || loading" class="btn btn--icon-left">
+            @if (saving) {
+              <mat-spinner diameter="18" class="btn__spinner" />
+            } @else {
+              <mat-icon>save</mat-icon>
+            }
+            {{ updatePage ? 'Salvar alterações' : 'Criar lançamento' }}
+          </button>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+</div>

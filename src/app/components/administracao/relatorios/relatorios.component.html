@@ -1,0 +1,103 @@
+<div class="p-6">
+
+  <!-- ─── Header ─────────────────────────────────────────────────────────────── -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-medium text-on-surface">Relatórios</h1>
+    <p class="text-sm text-gray-500 mt-1">Gere relatórios financeiros para impressão e arquivamento</p>
+  </div>
+
+  <!-- ─── Livro Caixa ─────────────────────────────────────────────────────────── -->
+  <mat-card appearance="outlined" class="mb-6">
+    <mat-card-header>
+      <mat-card-title class="flex items-center gap-2">
+        <mat-icon class="text-primary">menu_book</mat-icon>
+        Livro Caixa
+      </mat-card-title>
+      <mat-card-subtitle>
+        Relatório contábil com todas as entradas, saídas e saldo acumulado no período
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="!pt-4">
+      <form [formGroup]="formLivroCaixa" (ngSubmit)="gerarLivroCaixa()" class="flex flex-wrap gap-4 items-end">
+
+        <mat-form-field appearance="outline" floatLabel="always" class="w-48">
+          <mat-label>Data início</mat-label>
+          <input matInput [matDatepicker]="pickerLcInicio" formControlName="data_inicio" placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerLcInicio" />
+          <mat-datepicker #pickerLcInicio />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="w-48">
+          <mat-label>Data fim</mat-label>
+          <input matInput [matDatepicker]="pickerLcFim" formControlName="data_fim" placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerLcFim" />
+          <mat-datepicker #pickerLcFim />
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="btn btn--icon-left mb-5"
+          [disabled]="formLivroCaixa.invalid || gerandoLivroCaixa">
+          @if (gerandoLivroCaixa) {
+            <mat-spinner diameter="18" />
+          } @else {
+            <mat-icon>picture_as_pdf</mat-icon>
+          }
+          Gerar PDF
+        </button>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ─── Resumo Geral ──────────────────────────────────────────────────────────── -->
+  <mat-card appearance="outlined" class="mb-6">
+    <mat-card-header>
+      <mat-card-title class="flex items-center gap-2">
+        <mat-icon class="text-primary">summarize</mat-icon>
+        Resumo Geral
+      </mat-card-title>
+      <mat-card-subtitle>
+        Tabelas pivot de Receitas e Despesas por forma de pagamento e finalidade, com saldo final
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="!pt-4">
+      <form [formGroup]="formResumoGeral" (ngSubmit)="gerarResumoGeral()" class="flex flex-wrap gap-4 items-end">
+
+        <mat-form-field appearance="outline" floatLabel="always" class="w-48">
+          <mat-label>Data início</mat-label>
+          <input matInput [matDatepicker]="pickerRgInicio" formControlName="data_inicio" placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerRgInicio" />
+          <mat-datepicker #pickerRgInicio />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="w-48">
+          <mat-label>Data fim</mat-label>
+          <input matInput [matDatepicker]="pickerRgFim" formControlName="data_fim" placeholder="DD/MM/AAAA">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerRgFim" />
+          <mat-datepicker #pickerRgFim />
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="btn btn--icon-left mb-5"
+          [disabled]="formResumoGeral.invalid || gerandoResumoGeral">
+          @if (gerandoResumoGeral) {
+            <mat-spinner diameter="18" />
+          } @else {
+            <mat-icon>picture_as_pdf</mat-icon>
+          }
+          Gerar PDF
+        </button>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+</div>

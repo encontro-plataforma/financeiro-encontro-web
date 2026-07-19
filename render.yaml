@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: financeiro-encontro-web
+    runtime: static
+    buildCommand: npm ci && sed -i "s|##API_URL##|$API_URL|g" src/environments/environment.prod.ts && npm run build
+    staticPublishPath: dist/financeiro-encontro/browser
+    envVars:
+      - key: API_URL
+        value: https://financeiro-encontro-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
