@@ -18,6 +18,10 @@
 - Tela de Encontristas: mesmo formato da tela de Encontreiros — listagem com filtro de círculo
   multi-select (incluindo "Sem Círculo"), filtro por padrinho e por auditado, edição reaproveitando os
   mesmos componentes compartilhados de vínculo com lançamento
+- Tela de Lançamento (edição) ganha a lista de Detalhamentos vinculados, com botão para ir até a
+  inscrição referenciada (preservando o retorno para o lançamento de origem) e excluir; botão "Incluir"
+  abre um novo seletor (`DetalhamentoPickerDialogComponent`) que cria uma Oferta/Outro diretamente ou
+  vincula uma inscrição de Encontreiro/Encontrista ainda não auditada (busca paginada, 8 por página)
 
 ### Alterado
 - `ExtratoBancarioService`/`ExtratoBancario` renomeados para `UploadFileService`/`UploadFile`, acompanhando

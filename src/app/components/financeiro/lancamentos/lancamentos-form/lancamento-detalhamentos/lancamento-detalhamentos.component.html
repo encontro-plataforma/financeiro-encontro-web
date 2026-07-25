@@ -1,0 +1,46 @@
+<mat-card appearance="outlined" class="detalhamentos-card">
+  <mat-card-content>
+
+    <div class="detalhamentos-header">
+      <h3 class="detalhamentos-titulo">Detalhamentos</h3>
+      <button mat-stroked-button color="primary" (click)="incluir()">
+        <mat-icon>add</mat-icon>
+        Incluir
+      </button>
+    </div>
+
+    @if (loading) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    @if (!loading && detalhamentos.length === 0) {
+      <p class="detalhamentos-vazio">Nenhum detalhamento vinculado a este lançamento.</p>
+    }
+
+    @for (det of detalhamentos; track det.id) {
+      <div class="detalhamento-item">
+        <div class="detalhamento-linha1">
+          <span class="detalhamento-tipo">{{ tipoLabel(det.tipo) }}</span>
+          <span class="detalhamento-nome">{{ det.detalhe_nome }}</span>
+          <span class="detalhamento-valor">{{ det.valor | currency:'BRL' }}</span>
+          <span class="detalhamento-acoes">
+            <button
+              mat-icon-button
+              matTooltip="Ir para a inscrição"
+              [disabled]="!isInscricao(det.tipo)"
+              (click)="irPara(det)">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Remover" (click)="excluir(det)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </span>
+        </div>
+        @if (det.observacao_efetiva) {
+          <div class="detalhamento-linha2">{{ det.observacao_efetiva }}</div>
+        }
+      </div>
+    }
+
+  </mat-card-content>
+</mat-card>
