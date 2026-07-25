@@ -15,6 +15,9 @@
   multi-select, filtro por auditado, badge colorido de auditado), edição (sem criação/exclusão manual —
   só entram via CSV) e seção para ligar/trocar/remover o vínculo com um lançamento
   (`VinculoLancamentoComponent`, `LancamentoPickerDialogComponent`, ambos compartilhados)
+- Tela de Encontristas: mesmo formato da tela de Encontreiros — listagem com filtro de círculo
+  multi-select (incluindo "Sem Círculo"), filtro por padrinho e por auditado, edição reaproveitando os
+  mesmos componentes compartilhados de vínculo com lançamento
 
 ### Alterado
 - `ExtratoBancarioService`/`ExtratoBancario` renomeados para `UploadFileService`/`UploadFile`, acompanhando

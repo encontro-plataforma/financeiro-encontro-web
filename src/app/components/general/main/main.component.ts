@@ -66,6 +66,7 @@ export class MainComponent implements OnInit{
         { label: 'Equipes',      icon: 'groups',                route: '/secretaria/equipes' },
         { label: 'Círculos',     icon: 'radio_button_checked',  route: '/secretaria/circulos' },
         { label: 'Encontreiros', icon: 'volunteer_activism',    route: '/secretaria/encontreiros' },
+        { label: 'Encontristas', icon: 'diversity_3',           route: '/secretaria/encontristas' },
         { label: 'Relatórios',   icon: 'summarize',              route: '/secretaria/relatorios' },
       ],
     },

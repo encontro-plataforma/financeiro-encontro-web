@@ -121,6 +121,19 @@ export const routes: Routes = [
             ],
           },
           {
+            path: 'encontristas',
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('./components/secretaria/encontristas/encontristas.component').then(m => m.EncontristasComponent),
+              },
+              {
+                path: ':id/editar',
+                loadComponent: () => import('./components/secretaria/encontristas/encontristas-form/encontristas-form.component').then(m => m.EncontristasFormComponent),
+              },
+            ],
+          },
+          {
             path: 'relatorios',
             loadComponent: () => import('./components/secretaria/relatorios/relatorios.component').then(m => m.SecretariaRelatoriosComponent),
           },
