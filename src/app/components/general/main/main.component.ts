@@ -63,9 +63,10 @@ export class MainComponent implements OnInit{
       title: 'Secretaria',
       roles: [PerfilUsuario.ADMINISTRADOR, PerfilUsuario.SECRETARIO],
       items: [
-        { label: 'Equipes',     icon: 'groups',        route: '/secretaria/equipes' },
-        { label: 'Círculos',    icon: 'radio_button_checked', route: '/secretaria/circulos' },
-        { label: 'Relatórios',  icon: 'summarize',     route: '/secretaria/relatorios' },
+        { label: 'Equipes',      icon: 'groups',                route: '/secretaria/equipes' },
+        { label: 'Círculos',     icon: 'radio_button_checked',  route: '/secretaria/circulos' },
+        { label: 'Encontreiros', icon: 'volunteer_activism',    route: '/secretaria/encontreiros' },
+        { label: 'Relatórios',   icon: 'summarize',              route: '/secretaria/relatorios' },
       ],
     },
     {

@@ -108,6 +108,19 @@ export const routes: Routes = [
             ],
           },
           {
+            path: 'encontreiros',
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('./components/secretaria/encontreiros/encontreiros.component').then(m => m.EncontreirosComponent),
+              },
+              {
+                path: ':id/editar',
+                loadComponent: () => import('./components/secretaria/encontreiros/encontreiros-form/encontreiros-form.component').then(m => m.EncontreirosFormComponent),
+              },
+            ],
+          },
+          {
             path: 'relatorios',
             loadComponent: () => import('./components/secretaria/relatorios/relatorios.component').then(m => m.SecretariaRelatoriosComponent),
           },

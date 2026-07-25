@@ -1,0 +1,14 @@
+@use '../../../../styles/abstracts/colors' as c;
+
+.auditado-badge {
+  display: inline-block;
+  min-width: 40px;
+  text-align: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  &.auditado-badge--sim { @include c.status-chip('success'); }
+  &.auditado-badge--nao { @include c.status-chip('error'); }
+}

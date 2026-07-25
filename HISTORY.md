@@ -11,6 +11,10 @@
   telas de Encontreiros e Encontristas
 - Tela de Arquivos Enviados ganha coluna de status e um botão para ver o resumo do processamento de cada
   upload
+- Tela de Encontreiros: listagem (busca por nome/apelido, filtro por equipe e situação da camisa
+  multi-select, filtro por auditado, badge colorido de auditado), edição (sem criação/exclusão manual —
+  só entram via CSV) e seção para ligar/trocar/remover o vínculo com um lançamento
+  (`VinculoLancamentoComponent`, `LancamentoPickerDialogComponent`, ambos compartilhados)
 
 ### Alterado
 - `ExtratoBancarioService`/`ExtratoBancario` renomeados para `UploadFileService`/`UploadFile`, acompanhando

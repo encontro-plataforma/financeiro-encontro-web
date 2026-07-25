@@ -1,0 +1,36 @@
+<mat-card appearance="outlined" class="vinculo-card">
+  <mat-card-content>
+    <h3 class="vinculo-titulo">Lançamento vinculado</h3>
+
+    @if (lancamentoVinculado) {
+      <div class="vinculo-info">
+        <div class="vinculo-dados">
+          <p class="vinculo-descricao">{{ lancamentoVinculado.descricao }}</p>
+          <p class="vinculo-detalhe">
+            {{ lancamentoVinculado.data_pagamento | date:'dd/MM/yyyy' }}
+            &nbsp;·&nbsp;
+            {{ lancamentoVinculado.valor | currency:'BRL' }}
+          </p>
+        </div>
+        <div class="vinculo-acoes">
+          <button mat-stroked-button [disabled]="processando" (click)="trocar()">
+            <mat-icon>swap_horiz</mat-icon>
+            Trocar
+          </button>
+          <button mat-stroked-button color="warn" [disabled]="processando" (click)="remover()">
+            <mat-icon>link_off</mat-icon>
+            Remover
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="vinculo-info">
+        <p class="vinculo-vazio">Esta inscrição ainda não está ligada a nenhum lançamento.</p>
+        <button mat-flat-button color="primary" [disabled]="processando" (click)="ligar()">
+          <mat-icon>link</mat-icon>
+          Ligar a um lançamento
+        </button>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>
