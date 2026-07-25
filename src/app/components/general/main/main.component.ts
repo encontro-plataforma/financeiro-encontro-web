@@ -60,6 +60,15 @@ export class MainComponent implements OnInit{
       ],
     },
     {
+      title: 'Secretaria',
+      roles: [PerfilUsuario.ADMINISTRADOR, PerfilUsuario.SECRETARIO],
+      items: [
+        { label: 'Equipes',     icon: 'groups',        route: '/secretaria/equipes' },
+        { label: 'Círculos',    icon: 'radio_button_checked', route: '/secretaria/circulos' },
+        { label: 'Relatórios',  icon: 'summarize',     route: '/secretaria/relatorios' },
+      ],
+    },
+    {
       title: 'Administração',
       items: [
         { label: 'Finalidades', icon: 'label',          route: '/administracao/finalidades', roles: [PerfilUsuario.ADMINISTRADOR] },

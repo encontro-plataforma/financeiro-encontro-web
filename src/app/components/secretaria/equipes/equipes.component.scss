@@ -1,0 +1,33 @@
+.equipes-table {
+
+  .mat-column-id {
+    max-width: 80px;
+  }
+
+  .mat-column-nome {
+    font-weight: 500;
+  }
+
+  .mat-column-acoes {
+    max-width: 100px;
+    justify-content: flex-end;
+    white-space: nowrap;
+  }
+
+  .empty-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 3rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+
+    mat-icon {
+      opacity: 0.4;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

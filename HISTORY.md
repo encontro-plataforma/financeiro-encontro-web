@@ -1,5 +1,12 @@
 # Histórico de Versões
 
+## [0.1.0] — 2026-07-25
+
+### Adicionado
+- Módulo Secretaria: novo perfil `SECRETARIO` (cai direto em Equipes após login, só enxerga esta seção) e
+  telas de Equipes e Círculos (listagem com filtros, criação e edição), seguindo o mesmo padrão das telas
+  de Finalidades
+
 ## [0.0.1] — 2026-07-18
 
 ### Adicionado
