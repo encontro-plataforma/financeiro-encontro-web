@@ -51,16 +51,7 @@ export const routes: Routes = [
         path: 'conciliacao',
         canActivate: [roleGuard],
         data: { roles: ADMIN_CONC },
-        children: [
-          {
-            path: '',
-            loadComponent: () => import('./components/financeiro/conciliacao/conciliacao.component').then(m => m.ConciliacaoComponent),
-          },
-          {
-            path: 'conciliar',
-            loadComponent: () => import('./components/financeiro/conciliacao/conciliar-lancamentos/conciliar-lancamentos.component').then(m => m.ConciliarLancamentosComponent),
-          },
-        ],
+        loadComponent: () => import('./components/financeiro/conciliacao/conciliar-lancamentos/conciliar-lancamentos.component').then(m => m.ConciliarLancamentosComponent),
       },
       {
         path: 'arquivos',

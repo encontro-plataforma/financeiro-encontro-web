@@ -1,5 +1,17 @@
 # Histórico de Versões
 
+## [0.1.1] — 2026-07-25
+
+### Alterado
+- Listagem de Lançamentos: removido o botão "Buscar" — os filtros agora aplicam automaticamente, como nas
+  demais telas
+- Upload de extrato bancário: botão "Enviar CSV" sai da tela de Conciliação e vai para a listagem de
+  Lançamentos, usando o mesmo `CsvUploadDialogComponent` (assíncrono, com polling) das telas de
+  Encontreiros/Encontristas
+- Tela de Conciliação (`/conciliacao`) vai direto para "Conciliar Lançamentos" — removida a tela
+  intermediária de drag-and-drop (`ConciliacaoComponent`) e seu dialog de resumo, que ficaram redundantes
+- Ordem das seções do menu lateral: Painel, Administração, Arquivos, Secretaria, Financeiro
+
 ## [0.1.0] — 2026-07-25
 
 ### Adicionado

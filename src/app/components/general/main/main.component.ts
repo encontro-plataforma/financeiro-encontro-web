@@ -45,11 +45,11 @@ export class MainComponent implements OnInit{
       ],
     },
     {
-      title: 'Financeiro',
-      roles: [PerfilUsuario.ADMINISTRADOR, PerfilUsuario.CONCILIADOR],
+      title: 'Administração',
       items: [
-        { label: 'Lançamentos', icon: 'receipt_long', route: '/lancamentos' },
-        { label: 'Conciliação', icon: 'sync_alt',     route: '/conciliacao' },
+        { label: 'Finalidades', icon: 'label',          route: '/administracao/finalidades', roles: [PerfilUsuario.ADMINISTRADOR] },
+        { label: 'Usuários',    icon: 'group',           route: '/administracao/usuarios',   roles: [PerfilUsuario.ADMINISTRADOR] },
+        { label: 'Relatórios',  icon: 'picture_as_pdf',  route: '/administracao/relatorios' },
       ],
     },
     {
@@ -71,11 +71,11 @@ export class MainComponent implements OnInit{
       ],
     },
     {
-      title: 'Administração',
+      title: 'Financeiro',
+      roles: [PerfilUsuario.ADMINISTRADOR, PerfilUsuario.CONCILIADOR],
       items: [
-        { label: 'Finalidades', icon: 'label',          route: '/administracao/finalidades', roles: [PerfilUsuario.ADMINISTRADOR] },
-        { label: 'Usuários',    icon: 'group',           route: '/administracao/usuarios',   roles: [PerfilUsuario.ADMINISTRADOR] },
-        { label: 'Relatórios',  icon: 'picture_as_pdf',  route: '/administracao/relatorios' },
+        { label: 'Lançamentos', icon: 'receipt_long', route: '/lancamentos' },
+        { label: 'Conciliação', icon: 'sync_alt',     route: '/conciliacao' },
       ],
     },
   ];
