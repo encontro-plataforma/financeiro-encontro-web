@@ -144,4 +144,9 @@
     </mat-card-content>
   </mat-card>
 
+  <!-- ─── Detalhamentos vinculados ──────────────────────────────────────────── -->
+  @if (updatePage && lancamentoId) {
+    <app-lancamento-detalhamentos [lancamentoId]="lancamentoId" />
+  }
+
 </div>

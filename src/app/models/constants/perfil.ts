@@ -2,6 +2,7 @@ export class PerfilUsuario {
   static ADMINISTRADOR = 'ADMINISTRADOR';
   static CONCILIADOR   = 'CONCILIADOR';
   static REPORTER      = 'REPORTER';
+  static SECRETARIO    = 'SECRETARIO';
   static TODOS         = '';
 
   static get optionsAll() {
@@ -10,6 +11,7 @@ export class PerfilUsuario {
       { name: 'Administrador', value: PerfilUsuario.ADMINISTRADOR  },
       { name: 'Conciliador',   value: PerfilUsuario.CONCILIADOR    },
       { name: 'Reporter',      value: PerfilUsuario.REPORTER       },
+      { name: 'Secretario',    value: PerfilUsuario.SECRETARIO     },
     ];
   }
 
@@ -18,6 +20,7 @@ export class PerfilUsuario {
       { name: 'Administrador', value: PerfilUsuario.ADMINISTRADOR  },
       { name: 'Conciliador',   value: PerfilUsuario.CONCILIADOR    },
       { name: 'Reporter',      value: PerfilUsuario.REPORTER       },
+      { name: 'Secretario',    value: PerfilUsuario.SECRETARIO     },
     ];
   }
 
@@ -27,6 +30,7 @@ export class PerfilUsuario {
       case PerfilUsuario.ADMINISTRADOR: return 'Administrador';
       case PerfilUsuario.CONCILIADOR:   return 'Conciliador';
       case PerfilUsuario.REPORTER:      return 'Reporter';
+      case PerfilUsuario.SECRETARIO:    return 'Secretário';
     }
   }
 }

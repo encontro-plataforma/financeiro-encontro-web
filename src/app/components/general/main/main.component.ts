@@ -45,11 +45,11 @@ export class MainComponent implements OnInit{
       ],
     },
     {
-      title: 'Financeiro',
-      roles: [PerfilUsuario.ADMINISTRADOR, PerfilUsuario.CONCILIADOR],
+      title: 'Administração',
       items: [
-        { label: 'Lançamentos', icon: 'receipt_long', route: '/lancamentos' },
-        { label: 'Conciliação', icon: 'sync_alt',     route: '/conciliacao' },
+        { label: 'Finalidades', icon: 'label',          route: '/administracao/finalidades', roles: [PerfilUsuario.ADMINISTRADOR] },
+        { label: 'Usuários',    icon: 'group',           route: '/administracao/usuarios',   roles: [PerfilUsuario.ADMINISTRADOR] },
+        { label: 'Relatórios',  icon: 'picture_as_pdf',  route: '/administracao/relatorios' },
       ],
     },
     {
@@ -60,11 +60,22 @@ export class MainComponent implements OnInit{
       ],
     },
     {
-      title: 'Administração',
+      title: 'Secretaria',
+      roles: [PerfilUsuario.ADMINISTRADOR, PerfilUsuario.SECRETARIO],
       items: [
-        { label: 'Finalidades', icon: 'label',          route: '/administracao/finalidades', roles: [PerfilUsuario.ADMINISTRADOR] },
-        { label: 'Usuários',    icon: 'group',           route: '/administracao/usuarios',   roles: [PerfilUsuario.ADMINISTRADOR] },
-        { label: 'Relatórios',  icon: 'picture_as_pdf',  route: '/administracao/relatorios' },
+        { label: 'Equipes',      icon: 'groups',                route: '/secretaria/equipes' },
+        { label: 'Círculos',     icon: 'radio_button_checked',  route: '/secretaria/circulos' },
+        { label: 'Encontreiros', icon: 'volunteer_activism',    route: '/secretaria/encontreiros' },
+        { label: 'Encontristas', icon: 'diversity_3',           route: '/secretaria/encontristas' },
+        { label: 'Relatórios',   icon: 'summarize',              route: '/secretaria/relatorios' },
+      ],
+    },
+    {
+      title: 'Financeiro',
+      roles: [PerfilUsuario.ADMINISTRADOR, PerfilUsuario.CONCILIADOR],
+      items: [
+        { label: 'Lançamentos', icon: 'receipt_long', route: '/lancamentos' },
+        { label: 'Conciliação', icon: 'sync_alt',     route: '/conciliacao' },
       ],
     },
   ];

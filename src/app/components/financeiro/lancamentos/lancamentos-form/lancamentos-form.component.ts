@@ -18,11 +18,12 @@ import { TipoLancamento } from '../../../../models/constants/tipo-lancamento';
 import { StatusLancamento } from '../../../../models/constants/status-lancamento';
 import { FormaPagamento } from '../../../../models/constants/forma-pagamento';
 import { ErrorHandlerService } from '../../../../shared/services/error-handler.service';
+import { LancamentoDetalhamentosComponent } from './lancamento-detalhamentos/lancamento-detalhamentos.component';
 
 @Component({
   selector: 'app-lancamentos-form',
   standalone: true,
-  imports: [CommonModule, MaterialGlobalModule, MaterialFormsModule, MaterialDatepickerModule],
+  imports: [CommonModule, MaterialGlobalModule, MaterialFormsModule, MaterialDatepickerModule, LancamentoDetalhamentosComponent],
   templateUrl: './lancamentos-form.component.html',
   styleUrl: './lancamentos-form.component.scss',
 })

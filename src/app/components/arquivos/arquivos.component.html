@@ -49,10 +49,28 @@
         </mat-cell>
       </ng-container>
 
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <span class="status-chip" [ngClass]="statusClass(row.status)">
+            {{ statusLabel(row.status) }}
+          </span>
+        </mat-cell>
+      </ng-container>
+
       <!-- Ações -->
       <ng-container matColumnDef="acoes">
         <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
         <mat-cell *matCellDef="let row">
+          <button
+            mat-icon-button
+            matTooltip="Ver resumo do processamento"
+            [disabled]="row.status === 'PROCESSANDO'"
+            (click)="verResumo(row)">
+            <mat-icon>info</mat-icon>
+          </button>
+
           <button
             mat-icon-button
             matTooltip="Baixar arquivo"

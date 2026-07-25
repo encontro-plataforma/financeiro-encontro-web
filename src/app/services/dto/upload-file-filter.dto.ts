@@ -1,4 +1,4 @@
-export interface ExtratoBancarioFilterDto {
+export interface UploadFileFilterDto {
   nome_arquivo?:         string;
   processado_em_inicio?: string;
   processado_em_fim?:    string;

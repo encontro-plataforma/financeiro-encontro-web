@@ -4,6 +4,8 @@ import { roleGuard }  from './general/auth/role.guard';
 
 const ADMIN       = ['ADMINISTRADOR'];
 const ADMIN_CONC  = ['ADMINISTRADOR', 'CONCILIADOR'];
+const ADMIN_SECRETARIA = ['ADMINISTRADOR', 'SECRETARIO'];
+const NAO_SECRETARIA   = ['ADMINISTRADOR', 'CONCILIADOR', 'REPORTER'];
 
 export const routes: Routes = [
   {
@@ -22,6 +24,8 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
+        canActivate: [roleGuard],
+        data: { roles: NAO_SECRETARIA },
         loadComponent: () => import('./components/painel/dashboard/dashboard.component').then(m => m.DashboardComponent),
       },
       {
@@ -47,22 +51,84 @@ export const routes: Routes = [
         path: 'conciliacao',
         canActivate: [roleGuard],
         data: { roles: ADMIN_CONC },
-        children: [
-          {
-            path: '',
-            loadComponent: () => import('./components/financeiro/conciliacao/conciliacao.component').then(m => m.ConciliacaoComponent),
-          },
-          {
-            path: 'conciliar',
-            loadComponent: () => import('./components/financeiro/conciliacao/conciliar-lancamentos/conciliar-lancamentos.component').then(m => m.ConciliarLancamentosComponent),
-          },
-        ],
+        loadComponent: () => import('./components/financeiro/conciliacao/conciliar-lancamentos/conciliar-lancamentos.component').then(m => m.ConciliarLancamentosComponent),
       },
       {
         path: 'arquivos',
         canActivate: [roleGuard],
         data: { roles: ADMIN_CONC },
         loadComponent: () => import('./components/arquivos/arquivos.component').then(m => m.ArquivosComponent),
+      },
+      {
+        path: 'secretaria',
+        canActivate: [roleGuard],
+        data: { roles: ADMIN_SECRETARIA },
+        children: [
+          {
+            path: 'equipes',
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('./components/secretaria/equipes/equipes.component').then(m => m.EquipesComponent),
+              },
+              {
+                path: 'novo',
+                loadComponent: () => import('./components/secretaria/equipes/equipes-form/equipes-form.component').then(m => m.EquipesFormComponent),
+              },
+              {
+                path: ':id/editar',
+                loadComponent: () => import('./components/secretaria/equipes/equipes-form/equipes-form.component').then(m => m.EquipesFormComponent),
+              },
+            ],
+          },
+          {
+            path: 'circulos',
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('./components/secretaria/circulos/circulos.component').then(m => m.CirculosComponent),
+              },
+              {
+                path: 'novo',
+                loadComponent: () => import('./components/secretaria/circulos/circulos-form/circulos-form.component').then(m => m.CirculosFormComponent),
+              },
+              {
+                path: ':id/editar',
+                loadComponent: () => import('./components/secretaria/circulos/circulos-form/circulos-form.component').then(m => m.CirculosFormComponent),
+              },
+            ],
+          },
+          {
+            path: 'encontreiros',
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('./components/secretaria/encontreiros/encontreiros.component').then(m => m.EncontreirosComponent),
+              },
+              {
+                path: ':id/editar',
+                loadComponent: () => import('./components/secretaria/encontreiros/encontreiros-form/encontreiros-form.component').then(m => m.EncontreirosFormComponent),
+              },
+            ],
+          },
+          {
+            path: 'encontristas',
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('./components/secretaria/encontristas/encontristas.component').then(m => m.EncontristasComponent),
+              },
+              {
+                path: ':id/editar',
+                loadComponent: () => import('./components/secretaria/encontristas/encontristas-form/encontristas-form.component').then(m => m.EncontristasFormComponent),
+              },
+            ],
+          },
+          {
+            path: 'relatorios',
+            loadComponent: () => import('./components/secretaria/relatorios/relatorios.component').then(m => m.SecretariaRelatoriosComponent),
+          },
+        ],
       },
       {
         path: 'administracao',

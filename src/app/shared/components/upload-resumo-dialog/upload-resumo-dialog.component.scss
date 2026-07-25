@@ -1,0 +1,57 @@
+@use '../../../../styles/abstracts/colors' as c;
+
+.arquivo-nome {
+  font-weight: 500;
+  margin: 0 0 16px;
+  word-break: break-all;
+}
+
+.resumo-lista {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 0;
+
+  dt {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.85rem;
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
+.erro-box {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  @include c.status-theme('error');
+
+  mat-icon {
+    flex-shrink: 0;
+  }
+}
+
+.erro-codigo {
+  margin: 0 0 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.erro-mensagem {
+  width: 100%;
+  resize: vertical;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: inherit;
+}
+
+.sem-resumo {
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}

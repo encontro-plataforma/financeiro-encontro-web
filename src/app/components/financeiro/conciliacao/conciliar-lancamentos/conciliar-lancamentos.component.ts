@@ -80,7 +80,7 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
   }
 
   voltar(): void {
-    this.router.navigate(['/conciliacao']);
+    this.router.navigate(['/lancamentos']);
   }
 
   private reset(): void {

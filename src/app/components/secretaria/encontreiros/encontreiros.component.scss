@@ -1,0 +1,46 @@
+@use '../../../../styles/abstracts/colors' as c;
+
+.btn-verde {
+  background-color: c.status-color('success', 'accent') !important;
+  color: #fff !important;
+}
+
+.encontreiros-table {
+
+  .mat-column-id {
+    max-width: 64px;
+  }
+
+  .mat-column-nome {
+    font-weight: 500;
+  }
+
+  .mat-column-auditado {
+    max-width: 100px;
+  }
+
+  .clickable-row {
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+    }
+  }
+
+  .empty-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 3rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+
+    mat-icon {
+      opacity: 0.4;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

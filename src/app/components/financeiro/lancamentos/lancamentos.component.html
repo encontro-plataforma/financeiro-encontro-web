@@ -3,32 +3,38 @@
   <!-- ─── Header ───────────────────────────────────────────────────────────── -->
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-medium text-on-surface">Lançamentos</h1>
-    <button mat-flat-button color="primary" class="btn btn--icon-left" (click)="criar()">
-      <mat-icon>add</mat-icon>
-      Criar
-    </button>
+    <div class="flex gap-3">
+      <button mat-flat-button class="btn btn--icon-left btn-verde" (click)="enviarCsv()">
+        <mat-icon>upload_file</mat-icon>
+        Enviar CSV
+      </button>
+      <button mat-flat-button color="primary" class="btn btn--icon-left" (click)="criar()">
+        <mat-icon>add</mat-icon>
+        Criar
+      </button>
+    </div>
   </div>
 
   <!-- ─── Filtros ───────────────────────────────────────────────────────────── -->
   <mat-card class="mb-6" appearance="outlined">
     <mat-card-content class="!pb-0">
-      <form [formGroup]="formFilters" (ngSubmit)="buscar()" class="grid grid-cols-12 gap-x-4 items-start">
+      <div [formGroup]="formFilters" class="grid grid-cols-12 gap-x-4 items-start">
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4 lg:col-span-3 xl:col-span-2">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
           <mat-label>Data início</mat-label>
           <input matInput [matDatepicker]="pickerInicio" formControlName="data_inicio" placeholder="DD/MM/AAAA">
           <mat-datepicker-toggle matIconSuffix [for]="pickerInicio" />
           <mat-datepicker #pickerInicio />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4 lg:col-span-3 xl:col-span-2">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
           <mat-label>Data fim</mat-label>
           <input matInput [matDatepicker]="pickerFim" formControlName="data_fim" placeholder="DD/MM/AAAA">
           <mat-datepicker-toggle matIconSuffix [for]="pickerFim" />
           <mat-datepicker #pickerFim />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4 lg:col-span-3 xl:col-span-2">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
           <mat-label>Tipo</mat-label>
           <mat-select formControlName="tipo">
             @for (op of tipoOpcoes; track op.value) {
@@ -37,7 +43,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4 lg:col-span-3 xl:col-span-2">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
           <mat-label>Status</mat-label>
           <mat-select formControlName="status">
             @for (op of statusOpcoes; track op.value) {
@@ -46,7 +52,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4 lg:col-span-4 xl:col-span-2">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
           <mat-label>Finalidade</mat-label>
           <mat-select formControlName="finalidade_id">
             <mat-option [value]="-1">Todas</mat-option>
@@ -56,14 +62,7 @@
           </mat-select>
         </mat-form-field>
 
-        <div class="col-end-13 !pb-2 flex justify-end">
-          <button mat-flat-button color="primary" type="submit" [disabled]="loading" class="filter-btn">
-            <mat-icon>search</mat-icon>
-            Buscar
-          </button>
-        </div>
-
-      </form>
+      </div>
     </mat-card-content>
   </mat-card>
 

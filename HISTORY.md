@@ -1,5 +1,44 @@
 # Histórico de Versões
 
+## [0.1.1] — 2026-07-25
+
+### Alterado
+- Listagem de Lançamentos: removido o botão "Buscar" — os filtros agora aplicam automaticamente, como nas
+  demais telas
+- Upload de extrato bancário: botão "Enviar CSV" sai da tela de Conciliação e vai para a listagem de
+  Lançamentos, usando o mesmo `CsvUploadDialogComponent` (assíncrono, com polling) das telas de
+  Encontreiros/Encontristas
+- Tela de Conciliação (`/conciliacao`) vai direto para "Conciliar Lançamentos" — removida a tela
+  intermediária de drag-and-drop (`ConciliacaoComponent`) e seu dialog de resumo, que ficaram redundantes
+- Ordem das seções do menu lateral: Painel, Administração, Arquivos, Secretaria, Financeiro
+
+## [0.1.0] — 2026-07-25
+
+### Adicionado
+- Módulo Secretaria: novo perfil `SECRETARIO` (cai direto em Equipes após login, só enxerga esta seção) e
+  telas de Equipes e Círculos (listagem com filtros, criação e edição), seguindo o mesmo padrão das telas
+  de Finalidades
+- Dialog compartilhado de upload de CSV assíncrono (`CsvUploadDialogComponent`): drag-and-drop, envio ao
+  backend, polling do status a cada 5s e exibição do resumo/erro ao final — será reaproveitado pelas
+  telas de Encontreiros e Encontristas
+- Tela de Arquivos Enviados ganha coluna de status e um botão para ver o resumo do processamento de cada
+  upload
+- Tela de Encontreiros: listagem (busca por nome/apelido, filtro por equipe e situação da camisa
+  multi-select, filtro por auditado, badge colorido de auditado), edição (sem criação/exclusão manual —
+  só entram via CSV) e seção para ligar/trocar/remover o vínculo com um lançamento
+  (`VinculoLancamentoComponent`, `LancamentoPickerDialogComponent`, ambos compartilhados)
+- Tela de Encontristas: mesmo formato da tela de Encontreiros — listagem com filtro de círculo
+  multi-select (incluindo "Sem Círculo"), filtro por padrinho e por auditado, edição reaproveitando os
+  mesmos componentes compartilhados de vínculo com lançamento
+- Tela de Lançamento (edição) ganha a lista de Detalhamentos vinculados, com botão para ir até a
+  inscrição referenciada (preservando o retorno para o lançamento de origem) e excluir; botão "Incluir"
+  abre um novo seletor (`DetalhamentoPickerDialogComponent`) que cria uma Oferta/Outro diretamente ou
+  vincula uma inscrição de Encontreiro/Encontrista ainda não auditada (busca paginada, 8 por página)
+
+### Alterado
+- `ExtratoBancarioService`/`ExtratoBancario` renomeados para `UploadFileService`/`UploadFile`, acompanhando
+  a rota `/uploads` do backend
+
 ## [0.0.1] — 2026-07-18
 
 ### Adicionado

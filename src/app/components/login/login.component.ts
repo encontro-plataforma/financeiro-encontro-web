@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { ErrorHandlerService } from '../../shared/services/error-handler.service';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
+import { PerfilUsuario } from '../../models/constants/perfil';
 
 @Component({
   selector: 'app-login',
@@ -48,7 +49,11 @@ export class LoginComponent {
     const request = this.form.value as { email: string; senha: string };
 
     this.authService.login(request).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        const perfil = this.authService.getUsuario()?.perfil;
+        const destino = perfil === PerfilUsuario.SECRETARIO ? '/secretaria/equipes' : '/dashboard';
+        this.router.navigate([destino]);
+      },
       error: err => {
         if(err.status === 401) {
           this.errorMessage =  'E-mail ou senha incorretos.'

@@ -1,0 +1,125 @@
+<h2 mat-dialog-title>Incluir detalhamento</h2>
+
+<mat-dialog-content class="picker-content">
+
+  @if (!tipo) {
+    <p class="escolha-titulo">O que você quer detalhar?</p>
+    <div class="escolha-opcoes">
+      <button mat-stroked-button (click)="escolherTipo('INSCRICAO_ENCONTREIRO')">
+        <mat-icon>volunteer_activism</mat-icon>
+        Inscrição de Encontreiro
+      </button>
+      <button mat-stroked-button (click)="escolherTipo('INSCRICAO_ENCONTRISTA')">
+        <mat-icon>diversity_3</mat-icon>
+        Inscrição de Encontrista
+      </button>
+      <button mat-stroked-button (click)="escolherTipo('OFERTA')">
+        <mat-icon>volunteer_activism</mat-icon>
+        Oferta
+      </button>
+      <button mat-stroked-button (click)="escolherTipo('OUTRO')">
+        <mat-icon>more_horiz</mat-icon>
+        Outro
+      </button>
+    </div>
+  }
+
+  @if (tipo === 'OFERTA' || tipo === 'OUTRO') {
+    <div class="simples-form">
+      <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+        <mat-label>Valor</mat-label>
+        <span matTextPrefix>R$&nbsp;</span>
+        <input matInput type="number" step="0.01" [(ngModel)]="valorSimples" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+        <mat-label>Descrição</mat-label>
+        <textarea matInput rows="2" [(ngModel)]="descricaoSimples"></textarea>
+      </mat-form-field>
+    </div>
+  }
+
+  @if (tipo === 'INSCRICAO_ENCONTREIRO' || tipo === 'INSCRICAO_ENCONTRISTA') {
+    <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+      <mat-label>Buscar por nome ou apelido</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="searchInscricao" (ngModelChange)="onSearchInscricaoChange()" />
+    </mat-form-field>
+
+    @if (loading) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    <mat-table [dataSource]="resultInscricao.items" class="picker-table">
+
+      <ng-container matColumnDef="dt_pagamento">
+        <mat-header-cell *matHeaderCellDef>Dt. Pagamento</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.dt_pagamento | date:'dd/MM/yyyy' }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="nome">
+        <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.nome }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="apelido">
+        <mat-header-cell *matHeaderCellDef>Apelido</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.apelido ?? '—' }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="nome_pagador">
+        <mat-header-cell *matHeaderCellDef>Nome do Pagador</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.nome_pagador ?? '—' }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="pagamento">
+        <mat-header-cell *matHeaderCellDef>Valor Pago</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.pagamento | currency:'BRL' }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="observacao">
+        <mat-header-cell *matHeaderCellDef>Observação</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.observacao ?? '—' }}</mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="['dt_pagamento','nome','apelido','nome_pagador','pagamento','observacao']" />
+      <mat-row
+        *matRowDef="let row; columns: ['dt_pagamento','nome','apelido','nome_pagador','pagamento','observacao'];"
+        class="picker-row"
+        (click)="selecionarInscricao(row)" />
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell empty-row" colspan="6">
+          @if (!loading) {
+            <span>Nenhuma inscrição pendente de auditoria encontrada</span>
+          }
+        </td>
+      </tr>
+
+    </mat-table>
+
+    <mat-paginator
+      [length]="resultInscricao.total"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[8, 16, 24]"
+      (page)="onPage($event)" />
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (tipo) {
+    <button mat-stroked-button [disabled]="salvando" (click)="voltarEscolha()">Voltar</button>
+  }
+  @if (tipo === 'OFERTA' || tipo === 'OUTRO') {
+    <button mat-flat-button color="primary" [disabled]="salvando" (click)="salvarSimples()">
+      @if (salvando) {
+        <mat-spinner diameter="18" />
+      } @else {
+        Adicionar
+      }
+    </button>
+  }
+  <button mat-stroked-button [disabled]="salvando" (click)="cancelar()">Cancelar</button>
+</mat-dialog-actions>

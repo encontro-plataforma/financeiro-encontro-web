@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup }               from '@angular/forms';
 import { Router }                               from '@angular/router';
 import { MatDialog }                            from '@angular/material/dialog';
 import { PageEvent }                            from '@angular/material/paginator';
+import { debounceTime }                         from 'rxjs/operators';
 import moment                                   from 'moment';
 
 import {
@@ -13,6 +14,7 @@ import {
   MaterialDatepickerModule,
 } from '../../../shared/modules/material.imports.module';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { CsvUploadDialogComponent } from '../../../shared/components/csv-upload-dialog/csv-upload-dialog.component';
 import { ToastService }           from '../../../shared/components/toast/toast.service';
 import { LancamentoService }      from '../../../services/lancamento.service';
 import { FinalidadeService }      from '../../../services/finalidade.service';
@@ -71,6 +73,10 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
       status:        [StatusLancamento.TODOS],
       finalidade_id: [-1],
     });
+
+    this.formFilters.valueChanges.pipe(
+      debounceTime(300),
+    ).subscribe(() => this.buscar());
   }
 
   ngAfterViewInit(): void {
@@ -116,6 +122,13 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
 
   criar(): void  { this.router.navigate(['/lancamentos/novo']); }
   editar(id: number): void { this.router.navigate(['/lancamentos', id, 'editar']); }
+
+  enviarCsv(): void {
+    CsvUploadDialogComponent.open(this.dialog, {
+      titulo:   'Importar Extrato Bancário',
+      endpoint: '/conciliacao/upload',
+    }).afterClosed().subscribe(() => this.load());
+  }
 
   deletar(l: Lancamento): void {
     const valor = l.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
