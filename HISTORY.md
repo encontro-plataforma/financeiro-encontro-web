@@ -6,6 +6,15 @@
 - Módulo Secretaria: novo perfil `SECRETARIO` (cai direto em Equipes após login, só enxerga esta seção) e
   telas de Equipes e Círculos (listagem com filtros, criação e edição), seguindo o mesmo padrão das telas
   de Finalidades
+- Dialog compartilhado de upload de CSV assíncrono (`CsvUploadDialogComponent`): drag-and-drop, envio ao
+  backend, polling do status a cada 5s e exibição do resumo/erro ao final — será reaproveitado pelas
+  telas de Encontreiros e Encontristas
+- Tela de Arquivos Enviados ganha coluna de status e um botão para ver o resumo do processamento de cada
+  upload
+
+### Alterado
+- `ExtratoBancarioService`/`ExtratoBancario` renomeados para `UploadFileService`/`UploadFile`, acompanhando
+  a rota `/uploads` do backend
 
 ## [0.0.1] — 2026-07-18
 

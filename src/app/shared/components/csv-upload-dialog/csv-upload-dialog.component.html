@@ -1,0 +1,86 @@
+<h2 mat-dialog-title>{{ data.titulo }}</h2>
+
+<mat-dialog-content class="upload-dialog-content">
+
+  @if (etapa === 'selecao' || etapa === 'enviando') {
+    <div
+      class="drop-zone"
+      [class.drag-over]="dragOver"
+      [class.uploading]="etapa === 'enviando'"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (click)="abrirSeletor()">
+
+      <input
+        #fileInput
+        type="file"
+        accept=".csv"
+        style="display:none"
+        (change)="onFileSelected($event)" />
+
+      @if (etapa === 'enviando') {
+        <div class="drop-content">
+          <mat-spinner diameter="52"></mat-spinner>
+          <p class="drop-title">Enviando arquivo...</p>
+        </div>
+      } @else {
+        <div class="drop-content">
+          <mat-icon class="drop-icon">{{ dragOver ? 'file_download' : 'upload_file' }}</mat-icon>
+          <p class="drop-title">
+            {{ dragOver ? 'Solte o arquivo aqui' : 'Arraste seu arquivo CSV aqui' }}
+          </p>
+          <p class="drop-sub">ou</p>
+          <button mat-flat-button color="primary" class="btn" (click)="$event.stopPropagation(); abrirSeletor()">
+            <mat-icon>folder_open</mat-icon>
+            Selecionar arquivo
+          </button>
+          <p class="drop-hint">Formato aceito: .csv &nbsp;·&nbsp; Tamanho máximo: 3 MB</p>
+        </div>
+      }
+    </div>
+  }
+
+  @if (etapa === 'processando') {
+    <div class="processando-box">
+      <mat-spinner diameter="52"></mat-spinner>
+      <p class="drop-title">Processando "{{ nomeArquivo }}"...</p>
+      <p class="drop-sub">Isso pode levar alguns instantes. Você pode aguardar aqui.</p>
+    </div>
+  }
+
+  @if (etapa === 'concluido') {
+    <div class="resumo-box">
+      @if (temErro) {
+        <div class="erro-box">
+          <mat-icon>error_outline</mat-icon>
+          <div>
+            <p class="erro-codigo">{{ upload?.error_code }}</p>
+            <p class="erro-mensagem">{{ upload?.error_message }}</p>
+          </div>
+        </div>
+      } @else {
+        <div class="sucesso-box">
+          <mat-icon>check_circle</mat-icon>
+          <p>Processamento concluído com sucesso.</p>
+        </div>
+
+        @if (resumo.length) {
+          <dl class="resumo-lista">
+            @for (item of resumo; track item.chave) {
+              <dt>{{ item.chave }}</dt>
+              <dd>{{ item.valor }}</dd>
+            }
+          </dl>
+        }
+      }
+    </div>
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" [disabled]="etapa === 'enviando' || etapa === 'processando'" (click)="fechar()">
+    Fechar
+  </button>
+</mat-dialog-actions>
