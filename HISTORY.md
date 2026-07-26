@@ -1,5 +1,14 @@
 # Histórico de Versões
 
+## [0.2.2] — 2026-07-26
+
+### Corrigido
+- Toast de erro/aviso/sucesso não conseguia aparecer nem ser clicado na frente de dialogs abertos: o
+  Angular CDK 21 passou a renderizar overlays (dialogs, menus, etc.) usando a Popover API do navegador
+  (top layer), que sempre pinta acima de qualquer elemento comum, não importa o `z-index`. O toast (`app-
+  toast`) agora também usa `popover="manual"` e é promovido ao topo do top layer a cada novo toast, para
+  continuar na frente de qualquer tela ou dialog
+
 ## [0.2.1] — 2026-07-26
 
 ### Corrigido

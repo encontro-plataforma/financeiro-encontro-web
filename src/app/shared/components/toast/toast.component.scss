@@ -1,5 +1,15 @@
 .toast-container {
+  // Reset dos estilos padrão de UA aplicados por [popover] (inset/margin/border/
+  // padding/overflow/background) — o container continua com a própria aparência.
   position: fixed;
+  inset: auto;
+  margin: 0;
+  border: none;
+  padding: 0;
+  overflow: visible;
+  background: none;
+  color: inherit;
+
   bottom: 1.5rem;
   right:  1.5rem;
   z-index: 9999;
@@ -8,6 +18,10 @@
   gap: 0.5rem;
   max-width: 420px;
   pointer-events: none;
+}
+
+.toast-container:popover-open {
+  display: flex;
 }
 
 .toast {
