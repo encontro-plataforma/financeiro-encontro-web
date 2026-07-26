@@ -62,28 +62,30 @@
   font-style: italic;
 }
 
-.lista-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+.resumo-table {
+  width: 100%;
+}
 
-  &__tipo {
-    flex: 0 0 160px;
-    font-size: 0.85rem;
-    color: var(--mat-sys-on-surface-variant);
-  }
+.resumo-table .col-tipo {
+  flex: 0 0 160px;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+}
 
-  &__nome {
-    flex: 1;
-  }
+.resumo-table .col-detalhe {
+  flex: 1;
+}
 
-  &__valor {
-    flex: 0 0 100px;
-    text-align: right;
-    font-weight: 500;
-  }
+.resumo-table .col-valor {
+  flex: 0 0 100px;
+  justify-content: flex-end;
+  text-align: right;
+  font-weight: 500;
+}
+
+.resumo-table .col-acoes {
+  flex: 0 0 auto;
+  justify-content: flex-end;
 }
 
 .simples-form {

@@ -22,22 +22,11 @@
   margin: 8px 0;
 }
 
-.detalhamento-item {
-  padding: 10px 4px;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
-
-  &:last-child {
-    border-bottom: none;
-  }
+.detalhamentos-table {
+  width: 100%;
 }
 
-.detalhamento-linha1 {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.detalhamento-tipo {
+.col-tipo {
   min-width: 170px;
   font-size: 0.72rem;
   font-weight: 700;
@@ -45,29 +34,36 @@
   color: var(--mat-sys-primary);
 }
 
-.detalhamento-nome {
+.col-detalhe {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 0;
+}
+
+.detalhe-nome {
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.detalhamento-valor {
+.detalhe-observacao {
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.col-valor {
   min-width: 100px;
+  justify-content: flex-end;
   text-align: right;
   font-weight: 500;
 }
 
-.detalhamento-acoes {
+.col-acoes {
   flex-shrink: 0;
+  justify-content: flex-end;
   white-space: nowrap;
-}
-
-.detalhamento-linha2 {
-  margin-top: 2px;
-  padding-left: 12px;
-  font-size: 0.8rem;
-  color: var(--mat-sys-on-surface-variant);
 }

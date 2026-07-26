@@ -50,15 +50,43 @@
       <p class="lista-vazia">Nenhum detalhamento vinculado a este lançamento.</p>
     }
 
-    @for (det of detalhamentos; track det.id) {
-      <div class="lista-item">
-        <span class="lista-item__tipo">{{ tipoLabel(det.tipo) }}</span>
-        <span class="lista-item__nome">{{ det.detalhe_nome }}</span>
-        <span class="lista-item__valor">{{ det.valor | currency:'BRL' }}</span>
-        <button mat-icon-button color="warn" matTooltip="Remover" (click)="excluir(det)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
+    @if (!loadingLista && detalhamentos.length > 0) {
+      <mat-table [dataSource]="pagedDetalhamentos" class="resumo-table">
+
+        <ng-container matColumnDef="tipo">
+          <mat-header-cell *matHeaderCellDef>Tipo</mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-tipo">{{ tipoLabel(det.tipo) }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="detalhe">
+          <mat-header-cell *matHeaderCellDef>Detalhe</mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-detalhe">{{ detalheDisplay(det) }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="valor">
+          <mat-header-cell *matHeaderCellDef class="col-valor">Valor</mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-valor">{{ det.valor | currency:'BRL' }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <mat-header-cell *matHeaderCellDef class="col-acoes"></mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-acoes">
+            <button mat-icon-button color="warn" matTooltip="Remover" (click)="excluir(det)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="resumoColumns" />
+        <mat-row *matRowDef="let det; columns: resumoColumns" />
+      </mat-table>
+
+      <mat-paginator
+        [length]="detalhamentos.length"
+        [pageSize]="resumoPageSize"
+        [pageIndex]="resumoPageIndex"
+        [hidePageSize]="true"
+        (page)="onResumoPage($event)" />
     }
   }
 

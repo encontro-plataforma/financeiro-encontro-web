@@ -1,5 +1,4 @@
 <div class="p-6">
-
   <!-- ─── Header ───────────────────────────────────────────────────────────── -->
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-medium text-on-surface">Círculos</h1>
@@ -13,18 +12,25 @@
   <mat-card class="mb-6" appearance="outlined">
     <mat-card-content class="!pb-0">
       <div class="grid grid-cols-12 gap-x-4 items-start">
-
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-4">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-4"
+        >
           <mat-label>Buscar por nome</mat-label>
           <mat-icon matPrefix>search</mat-icon>
-          <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Nome do círculo..." />
+          <input
+            matInput
+            [(ngModel)]="search"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Nome do círculo..."
+          />
           @if (search) {
             <button matSuffix mat-icon-button (click)="search = ''; onSearchChange()">
               <mat-icon>close</mat-icon>
             </button>
           }
         </mat-form-field>
-
       </div>
     </mat-card-content>
   </mat-card>
@@ -32,13 +38,11 @@
   <!-- ─── Tabela ────────────────────────────────────────────────────────────── -->
   <mat-card appearance="outlined">
     <mat-card-content class="!p-0">
-
       @if (loading) {
         <mat-progress-bar mode="indeterminate" />
       }
 
       <mat-table [dataSource]="result.items" class="circulos-table">
-
         <ng-container matColumnDef="id">
           <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
           <mat-cell *matCellDef="let row">{{ row.id }}</mat-cell>
@@ -52,7 +56,9 @@
         <ng-container matColumnDef="rgb">
           <mat-header-cell *matHeaderCellDef>Cor</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <span class="cor-swatch" [style.background-color]="row.rgb" [matTooltip]="row.rgb">Cor</span>
+            <span class="cor-swatch" [style.background-color]="row.rgb" [matTooltip]="row.rgb">{{
+              row.rgb
+            }}</span>
           </mat-cell>
         </ng-container>
 
@@ -69,7 +75,7 @@
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns" />
-        <mat-row *matRowDef="let row; columns: displayedColumns;" />
+        <mat-row *matRowDef="let row; columns: displayedColumns" />
 
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
@@ -79,7 +85,6 @@
             }
           </td>
         </tr>
-
       </mat-table>
 
       <mat-paginator
@@ -88,9 +93,8 @@
         [pageIndex]="pageIndex"
         [pageSizeOptions]="[10, 25, 50]"
         (page)="onPage($event)"
-        showFirstLastButtons />
-
+        showFirstLastButtons
+      />
     </mat-card-content>
   </mat-card>
-
 </div>

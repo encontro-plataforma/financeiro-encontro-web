@@ -63,6 +63,9 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
   // Lista atual de detalhamentos do lançamento
   detalhamentos: Detalhamento[] = [];
   loadingLista = false;
+  resumoPageIndex = 0;
+  readonly resumoPageSize = 5;
+  readonly resumoColumns = ['tipo', 'detalhe', 'valor', 'acoes'];
 
   // Oferta / Outro
   valorSimples: number | null = null;
@@ -97,6 +100,7 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
 
   private carregarLista(): void {
     this.loadingLista = true;
+    this.resumoPageIndex = 0;
     this.detalhamentoService.listAll({ lancamento_id: this.data.lancamentoId }).subscribe({
       next: (data) => {
         this.detalhamentos = data;
@@ -108,6 +112,23 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  get pagedDetalhamentos(): Detalhamento[] {
+    const start = this.resumoPageIndex * this.resumoPageSize;
+    return this.detalhamentos.slice(start, start + this.resumoPageSize);
+  }
+
+  onResumoPage(event: PageEvent): void {
+    this.resumoPageIndex = event.pageIndex;
+  }
+
+  isInscricao(tipo: string): boolean {
+    return tipo === 'INSCRICAO_ENCONTREIRO' || tipo === 'INSCRICAO_ENCONTRISTA';
+  }
+
+  detalheDisplay(det: Detalhamento): string {
+    return this.isInscricao(det.tipo) ? det.detalhe_nome : (det.observacao_efetiva || det.detalhe_nome);
   }
 
   escolherTipo(tipo: TipoEscolha): void {

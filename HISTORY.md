@@ -1,5 +1,23 @@
 # Histórico de Versões
 
+## [0.2.1] — 2026-07-26
+
+### Corrigido
+- Listagem de Detalhamentos na tela de Editar Lançamento e o resumo de Detalhamentos dentro do dialog de
+  vínculo passam a usar `mat-table` paginada (5 itens por página), no lugar da lista em divs sem paginação
+- Resumo de Detalhamentos do dialog agora exibe o texto digitado para Oferta/Outro (antes só mostrava o
+  rótulo genérico do tipo)
+- Labels padrão do `mat-paginator` (ex. "of" → "de") traduzidos para pt-BR em toda a aplicação, via
+  `MatPaginatorIntl` global registrado em `app.config.ts`
+- `ErrorHandlerService` retornava sempre uma mensagem genérica ("Requisição inválida.") para erros 400,
+  sem nunca chegar a ler o campo `detail` retornado pela API — mensagens específicas de validação de
+  negócio (ex. soma de Detalhamentos excedente) nunca apareciam no toast. Agora o `detail` é priorizado
+  antes dos fallbacks genéricos por status
+
+### Alterado
+- Área de Detalhamentos do card de Conciliação ganhou destaque visual (gap, fundo e sombra) e o botão de
+  vincular passou a ter formato quadrado com cor de destaque
+
 ## [0.2.0] — 2026-07-25
 
 ### Adicionado
