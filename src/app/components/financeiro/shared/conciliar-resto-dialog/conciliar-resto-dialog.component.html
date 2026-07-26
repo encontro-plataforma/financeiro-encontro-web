@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>Confirmar conciliação</h2>
+
+<mat-dialog-content>
+  <p class="resumo-calculo">
+    Valor do lançamento ({{ data.valorTotal | currencyBR }}) − Detalhamentos já vinculados
+    ({{ data.somaDetalhamentos | currencyBR }}) = <strong>{{ data.resto | currencyBR }}</strong>
+  </p>
+  <p>
+    Um detalhamento com esse valor restante será criado automaticamente ao confirmar.
+  </p>
+
+  <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+    <mat-label>Detalhe</mat-label>
+    <input matInput [(ngModel)]="descricao" />
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button class="btn" (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" class="btn" [disabled]="!descricao" (click)="confirmar()">
+    Confirmar
+  </button>
+</mat-dialog-actions>

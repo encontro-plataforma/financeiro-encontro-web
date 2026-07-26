@@ -8,16 +8,21 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { MaterialGlobalModule, MaterialFormsModule } from '../../../../shared/modules/material.imports.module';
 import { ConciliacaoCardComponent } from './conciliacao-card/conciliacao-card.component';
+import { AuditoriaResumoDialogComponent } from '../../shared/auditoria-resumo-dialog/auditoria-resumo-dialog.component';
+import { ErrorHandlerService } from '../../../../shared/services/error-handler.service';
 import { LancamentoService } from '../../../../services/lancamento.service';
 import { FinalidadeService } from '../../../../services/finalidade.service';
+import { DetalhamentoService } from '../../../../services/detalhamento.service';
 import { Lancamento } from '../../../../models/lancamento.model';
 import { Finalidade } from '../../../../models/finalidade.model';
 import { StatusLancamento } from '../../../../models/constants/status-lancamento';
+import { TipoLancamento } from '../../../../models/constants/tipo-lancamento';
 
 const ANIMATION_DURATION_MS = 350;
 const LAZY_THRESHOLD        = 10;
@@ -41,10 +46,13 @@ interface CardItem extends Lancamento {
   styleUrl: './conciliar-lancamentos.component.scss',
 })
 export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
-  private lancamentoService = inject(LancamentoService);
-  private finalidadeService = inject(FinalidadeService);
-  private router            = inject(Router);
-  private cdr               = inject(ChangeDetectorRef);
+  private lancamentoService   = inject(LancamentoService);
+  private finalidadeService   = inject(FinalidadeService);
+  private detalhamentoService = inject(DetalhamentoService);
+  private router               = inject(Router);
+  private cdr                  = inject(ChangeDetectorRef);
+  private dialog                = inject(MatDialog);
+  private errorHandler          = inject(ErrorHandlerService);
 
   items: CardItem[]     = [];
   finalidades: Finalidade[] = [];
@@ -52,6 +60,10 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
   loadingMore = false;
   allLoaded   = false;
   search      = '';
+  tipoFiltro  = TipoLancamento.RECEITA;
+  auditando   = false;
+
+  readonly tipoOptions = TipoLancamento.options;
 
   private searchSubject = new Subject<string>();
   private searchSub!: Subscription;
@@ -79,8 +91,34 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
     this.searchSubject.next(this.search);
   }
 
+  onTipoFiltroChange(): void {
+    this.reset();
+  }
+
   voltar(): void {
     this.router.navigate(['/lancamentos']);
+  }
+
+  processarConciliacao(): void {
+    this.auditando = true;
+
+    this.detalhamentoService.auditoria().subscribe({
+      next: (resultado) => {
+        this.dialog.open(AuditoriaResumoDialogComponent, {
+          width: '480px',
+          data: resultado,
+        }).afterClosed().subscribe(() => {
+          this.auditando = false;
+          this.cdr.detectChanges();
+          this.reset();
+        });
+      },
+      error: (err) => {
+        this.auditando = false;
+        this.cdr.detectChanges();
+        this.errorHandler.handler(err);
+      },
+    });
   }
 
   private reset(): void {
@@ -102,6 +140,7 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
       .list(
         {
           status: StatusLancamento.NAO_CONCILIADO,
+          tipo: this.tipoFiltro,
           exclude_ids: excludeIds,
           ...(this.search ? { descricao: this.search } : {}),
         },

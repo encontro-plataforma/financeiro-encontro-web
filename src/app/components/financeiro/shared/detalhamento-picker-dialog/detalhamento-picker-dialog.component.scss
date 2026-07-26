@@ -1,0 +1,122 @@
+.picker-subtitulo {
+  margin: -8px 24px 0;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.85rem;
+}
+
+.picker-content {
+  min-width: 640px;
+  max-width: 100%;
+
+  &--com-tipo {
+    padding-top: 8px;
+  }
+}
+
+.escolha-titulo {
+  margin: 0 0 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.escolha-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.escolha-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  height: auto;
+  background: var(--mat-sys-surface-container-low);
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-highest);
+    box-shadow: 0 0 0 8px var(--mat-sys-surface-container-highest);
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.lista-divider {
+  margin: 8px 0 16px;
+}
+
+.lista-titulo {
+  margin: 0 0 8px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.lista-vazia {
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}
+
+.lista-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &__tipo {
+    flex: 0 0 160px;
+    font-size: 0.85rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__nome {
+    flex: 1;
+  }
+
+  &__valor {
+    flex: 0 0 100px;
+    text-align: right;
+    font-weight: 500;
+  }
+}
+
+.simples-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.picker-table {
+  width: 100%;
+}
+
+.col-observacao {
+  flex: 2 0 0%;
+}
+
+.picker-row {
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+  }
+}
+
+.empty-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}

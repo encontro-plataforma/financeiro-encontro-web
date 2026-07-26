@@ -1,5 +1,30 @@
 # Histórico de Versões
 
+## [0.2.0] — 2026-07-25
+
+### Adicionado
+- Tela de Conciliação: botão "Processar Conciliação" (dispara `POST /detalhamentos/auditoria`) — mostra uma
+  mensagem de "Auditando Lançamentos e Inscrições..." no lugar dos cards enquanto processa e, ao final, um
+  dialog com o resumo do resultado. Novo select "Tipo" (Receita/Despesa, padrão Receita) filtra quais
+  lançamentos pendentes aparecem na tela
+- Cards de conciliação passam a exibir a quantidade de Detalhamentos vinculados ao lançamento, com um
+  botão para abrir o dialog de vínculo (mesmo componente usado na tela de Editar Lançamento). Ao clicar em
+  "Conciliar" com valor restante (Total − Detalhamentos), um dialog de confirmação mostra o cálculo e cria
+  um Detalhamento com esse valor (pré-preenchido conforme a finalidade escolhida)
+- Campo Observação do card de conciliação agora vem pré-preenchido com a observação do próprio lançamento
+
+### Alterado
+- `DetalhamentoPickerDialogComponent` movido de `financeiro/lancamentos/lancamentos-form/` para
+  `financeiro/shared/` — passa a ser o mesmo componente usado tanto na tela de Editar Lançamento quanto nos
+  cards de Conciliação. Reestilizado: opções em botões quadrados empilhados com ícone de seta e destaque no
+  hover; botão "Cancelar" da tela inicial virou "Fechar"; a tela passa a listar os Detalhamentos já
+  vinculados ao lançamento (com opção de remover) antes de fechar; campos de Oferta/Outro usam `input` em
+  vez de `textarea`; passo de inscrição usa 60% da largura da tela com a Observação como coluna mais larga
+- Botão "Incluir" do card de Detalhamentos (tela de Editar Lançamento) alinhado ao mesmo estilo de "Salvar
+  alterações"/"Conciliar"
+- Picker de lançamento usado em "Ligar a um Lançamento" (Encontreiro/Encontrista) passa a filtrar somente
+  lançamentos de RECEITA
+
 ## [0.1.1] — 2026-07-25
 
 ### Alterado

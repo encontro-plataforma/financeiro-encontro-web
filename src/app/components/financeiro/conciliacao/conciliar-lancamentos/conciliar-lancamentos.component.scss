@@ -30,7 +30,12 @@
   min-width: 200px;
 }
 
+.tipo-field {
+  width: 160px;
+}
+
 .loading-container,
+.auditando-container,
 .empty-state {
   display: flex;
   flex-direction: column;

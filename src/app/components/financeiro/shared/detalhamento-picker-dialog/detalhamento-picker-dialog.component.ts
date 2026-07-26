@@ -1,18 +1,20 @@
-import { ChangeDetectorRef, Component, Inject, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-import { MaterialGlobalModule, MaterialFormsModule } from '../../../../../shared/modules/material.imports.module';
-import { ToastService } from '../../../../../shared/components/toast/toast.service';
-import { ErrorHandlerService } from '../../../../../shared/services/error-handler.service';
-import { DetalhamentoService } from '../../../../../services/detalhamento.service';
-import { EncontreiroService } from '../../../../../services/encontreiro.service';
-import { EncontristaService } from '../../../../../services/encontrista.service';
-import { PageTemplate } from '../../../../../services/util/PageTemplate';
+import { MaterialGlobalModule, MaterialFormsModule } from '../../../../shared/modules/material.imports.module';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ToastService } from '../../../../shared/components/toast/toast.service';
+import { ErrorHandlerService } from '../../../../shared/services/error-handler.service';
+import { DetalhamentoService } from '../../../../services/detalhamento.service';
+import { EncontreiroService } from '../../../../services/encontreiro.service';
+import { EncontristaService } from '../../../../services/encontrista.service';
+import { PageTemplate } from '../../../../services/util/PageTemplate';
+import { Detalhamento } from '../../../../models/detalhamento.model';
 
 export interface DetalhamentoPickerDialogData {
   lancamentoId: number;
@@ -30,6 +32,13 @@ interface PickerRow {
   observacao:    string | null;
 }
 
+const LABEL_POR_TIPO: Record<string, string> = {
+  INSCRICAO_ENCONTREIRO: 'Inscrição de Encontreiro',
+  INSCRICAO_ENCONTRISTA: 'Inscrição de Encontrista',
+  OFERTA: 'Oferta',
+  OUTRO: 'Outro',
+};
+
 @Component({
   selector: 'app-detalhamento-picker-dialog',
   standalone: true,
@@ -37,17 +46,23 @@ interface PickerRow {
   templateUrl: './detalhamento-picker-dialog.component.html',
   styleUrl: './detalhamento-picker-dialog.component.scss',
 })
-export class DetalhamentoPickerDialogComponent {
+export class DetalhamentoPickerDialogComponent implements OnInit {
   private detalhamentoService = inject(DetalhamentoService);
   private encontreiroService  = inject(EncontreiroService);
   private encontristaService  = inject(EncontristaService);
   private toast                 = inject(ToastService);
   private errorHandler          = inject(ErrorHandlerService);
   private cdr                    = inject(ChangeDetectorRef);
+  private matDialog               = inject(MatDialog);
   private dialogRef              = inject(MatDialogRef<DetalhamentoPickerDialogComponent, boolean>);
 
   tipo: TipoEscolha | null = null;
   salvando = false;
+  houveAlteracao = false;
+
+  // Lista atual de detalhamentos do lançamento
+  detalhamentos: Detalhamento[] = [];
+  loadingLista = false;
 
   // Oferta / Outro
   valorSimples: number | null = null;
@@ -72,17 +87,46 @@ export class DetalhamentoPickerDialogComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.carregarLista();
+  }
+
+  get subtitulo(): string {
+    return this.tipo ? `Selecionando detalhamento para ${LABEL_POR_TIPO[this.tipo]}` : '';
+  }
+
+  private carregarLista(): void {
+    this.loadingLista = true;
+    this.detalhamentoService.listAll({ lancamento_id: this.data.lancamentoId }).subscribe({
+      next: (data) => {
+        this.detalhamentos = data;
+        this.loadingLista = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loadingLista = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
   escolherTipo(tipo: TipoEscolha): void {
     this.tipo = tipo;
+    this.valorSimples = null;
+    this.descricaoSimples = '';
     if (tipo === 'INSCRICAO_ENCONTREIRO' || tipo === 'INSCRICAO_ENCONTRISTA') {
       this.pageIndex = 0;
       this.searchInscricao = '';
+      this.dialogRef.updateSize('60vw');
       this.loadInscricoes();
+    } else {
+      this.dialogRef.updateSize('700px');
     }
   }
 
   voltarEscolha(): void {
     this.tipo = null;
+    this.dialogRef.updateSize('700px');
   }
 
   onSearchInscricaoChange(): void {
@@ -136,8 +180,11 @@ export class DetalhamentoPickerDialogComponent {
     }).subscribe({
       next: () => {
         this.salvando = false;
+        this.houveAlteracao = true;
         this.toast.success({ message: 'Detalhamento criado com sucesso.' });
-        this.dialogRef.close(true);
+        this.tipo = null;
+        this.dialogRef.updateSize('700px');
+        this.carregarLista();
       },
       error: (err) => {
         this.salvando = false;
@@ -161,8 +208,11 @@ export class DetalhamentoPickerDialogComponent {
     }).subscribe({
       next: () => {
         this.salvando = false;
+        this.houveAlteracao = true;
         this.toast.success({ message: 'Detalhamento criado com sucesso.' });
-        this.dialogRef.close(true);
+        this.tipo = null;
+        this.dialogRef.updateSize('700px');
+        this.carregarLista();
       },
       error: (err) => {
         this.salvando = false;
@@ -171,7 +221,31 @@ export class DetalhamentoPickerDialogComponent {
     });
   }
 
-  cancelar(): void {
-    this.dialogRef.close(false);
+  excluir(det: Detalhamento): void {
+    this.matDialog.open(ConfirmDialogComponent, {
+      width: '440px',
+      data: {
+        title:   'Remover detalhamento',
+        message: `Deseja remover o detalhamento "${this.tipoLabel(det.tipo)} — ${det.detalhe_nome}"?`,
+      },
+    }).afterClosed().subscribe((ok: boolean) => {
+      if (!ok) return;
+      this.detalhamentoService.remover(det.id).subscribe({
+        next: () => {
+          this.houveAlteracao = true;
+          this.toast.success({ message: 'Detalhamento removido com sucesso.' });
+          this.carregarLista();
+        },
+        error: (err) => this.errorHandler.handler(err),
+      });
+    });
+  }
+
+  tipoLabel(tipo: string): string {
+    return LABEL_POR_TIPO[tipo] ?? tipo;
+  }
+
+  fechar(): void {
+    this.dialogRef.close(this.houveAlteracao);
   }
 }

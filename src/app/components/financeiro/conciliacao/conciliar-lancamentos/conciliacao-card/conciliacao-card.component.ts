@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 
 import { MaterialGlobalModule, MaterialFormsModule } from '../../../../../shared/modules/material.imports.module';
 import { CurrencyBRPipe } from '../../../../../shared/pipes/currency-br.pipe';
@@ -11,6 +12,17 @@ import { Lancamento } from '../../../../../models/lancamento.model';
 import { Finalidade } from '../../../../../models/finalidade.model';
 import { TipoLancamento } from '../../../../../models/constants/tipo-lancamento';
 import { FormaPagamento } from '../../../../../models/constants/forma-pagamento';
+import {
+  DetalhamentoPickerDialogComponent,
+  DetalhamentoPickerDialogData,
+} from '../../../shared/detalhamento-picker-dialog/detalhamento-picker-dialog.component';
+import {
+  ConciliarRestoDialogComponent,
+  ConciliarRestoDialogData,
+  ConciliarRestoDialogResult,
+} from '../../../shared/conciliar-resto-dialog/conciliar-resto-dialog.component';
+
+const TOLERANCIA = 0.01;
 
 @Component({
   selector: 'app-conciliacao-card',
@@ -35,6 +47,7 @@ export class ConciliacaoCardComponent implements OnInit {
     private lancamentoService: LancamentoService,
     private toast: ToastService,
     private errorHandler: ErrorHandlerService,
+    private dialog: MatDialog,
   ) {}
 
   get finalidadesFiltradas(): Finalidade[] {
@@ -46,6 +59,20 @@ export class ConciliacaoCardComponent implements OnInit {
     const suggestionId = this.lancamento.sugestao_finalidade?.id ?? null;
     const isValid     = filtered.some(f => f.id === suggestionId);
     this.selectedFinalidadeId = isValid ? suggestionId : (filtered[0]?.id ?? null);
+    this.observacaoConciliar = this.lancamento.observacao ?? '';
+  }
+
+  abrirDetalhamentos(): void {
+    this.dialog.open<DetalhamentoPickerDialogComponent, DetalhamentoPickerDialogData, boolean>(
+      DetalhamentoPickerDialogComponent,
+      { width: '700px', maxWidth: '95vw', data: { lancamentoId: this.lancamento.id } },
+    ).afterClosed().subscribe((alterado) => {
+      if (!alterado) return;
+      this.lancamentoService.buscarPorId(this.lancamento.id).subscribe((atualizado) => {
+        this.lancamento.quantidade_detalhamentos = atualizado.quantidade_detalhamentos;
+        this.lancamento.soma_detalhamentos = atualizado.soma_detalhamentos;
+      });
+    });
   }
 
   conciliar(): void {
@@ -54,9 +81,42 @@ export class ConciliacaoCardComponent implements OnInit {
       return;
     }
 
+    if (this.lancamento.tipo === TipoLancamento.RECEITA) {
+      const soma  = this.lancamento.soma_detalhamentos ?? 0;
+      const resto = this.lancamento.valor - soma;
+
+      if (resto > TOLERANCIA) {
+        const finalidade = this.finalidadesFiltradas.find(f => f.id === this.selectedFinalidadeId);
+        const descricaoPadrao = finalidade?.nome === 'OFERTA'
+          ? 'Oferta'
+          : `Outros valores para o tipo ${finalidade?.nome ?? ''}`;
+
+        this.dialog.open<ConciliarRestoDialogComponent, ConciliarRestoDialogData, ConciliarRestoDialogResult | false>(
+          ConciliarRestoDialogComponent,
+          {
+            width: '480px',
+            data: { valorTotal: this.lancamento.valor, somaDetalhamentos: soma, resto, descricaoPadrao },
+          },
+        ).afterClosed().subscribe((result) => {
+          if (!result) return;
+          this.executarConciliar({ descricao: result.descricao });
+        });
+        return;
+      }
+    }
+
+    this.executarConciliar();
+  }
+
+  private executarConciliar(detalhamentoFinal?: { descricao: string }): void {
     this.conciliando = true;
     this.lancamentoService
-      .conciliar(this.lancamento.id, this.selectedFinalidadeId, this.observacaoConciliar || undefined)
+      .conciliar(
+        this.lancamento.id,
+        this.selectedFinalidadeId as number,
+        this.observacaoConciliar || undefined,
+        detalhamentoFinal,
+      )
       .subscribe({
         next: () => {
           this.conciliando = false;

@@ -12,6 +12,8 @@ export interface Lancamento {
   finalidade:           Finalidade | null;
   sugestao_finalidade:  Finalidade | null;
   observacao:           string | null;
+  quantidade_detalhamentos: number;
+  soma_detalhamentos:       number;
   criado_em:            string;
   atualizado_em:        string | null;
 }
