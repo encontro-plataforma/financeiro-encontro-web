@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { AbstractService } from './abstract.service';
 import { Detalhamento, DetalhamentoCreate, DetalhamentoUpdate } from '../models/detalhamento.model';
+import { AuditoriaResultado } from '../models/auditoria-resultado.model';
 import { PageTemplate, PageRequest } from './util/PageTemplate';
 import { DetalhamentoFilterDto } from './dto/detalhamento-filter.dto';
 
@@ -38,5 +39,9 @@ export class DetalhamentoService extends AbstractService<Detalhamento> {
 
   remover(id: number): Observable<null> {
     return this.delete(id);
+  }
+
+  auditoria(): Observable<AuditoriaResultado> {
+    return this.persist<AuditoriaResultado>({}, '/auditoria');
   }
 }

@@ -38,6 +38,15 @@
         </mat-select>
       </mat-form-field>
 
+      @if (lancamento.tipo === TipoLancamento.RECEITA) {
+        <div class="detalhamentos-row">
+          <span class="detalhamentos-label">Detalhamentos ({{ lancamento.quantidade_detalhamentos }})</span>
+          <button mat-icon-button matTooltip="Vincular detalhamento" (click)="abrirDetalhamentos()">
+            <mat-icon>link</mat-icon>
+          </button>
+        </div>
+      }
+
       <mat-form-field appearance="outline" class="field-full">
         <mat-label>Observação (opcional)</mat-label>
         <textarea

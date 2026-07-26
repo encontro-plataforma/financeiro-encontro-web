@@ -12,7 +12,7 @@ import { Detalhamento } from '../../../../../models/detalhamento.model';
 import {
   DetalhamentoPickerDialogComponent,
   DetalhamentoPickerDialogData,
-} from '../detalhamento-picker-dialog/detalhamento-picker-dialog.component';
+} from '../../../shared/detalhamento-picker-dialog/detalhamento-picker-dialog.component';
 
 const ROTA_POR_TIPO: Record<string, string> = {
   INSCRICAO_ENCONTREIRO: '/secretaria/encontreiros',

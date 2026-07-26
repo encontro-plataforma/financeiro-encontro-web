@@ -42,7 +42,7 @@ A resposta agora inclui o `status` e a `version` do backend, por exemplo:
 ```json
 {
   "status": "ok",
-  "version": "0.0.1"
+  "version": "0.3.0"
 }
 ```
 
@@ -67,46 +67,69 @@ src/
 │   ├── environment.ts          # API_URL desenvolvimento
 │   └── environment.prod.ts     # API_URL produção
 ├── app/
-│   ├── models/                 # Interfaces TypeScript (espelham o backend)
-│   ├── services/               # Serviços HTTP (extendem AbstractService)
-│   │   ├── abstract.service.ts # Base genérica com paginação e filtros
+│   ├── models/                 # Interfaces TypeScript (espelham o backend) + constants/ (enums)
+│   ├── services/                     # Serviços HTTP (extendem AbstractService)
+│   │   ├── abstract.service.ts       # Base genérica com paginação e filtros
 │   │   ├── auth.service.ts
 │   │   ├── lancamento.service.ts
 │   │   ├── finalidade.service.ts
-│   │   ├── extrato-bancario.service.ts
-│   │   ├── conciliacao.service.ts
+│   │   ├── detalhamento.service.ts   # Vínculo Lançamento ↔ inscrição/oferta/outro + auditoria manual
+│   │   ├── upload-file.service.ts    # Extratos bancários e CSVs de Encontreiro/Encontrista
+│   │   ├── encontreiro.service.ts
+│   │   ├── encontrista.service.ts
+│   │   ├── equipe.service.ts
+│   │   ├── circulo.service.ts
 │   │   ├── dashboard.service.ts
 │   │   ├── dashboard-state.service.ts  # Estado compartilhado do dashboard
 │   │   ├── relatorio.service.ts        # Download de PDFs (Livro Caixa, Resumo Geral)
 │   │   ├── usuario.service.ts          # CRUD de usuários
 │   │   ├── dto/                # DTOs de filtro para cada endpoint
 │   │   └── util/               # Utilitários (PageTemplate)
+│   ├── shared/                  # Compartilhado por todo o app
+│   │   ├── components/          # confirm-dialog, csv-upload-dialog, lancamento-picker-dialog,
+│   │   │                        # vinculo-lancamento, toast, upload-resumo-dialog, multi-select, auditado-badge
+│   │   ├── modules/             # Módulos agregadores do Angular Material
+│   │   ├── pipes/               # ex.: currency-br.pipe
+│   │   └── services/            # ex.: error-handler.service
 │   ├── general/
-│   │   └── auth/               # authGuard (JWT), roleGuard (RBAC), authInterceptor
-│   └── components/             # Componentes por tela (lazy loaded)
+│   │   └── auth/                # authGuard (JWT), roleGuard (RBAC), authInterceptor
+│   └── components/               # Componentes por tela (lazy loaded)
 │       ├── login/
-│       ├── main/               # Shell principal com navegação lateral filtrada por perfil
-│       ├── dashboard/
-│       │   └── graphs/         # Gráficos Chart.js
-│       │       ├── barra-mensal/
-│       │       ├── barra-top-finalidades/
-│       │       └── pizza-finalidade/
-│       │           └── lista-lancamentos-graph/
-│       ├── lancamentos/
-│       │   └── lancamentos-form/
-│       ├── conciliacao/
-│       │   ├── conciliacao-upload-dialog/
-│       │   └── conciliar-lancamentos/
-│       │       └── conciliacao-card/
-│       ├── arquivos/           # Listagem de extratos importados
-│       ├── administracao/
-│       │   ├── finalidades/
-│       │   │   └── finalidades-form/
-│       │   ├── usuarios/       # CRUD de usuários (somente ADMINISTRADOR)
-│       │   │   └── usuarios-form/
-│       │   └── relatorios/     # Geração de PDFs (todos os perfis)
-│       ├── access-denied/      # Página 403 — usuário sem permissão para a rota
-│       └── not-found/          # Página 404 — rota inexistente
+│       ├── general/
+│       │   ├── main/            # Shell principal com navegação lateral filtrada por perfil
+│       │   ├── access-denied/   # Página 403 — usuário sem permissão para a rota
+│       │   └── not-found/       # Página 404 — rota inexistente
+│       ├── painel/
+│       │   └── dashboard/
+│       │       └── graphs/      # Gráficos Chart.js (barra-mensal, barra-top-finalidades, pizza-finalidade)
+│       ├── financeiro/
+│       │   ├── lancamentos/
+│       │   │   └── lancamentos-form/
+│       │   │       └── lancamento-detalhamentos/   # Card de Detalhamentos na tela de Editar Lançamento
+│       │   ├── conciliacao/
+│       │   │   └── conciliar-lancamentos/
+│       │   │       └── conciliacao-card/
+│       │   └── shared/           # Só usado dentro do módulo financeiro
+│       │       ├── detalhamento-picker-dialog/   # Dialog para vincular/ver Detalhamentos de um lançamento
+│       │       ├── conciliar-resto-dialog/       # Confirmação do valor restante ao conciliar
+│       │       └── auditoria-resumo-dialog/      # Resultado de "Processar Conciliação"
+│       ├── arquivos/             # Listagem de extratos/CSVs importados
+│       ├── secretaria/           # Perfis ADMINISTRADOR e SECRETARIO
+│       │   ├── equipes/
+│       │   │   └── equipes-form/
+│       │   ├── circulos/
+│       │   │   └── circulos-form/
+│       │   ├── encontreiros/
+│       │   │   └── encontreiros-form/
+│       │   ├── encontristas/
+│       │   │   └── encontristas-form/
+│       │   └── relatorios/
+│       └── administracao/        # Perfil ADMINISTRADOR
+│           ├── finalidades/
+│           │   └── finalidades-form/
+│           ├── usuarios/         # CRUD de usuários (somente ADMINISTRADOR)
+│           │   └── usuarios-form/
+│           └── relatorios/       # Geração de PDFs
 └── styles.scss                 # Estilos globais
 ```
 
@@ -127,9 +150,10 @@ Existem dois guards de rota:
 
 | Perfil | Telas acessíveis |
 |---|---|
-| `ADMINISTRADOR` | Todas — Dashboard, Lançamentos, Conciliação, Arquivos, Finalidades, Usuários, Relatórios |
+| `ADMINISTRADOR` | Todas — Dashboard, Lançamentos, Conciliação, Arquivos, Secretaria, Finalidades, Usuários, Relatórios |
 | `CONCILIADOR` | Dashboard, Lançamentos, Conciliação, Arquivos, Relatórios |
 | `REPORTER` | Dashboard (sem navegar para lançamentos ao clicar nas linhas) e Relatórios |
+| `SECRETARIO` | Módulo Secretaria (Equipes, Círculos, Encontreiros, Encontristas, Relatórios da Secretaria) — sem Dashboard, Lançamentos, Conciliação ou Arquivos |
 
 O menu lateral (`MainComponent`) filtra automaticamente as seções e itens pelo perfil do usuário logado. O modelo `PerfilUsuario` e as constantes `Perfil` estão em `models/constants/perfil.ts`.
 

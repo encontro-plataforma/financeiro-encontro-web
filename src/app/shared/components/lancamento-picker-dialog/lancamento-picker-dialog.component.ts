@@ -9,6 +9,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { MaterialGlobalModule, MaterialFormsModule } from '../../modules/material.imports.module';
 import { LancamentoService } from '../../../services/lancamento.service';
 import { Lancamento } from '../../../models/lancamento.model';
+import { TipoLancamento } from '../../../models/constants/tipo-lancamento';
 import { PageTemplate } from '../../../services/util/PageTemplate';
 
 @Component({
@@ -61,7 +62,7 @@ export class LancamentoPickerDialogComponent implements AfterViewInit {
     this.loading = true;
     this.lancamentoService
       .list(
-        { ...(this.search ? { descricao: this.search } : {}) },
+        { tipo: TipoLancamento.RECEITA, ...(this.search ? { descricao: this.search } : {}) },
         { skip: this.pageIndex * this.pageSize, limit: this.pageSize, sort: ['data_pagamento:desc'] },
       )
       .subscribe({

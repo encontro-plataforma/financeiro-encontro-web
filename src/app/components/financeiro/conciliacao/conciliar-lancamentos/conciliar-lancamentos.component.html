@@ -12,13 +12,36 @@
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Buscar por descrição</mat-label>
       <mat-icon matPrefix>search</mat-icon>
-      <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Digite para filtrar..." />
+      <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Digite para filtrar..." [disabled]="auditando" />
       @if (search) {
-        <button matSuffix mat-icon-button (click)="search = ''; onSearchChange()">
+        <button matSuffix mat-icon-button (click)="search = ''; onSearchChange()" [disabled]="auditando">
           <mat-icon>close</mat-icon>
         </button>
       }
     </mat-form-field>
+
+    <mat-form-field appearance="outline" class="tipo-field">
+      <mat-label>Tipo</mat-label>
+      <mat-select [(ngModel)]="tipoFiltro" (ngModelChange)="onTipoFiltroChange()" [disabled]="auditando">
+        @for (op of tipoOptions; track op.value) {
+          <mat-option [value]="op.value">{{ op.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button
+      mat-flat-button
+      color="primary"
+      class="btn"
+      [disabled]="auditando"
+      (click)="processarConciliacao()"
+    >
+      @if (auditando) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        Processar Conciliação
+      }
+    </button>
   </div>
 
   <!-- loading inicial -->
@@ -29,8 +52,16 @@
     </div>
   }
 
+  <!-- auditando: cards somem, mensagem central aparece -->
+  @if (auditando) {
+    <div class="auditando-container">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Auditando Lançamentos e Inscrições...</p>
+    </div>
+  }
+
   <!-- lista vazia -->
-  @if (isEmpty) {
+  @if (isEmpty && !auditando) {
     <div class="empty-state">
       <mat-icon>check_circle</mat-icon>
       <h2>Nenhum lançamento pendente</h2>
@@ -39,7 +70,7 @@
   }
 
   <!-- grid de cards -->
-  @if (!loading) {
+  @if (!loading && !auditando) {
     <div class="cards-grid">
       @for (item of items; track item.id) {
         <div class="card-wrapper" [class.card-leaving]="item._leaving">
@@ -54,14 +85,14 @@
   }
 
   <!-- loading mais itens -->
-  @if (loadingMore) {
+  @if (loadingMore && !auditando) {
     <div class="loading-more">
       <mat-spinner diameter="32"></mat-spinner>
       <span>Carregando mais...</span>
     </div>
   }
 
-  @if (allLoaded && !isEmpty && !loading) {
+  @if (allLoaded && !isEmpty && !loading && !auditando) {
     <div class="all-loaded">
       <mat-icon>check</mat-icon>
       <span>Todos os {{ visibleCount }} lançamentos carregados</span>

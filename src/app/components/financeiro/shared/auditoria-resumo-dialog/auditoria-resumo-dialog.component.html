@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Processar Conciliação</h2>
+
+<mat-dialog-content>
+  <p>{{ data.mensagem }}</p>
+
+  <ul class="resumo-lista">
+    <li>Inscrições avaliadas: <strong>{{ data.avaliados }}</strong></li>
+    <li>Encontreiros vinculados: <strong>{{ data.vinculados_encontreiro }}</strong></li>
+    <li>Encontristas vinculados: <strong>{{ data.vinculados_encontrista }}</strong></li>
+    <li>Detalhamentos extras via observação: <strong>{{ data.detalhamentos_extras_via_observacao }}</strong></li>
+    <li>Ainda não auditadas: <strong>{{ data.nao_auditados }}</strong></li>
+  </ul>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" class="btn" (click)="fechar()">OK</button>
+</mat-dialog-actions>

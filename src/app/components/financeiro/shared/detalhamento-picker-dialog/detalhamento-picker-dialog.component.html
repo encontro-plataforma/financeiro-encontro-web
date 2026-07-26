@@ -1,27 +1,65 @@
 <h2 mat-dialog-title>Incluir detalhamento</h2>
+@if (subtitulo) {
+  <p class="picker-subtitulo">{{ subtitulo }}</p>
+}
 
-<mat-dialog-content class="picker-content">
+<mat-dialog-content class="picker-content" [class.picker-content--com-tipo]="tipo">
 
   @if (!tipo) {
     <p class="escolha-titulo">O que você quer detalhar?</p>
     <div class="escolha-opcoes">
-      <button mat-stroked-button (click)="escolherTipo('INSCRICAO_ENCONTREIRO')">
-        <mat-icon>volunteer_activism</mat-icon>
-        Inscrição de Encontreiro
+      <button class="btn escolha-btn" (click)="escolherTipo('INSCRICAO_ENCONTREIRO')">
+        <span class="escolha-btn__label">
+          <mat-icon>volunteer_activism</mat-icon>
+          Inscrição de Encontreiro
+        </span>
+        <mat-icon>chevron_right</mat-icon>
       </button>
-      <button mat-stroked-button (click)="escolherTipo('INSCRICAO_ENCONTRISTA')">
-        <mat-icon>diversity_3</mat-icon>
-        Inscrição de Encontrista
+      <button class="btn escolha-btn" (click)="escolherTipo('INSCRICAO_ENCONTRISTA')">
+        <span class="escolha-btn__label">
+          <mat-icon>diversity_3</mat-icon>
+          Inscrição de Encontrista
+        </span>
+        <mat-icon>chevron_right</mat-icon>
       </button>
-      <button mat-stroked-button (click)="escolherTipo('OFERTA')">
-        <mat-icon>volunteer_activism</mat-icon>
-        Oferta
+      <button class="btn escolha-btn" (click)="escolherTipo('OFERTA')">
+        <span class="escolha-btn__label">
+          <mat-icon>volunteer_activism</mat-icon>
+          Oferta
+        </span>
+        <mat-icon>chevron_right</mat-icon>
       </button>
-      <button mat-stroked-button (click)="escolherTipo('OUTRO')">
-        <mat-icon>more_horiz</mat-icon>
-        Outro
+      <button class="btn escolha-btn" (click)="escolherTipo('OUTRO')">
+        <span class="escolha-btn__label">
+          <mat-icon>more_horiz</mat-icon>
+          Outro
+        </span>
+        <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
+
+    <mat-divider class="lista-divider" />
+
+    <p class="lista-titulo">Detalhamentos vinculados</p>
+
+    @if (loadingLista) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    @if (!loadingLista && detalhamentos.length === 0) {
+      <p class="lista-vazia">Nenhum detalhamento vinculado a este lançamento.</p>
+    }
+
+    @for (det of detalhamentos; track det.id) {
+      <div class="lista-item">
+        <span class="lista-item__tipo">{{ tipoLabel(det.tipo) }}</span>
+        <span class="lista-item__nome">{{ det.detalhe_nome }}</span>
+        <span class="lista-item__valor">{{ det.valor | currency:'BRL' }}</span>
+        <button mat-icon-button color="warn" matTooltip="Remover" (click)="excluir(det)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    }
   }
 
   @if (tipo === 'OFERTA' || tipo === 'OUTRO') {
@@ -34,7 +72,7 @@
 
       <mat-form-field appearance="outline" floatLabel="always" class="w-full">
         <mat-label>Descrição</mat-label>
-        <textarea matInput rows="2" [(ngModel)]="descricaoSimples"></textarea>
+        <input matInput [(ngModel)]="descricaoSimples" />
       </mat-form-field>
     </div>
   }
@@ -78,8 +116,8 @@
       </ng-container>
 
       <ng-container matColumnDef="observacao">
-        <mat-header-cell *matHeaderCellDef>Observação</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.observacao ?? '—' }}</mat-cell>
+        <mat-header-cell *matHeaderCellDef class="col-observacao">Observação</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-observacao">{{ row.observacao ?? '—' }}</mat-cell>
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="['dt_pagamento','nome','apelido','nome_pagador','pagamento','observacao']" />
@@ -108,12 +146,15 @@
 
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions>
+  @if (!tipo) {
+    <button mat-button class="btn" (click)="fechar()">Fechar</button>
+  }
   @if (tipo) {
-    <button mat-stroked-button [disabled]="salvando" (click)="voltarEscolha()">Voltar</button>
+    <button mat-stroked-button class="btn" [disabled]="salvando" (click)="voltarEscolha()">Voltar</button>
   }
   @if (tipo === 'OFERTA' || tipo === 'OUTRO') {
-    <button mat-flat-button color="primary" [disabled]="salvando" (click)="salvarSimples()">
+    <button mat-flat-button color="primary" class="btn" [disabled]="salvando" (click)="salvarSimples()">
       @if (salvando) {
         <mat-spinner diameter="18" />
       } @else {
@@ -121,5 +162,4 @@
       }
     </button>
   }
-  <button mat-stroked-button [disabled]="salvando" (click)="cancelar()">Cancelar</button>
 </mat-dialog-actions>
