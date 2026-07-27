@@ -51,7 +51,10 @@
 
   @if (etapa === 'concluido') {
     <div class="resumo-box">
-      <p class="arquivo-nome">{{ upload?.nome_arquivo }}</p>
+      <mat-form-field appearance="outline" class="arquivo-nome-field">
+        <mat-label>Nome do Arquivo</mat-label>
+        <input matInput [value]="upload?.nome_arquivo" readonly />
+      </mat-form-field>
 
       <div class="mensagem-destaque" [class.mensagem-destaque--erro]="temErro" [class.mensagem-destaque--sucesso]="!temErro">
         <mat-icon>{{ temErro ? 'error_outline' : 'check_circle' }}</mat-icon>

@@ -44,7 +44,7 @@ type Etapa = 'selecao' | 'enviando' | 'processando' | 'concluido';
 const POLLING_INTERVAL_MS = 5000;
 const WIDTH_PADRAO = '70vw';
 const WIDTH_ERRO = '80vw';
-const HEIGHT_ERRO = '70vh';
+const HEIGHT_ERRO = '80vh';
 
 @Component({
   selector: 'app-csv-upload-dialog',

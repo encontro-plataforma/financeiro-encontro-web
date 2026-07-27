@@ -89,12 +89,8 @@
   padding: 24px 0;
 }
 
-.arquivo-nome {
-  margin: 0;
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--mat-sys-on-surface);
-  word-break: break-all;
+.arquivo-nome-field {
+  width: 100%;
 }
 
 .mensagem-destaque {

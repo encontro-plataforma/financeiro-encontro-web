@@ -1,7 +1,10 @@
 <h2 mat-dialog-title>Resumo do processamento</h2>
 
 <mat-dialog-content class="resumo-content">
-  <p class="arquivo-nome">{{ arquivo.nome_arquivo }}</p>
+  <mat-form-field appearance="outline" class="arquivo-nome-field">
+    <mat-label>Nome do Arquivo</mat-label>
+    <input matInput [value]="arquivo.nome_arquivo" readonly />
+  </mat-form-field>
 
   @if (mensagem) {
     <div class="mensagem-destaque" [class.mensagem-destaque--erro]="temErro" [class.mensagem-destaque--sucesso]="!temErro">
