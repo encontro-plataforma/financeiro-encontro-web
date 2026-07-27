@@ -68,14 +68,7 @@
         </div>
       }
 
-      @if (resumo.length) {
-        <dl class="resumo-lista">
-          @for (item of resumo; track item.chave) {
-            <dt>{{ item.chave }}</dt>
-            <dd>{{ item.valor }}</dd>
-          }
-        </dl>
-      }
+      <app-upload-totais-cards [totais]="resumo" />
 
       @if (temErro) {
         <app-upload-erros-table [erros]="errosDetalhados" />

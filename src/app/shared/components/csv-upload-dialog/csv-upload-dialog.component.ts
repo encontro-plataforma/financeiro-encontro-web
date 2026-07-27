@@ -23,6 +23,7 @@ import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ToastService } from '../toast/toast.service';
 import { UploadFileService } from '../../../services/upload-file.service';
 import { UploadErrosTableComponent } from '../upload-erros-table/upload-erros-table.component';
+import { UploadTotaisCardsComponent } from '../upload-totais-cards/upload-totais-cards.component';
 import {
   UploadErroProcessamento,
   UploadFile,
@@ -42,12 +43,13 @@ type Etapa = 'selecao' | 'enviando' | 'processando' | 'concluido';
 
 const POLLING_INTERVAL_MS = 5000;
 const WIDTH_PADRAO = '70vw';
-const WIDTH_ERRO = '60vw';
+const WIDTH_ERRO = '80vw';
+const HEIGHT_ERRO = '70vh';
 
 @Component({
   selector: 'app-csv-upload-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialGlobalModule, UploadErrosTableComponent],
+  imports: [CommonModule, MaterialGlobalModule, UploadErrosTableComponent, UploadTotaisCardsComponent],
   templateUrl: './csv-upload-dialog.component.html',
   styleUrl: './csv-upload-dialog.component.scss',
 })
@@ -79,6 +81,14 @@ export class CsvUploadDialogComponent implements OnDestroy {
   dragOver = false;
   nomeArquivo = '';
   upload: UploadFile | null = null;
+
+  // Calculados uma única vez ao carregar o resultado (não getters): recalculá-los a cada
+  // ciclo de change detection devolveria um array novo a cada vez e resetaria a paginação
+  // da tabela de erros (o [erros] do filho dispararia ngOnChanges a cada CD).
+  mensagem: string | null = null;
+  resumo: UploadResumoItem[] = [];
+  errosDetalhados: UploadErroProcessamento[] = [];
+  temErro = false;
 
   private pollingSub?: Subscription;
 
@@ -185,8 +195,12 @@ export class CsvUploadDialogComponent implements OnDestroy {
     this.uploadFileService.buscarPorId(uploadId).subscribe({
       next: (upload) => {
         this.upload = upload;
+        this.mensagem = parseMensagemProcessamento(upload.resultado_processamento);
+        this.resumo = parseResumoProcessamento(upload.resultado_processamento);
+        this.errosDetalhados = parseErrosProcessamento(upload.resultado_processamento);
+        this.temErro = upload.status === 'ERRO' || this.errosDetalhados.length > 0;
         this.etapa = 'concluido';
-        if (this.temErro) this.dialogRef.updateSize(WIDTH_ERRO);
+        if (this.temErro) this.dialogRef.updateSize(WIDTH_ERRO, HEIGHT_ERRO);
         this.cdr.detectChanges();
       },
       error: () => {
@@ -194,22 +208,6 @@ export class CsvUploadDialogComponent implements OnDestroy {
         this.cdr.detectChanges();
       },
     });
-  }
-
-  get mensagem(): string | null {
-    return parseMensagemProcessamento(this.upload?.resultado_processamento ?? null);
-  }
-
-  get resumo(): UploadResumoItem[] {
-    return parseResumoProcessamento(this.upload?.resultado_processamento ?? null);
-  }
-
-  get errosDetalhados(): UploadErroProcessamento[] {
-    return parseErrosProcessamento(this.upload?.resultado_processamento ?? null);
-  }
-
-  get temErro(): boolean {
-    return this.upload?.status === 'ERRO' || this.errosDetalhados.length > 0;
   }
 
   fechar(): void {

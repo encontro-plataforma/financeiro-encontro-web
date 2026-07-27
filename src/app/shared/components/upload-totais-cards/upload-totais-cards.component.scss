@@ -1,0 +1,26 @@
+.totais-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.totais-card {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+}
+
+.totais-card-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+.totais-card-valor {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--mat-sys-on-surface-variant);
+}

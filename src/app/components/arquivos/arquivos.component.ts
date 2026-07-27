@@ -108,8 +108,10 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
   }
 
   verResumo(arquivo: UploadFile): void {
+    const comErro = this.temErros(arquivo);
     this.dialog.open(UploadResumoDialogComponent, {
-      width: this.temErros(arquivo) ? '60vw' : '520px',
+      width: comErro ? '80vw' : '520px',
+      height: comErro ? '70vh' : undefined,
       data: { arquivo },
     });
   }
