@@ -1,5 +1,9 @@
 @use '../../../../styles/abstracts/colors' as c;
 
+mat-dialog-actions {
+  padding: 8px 24px;
+}
+
 .upload-dialog-content {
   display: flex;
   flex-direction: column;

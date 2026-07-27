@@ -60,14 +60,26 @@ export function parseErrosProcessamento(resultadoProcessamento: string | null): 
   return Array.isArray(detalhes) ? detalhes : [];
 }
 
-/** Lista chave/valor (contagens) para exibição em uma dl simples. */
+/** Lista chave/valor (contagens) para exibição nos cards de totais. */
 export function parseResumoProcessamento(resultadoProcessamento: string | null): UploadResumoItem[] {
   if (!resultadoProcessamento) return [];
   const obj = parseResultado(resultadoProcessamento);
 
   if (!obj) return [{ chave: 'Resumo', valor: resultadoProcessamento }];
 
-  return Object.entries(obj)
+  const itens = Object.entries(obj)
     .filter(([chave]) => !CHAVES_RESUMO_OCULTAS.includes(chave))
     .map(([chave, valor]) => ({ chave: ROTULOS_RESUMO[chave] ?? chave, valor: String(valor) }));
+
+  // "Processados" é derivado (inseridos + duplicados + erros), não vem do backend —
+  // só faz sentido exibi-lo quando os três números de fato estão presentes.
+  const inseridos = Number(obj['inseridos']);
+  const duplicados = Number(obj['duplicados']);
+  const erros = Number(obj['erros']);
+
+  if (!Number.isNaN(inseridos) && !Number.isNaN(duplicados) && !Number.isNaN(erros)) {
+    itens.unshift({ chave: 'Processados', valor: String(inseridos + duplicados + erros) });
+  }
+
+  return itens;
 }
