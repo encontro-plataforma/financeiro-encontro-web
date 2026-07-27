@@ -15,6 +15,16 @@
   min-height: 0;
   overflow-y: auto;
   background: var(--mat-sys-surface-container-low);
+
+  // Tabela compacta: cabeçalho e linhas mais baixos (tokens oficiais de
+  // density/typography do mat-table) e texto menor — cabe mais conteúdo
+  // sem sobrar espaço vazio em volta do texto.
+  --mat-table-header-container-height: 36px;
+  --mat-table-row-item-container-height: 32px;
+  --mat-table-header-headline-size: 0.7rem;
+  --mat-table-header-headline-line-height: 1rem;
+  --mat-table-row-item-label-text-size: 0.75rem;
+  --mat-table-row-item-label-text-line-height: 1rem;
 }
 
 // O :host aplica overflow-y:auto na própria tabela (não há uma área de body
@@ -27,8 +37,8 @@
 }
 
 .col-linha {
-  min-width: 56px;
-  max-width: 56px;
+  min-width: 76px;
+  max-width: 76px;
   font-weight: 600;
   color: var(--mat-sys-on-surface-variant);
 }
