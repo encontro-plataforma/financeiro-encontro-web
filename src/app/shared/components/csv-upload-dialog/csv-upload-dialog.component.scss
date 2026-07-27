@@ -7,6 +7,8 @@
   height: 100%;
   max-height: none !important; // Material limita mat-dialog-content a 65vh por padrão
   overflow: hidden;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .drop-zone {
@@ -90,7 +92,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 24px 0;
 }
 
 // A tabela de erros (app-upload-erros-table) é a única parte deste layout que deve

@@ -16,7 +16,7 @@
       <mat-cell *matCellDef="let erro" class="col-erro">{{ erro.erro }}</mat-cell>
     </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns" />
+    <mat-header-row *matHeaderRowDef="displayedColumns" class="upload-erros-header" />
     <mat-row *matRowDef="let erro; columns: displayedColumns" />
   </mat-table>
 

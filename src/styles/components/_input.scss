@@ -1,0 +1,11 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Inputs — utilitários para mat-form-field
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Aplique num mat-form-field que nunca terá hint/erro (ex: campos somente leitura)
+// para remover o espaço reservado ao subscript-wrapper (hint/erro). O gap do
+// container pai já cuida do espaçamento — aqui a intenção é ocupar o menor
+// espaço vertical possível.
+.no-hint .mat-mdc-form-field-subscript-wrapper.mat-mdc-form-field-bottom-align {
+  display: none;
+}

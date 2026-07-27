@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Resumo do processamento</h2>
 
 <mat-dialog-content class="resumo-content">
-  <mat-form-field appearance="outline" class="arquivo-nome-field">
+  <mat-form-field appearance="outline" class="arquivo-nome-field no-hint">
     <mat-label>Nome do Arquivo</mat-label>
     <input matInput [value]="arquivo.nome_arquivo" readonly />
   </mat-form-field>
@@ -33,5 +33,5 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-flat-button color="primary" (click)="fechar()">Fechar</button>
+  <button mat-flat-button color="primary" class="btn" (click)="fechar()">Fechar</button>
 </mat-dialog-actions>

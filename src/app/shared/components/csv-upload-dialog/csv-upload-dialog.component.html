@@ -51,7 +51,7 @@
 
   @if (etapa === 'concluido') {
     <div class="resumo-box">
-      <mat-form-field appearance="outline" class="arquivo-nome-field">
+      <mat-form-field appearance="outline" class="arquivo-nome-field no-hint">
         <mat-label>Nome do Arquivo</mat-label>
         <input matInput [value]="upload?.nome_arquivo" readonly />
       </mat-form-field>
@@ -77,7 +77,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-flat-button color="primary" [disabled]="etapa === 'enviando' || etapa === 'processando'" (click)="fechar()">
+  <button mat-flat-button color="primary" class="btn" [disabled]="etapa === 'enviando' || etapa === 'processando'" (click)="fechar()">
     Fechar
   </button>
 </mat-dialog-actions>
