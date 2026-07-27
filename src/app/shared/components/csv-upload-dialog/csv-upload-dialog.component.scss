@@ -7,7 +7,7 @@ mat-dialog-actions {
 .upload-dialog-content {
   display: flex;
   flex-direction: column;
-  min-height: 300px;
+  min-height: 250px;
   height: 100%;
   max-height: none !important; // Material limita mat-dialog-content a 65vh por padrão
   overflow: hidden;

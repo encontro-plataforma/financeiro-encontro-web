@@ -16,7 +16,7 @@ export class UploadErrosTableComponent implements OnChanges {
   @Input() erros: UploadErroProcessamento[] = [];
 
   pageIndex = 0;
-  readonly pageSize = 5;
+  readonly pageSize = 6;
   readonly displayedColumns = ['linha', 'descricao', 'erro'];
 
   ngOnChanges(changes: SimpleChanges): void {
