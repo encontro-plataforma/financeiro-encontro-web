@@ -4,6 +4,19 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 100%;
+  max-height: none !important; // Material limita mat-dialog-content a 65vh por padrão
+  overflow: hidden;
+}
+
+// A tabela de erros (app-upload-erros-table) é a única parte deste layout que deve
+// crescer para ocupar o espaço restante e rolar internamente — os demais blocos
+// mantêm o tamanho natural.
+.arquivo-nome-field,
+.mensagem-destaque,
+.erro-box,
+app-upload-totais-cards {
+  flex-shrink: 0;
 }
 
 .arquivo-nome-field {

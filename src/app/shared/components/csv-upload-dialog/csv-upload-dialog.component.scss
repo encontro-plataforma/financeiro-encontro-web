@@ -4,6 +4,9 @@
   display: flex;
   flex-direction: column;
   min-height: 300px;
+  height: 100%;
+  max-height: none !important; // Material limita mat-dialog-content a 65vh por padrão
+  overflow: hidden;
 }
 
 .drop-zone {
@@ -83,27 +86,24 @@
 
 .resumo-box {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 24px 0;
 }
 
-.arquivo-nome-field {
-  width: 100%;
+// A tabela de erros (app-upload-erros-table) é a única parte deste layout que deve
+// crescer para ocupar o espaço restante e rolar internamente — os demais blocos
+// (nome do arquivo, cards de totais, erro-box) mantêm o tamanho natural.
+.arquivo-nome-field,
+.erro-box,
+app-upload-totais-cards {
+  flex-shrink: 0;
 }
 
-.mensagem-destaque {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 8px;
-
-  p { margin: 0; font-weight: 500; }
-
-  &--sucesso { @include c.status-theme('success'); }
-  &--erro    { @include c.status-theme('error'); }
+.arquivo-nome-field {
+  width: 100%;
 }
 
 .erro-box {

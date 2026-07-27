@@ -56,11 +56,6 @@
         <input matInput [value]="upload?.nome_arquivo" readonly />
       </mat-form-field>
 
-      <div class="mensagem-destaque" [class.mensagem-destaque--erro]="temErro" [class.mensagem-destaque--sucesso]="!temErro">
-        <mat-icon>{{ temErro ? 'error_outline' : 'check_circle' }}</mat-icon>
-        <p>{{ mensagem ?? (temErro ? 'Processamento concluído com erros.' : 'Processamento concluído com sucesso.') }}</p>
-      </div>
-
       @if (temErro && upload?.error_code) {
         <div class="erro-box">
           <mat-icon>error_outline</mat-icon>

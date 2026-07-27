@@ -1,9 +1,18 @@
 @use '../../../../styles/abstracts/colors' as c;
 
+// O host preenche o espaço restante do dialog (o pai é sempre um flex column);
+// só a tabela em si rola internamente — o paginador, quando presente, fica fixo embaixo.
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .upload-erros-table {
   width: 100%;
-  min-height: 300px;
-  max-height: 320px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 
