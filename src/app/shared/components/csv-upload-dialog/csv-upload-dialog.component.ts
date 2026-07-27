@@ -1,7 +1,20 @@
-import { Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  inject,
+  Inject,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { Subscription, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -10,9 +23,10 @@ import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ToastService } from '../toast/toast.service';
 import { UploadFileService } from '../../../services/upload-file.service';
 import { UploadFile } from '../../../models/upload-file.model';
+import { StatusProcessamento } from '../../../models/constants/status-processamento';
 
 export interface CsvUploadDialogData {
-  titulo:   string;
+  titulo: string;
   endpoint: string;
 }
 
@@ -23,11 +37,21 @@ interface ResumoItem {
   valor: string;
 }
 
+interface ErroItem {
+  linha: number | null;
+  descricao: string | null;
+  erro: string;
+}
+
+const CHAVES_OCULTAS = ['detalhes_ignorados', 'detalhes_erros'];
+
 const ROTULOS: Record<string, string> = {
-  inseridos:   'Inseridos',
+  inseridos: 'Inseridos',
   atualizados: 'Atualizados',
-  ignorados:   'Ignorados',
-  mensagem:    'Mensagem',
+  ignorados: 'Ignorados',
+  duplicados: 'Duplicados',
+  erros: 'Erros',
+  mensagem: 'Mensagem',
 };
 
 const POLLING_INTERVAL_MS = 5000;
@@ -40,22 +64,31 @@ const POLLING_INTERVAL_MS = 5000;
   styleUrl: './csv-upload-dialog.component.scss',
 })
 export class CsvUploadDialogComponent implements OnDestroy {
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
 
   /** Abre o dialog já com o tamanho padrão (80% altura, 70% largura, centralizado). */
-  static open(dialog: MatDialog, data: CsvUploadDialogData, config?: MatDialogConfig): MatDialogRef<CsvUploadDialogComponent, boolean> {
-    return dialog.open<CsvUploadDialogComponent, CsvUploadDialogData, boolean>(CsvUploadDialogComponent, {
-      width: '70vw',
-      height: '80vh',
-      maxWidth: '70vw',
-      disableClose: true,
-      data,
-      ...config,
-    });
+  static open(
+    dialog: MatDialog,
+    data: CsvUploadDialogData,
+    config?: MatDialogConfig,
+  ): MatDialogRef<CsvUploadDialogComponent, boolean> {
+    return dialog.open<CsvUploadDialogComponent, CsvUploadDialogData, boolean>(
+      CsvUploadDialogComponent,
+      {
+        width: '70vw',
+        height: '80vh',
+        maxWidth: '70vw',
+        disableClose: true,
+        data,
+        ...config,
+      },
+    );
   }
 
   etapa: Etapa = 'selecao';
-  dragOver    = false;
+  dragOver = false;
   nomeArquivo = '';
   upload: UploadFile | null = null;
 
@@ -114,7 +147,9 @@ export class CsvUploadDialogComponent implements OnDestroy {
     }
 
     if (file.size > 3 * 1024 * 1024) {
-      this.toast.error({ message: 'Arquivo está acima do limite permitido de tamanho de dados (3 MB).' });
+      this.toast.error({
+        message: 'Arquivo está acima do limite permitido de tamanho de dados (3 MB).',
+      });
       return;
     }
 
@@ -124,35 +159,50 @@ export class CsvUploadDialogComponent implements OnDestroy {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    this.http.post<{ upload_id: number; status: string }>(
-      `${environment.API_URL}${this.data.endpoint}`,
-      formData,
-      { withCredentials: true },
-    ).subscribe({
-      next: (resposta) => {
-        this.etapa = 'processando';
-        this.iniciarPolling(resposta.upload_id);
-      },
-      error: (err) => {
-        this.etapa = 'selecao';
-        this.toast.error({ message: err?.error?.detail ?? 'Erro ao enviar o arquivo.' });
-      },
-    });
+    this.http
+      .post<{
+        upload_id: number;
+        status: string;
+      }>(`${environment.API_URL}${this.data.endpoint}`, formData, { withCredentials: true })
+      .subscribe({
+        next: (resposta) => {
+          this.etapa = 'processando';
+          this.iniciarPolling(resposta.upload_id);
+        },
+        error: (err) => {
+          this.etapa = 'selecao';
+          this.toast.error({ message: err?.error?.detail ?? 'Erro ao enviar o arquivo.' });
+        },
+      });
   }
 
   private iniciarPolling(uploadId: number): void {
-    this.pollingSub = timer(0, POLLING_INTERVAL_MS).pipe(
-      switchMap(() => this.uploadFileService.buscarPorId(uploadId)),
-    ).subscribe({
+    this.pollingSub = timer(0, POLLING_INTERVAL_MS)
+      .pipe(switchMap(() => this.uploadFileService.buscarStatusPorId(uploadId)))
+      .subscribe({
+        next: (statusResp) => {
+          if (statusResp.status === StatusProcessamento.PROCESSANDO) return;
+          this.pollingSub?.unsubscribe();
+          this.carregarResultado(uploadId);
+        },
+        error: () => {
+          this.pollingSub?.unsubscribe();
+          this.toast.error({ message: 'Erro ao consultar o status do processamento.' });
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  private carregarResultado(uploadId: number): void {
+    this.uploadFileService.buscarPorId(uploadId).subscribe({
       next: (upload) => {
-        if (upload.status === 'PROCESSANDO') return;
         this.upload = upload;
-        this.etapa  = 'concluido';
-        this.pollingSub?.unsubscribe();
+        this.etapa = 'concluido';
+        this.cdr.detectChanges();
       },
       error: () => {
-        this.pollingSub?.unsubscribe();
-        this.toast.error({ message: 'Erro ao consultar o status do processamento.' });
+        this.toast.error({ message: 'Erro ao buscar os dados do processamento.' });
+        this.cdr.detectChanges();
       },
     });
   }
@@ -162,15 +212,25 @@ export class CsvUploadDialogComponent implements OnDestroy {
     try {
       const obj = JSON.parse(this.upload.resultado_processamento);
       return Object.entries(obj)
-        .filter(([chave]) => chave !== 'detalhes_ignorados')
+        .filter(([chave]) => !CHAVES_OCULTAS.includes(chave))
         .map(([chave, valor]) => ({ chave: ROTULOS[chave] ?? chave, valor: String(valor) }));
     } catch {
       return [{ chave: 'Resumo', valor: this.upload.resultado_processamento }];
     }
   }
 
+  get errosDetalhados(): ErroItem[] {
+    if (!this.upload?.resultado_processamento) return [];
+    try {
+      const obj = JSON.parse(this.upload.resultado_processamento);
+      return Array.isArray(obj?.detalhes_erros) ? obj.detalhes_erros : [];
+    } catch {
+      return [];
+    }
+  }
+
   get temErro(): boolean {
-    return this.upload?.status === 'ERRO';
+    return this.upload?.status === 'ERRO' || this.errosDetalhados.length > 0;
   }
 
   fechar(): void {

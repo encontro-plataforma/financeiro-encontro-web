@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { AbstractService } from './abstract.service';
-import { UploadFile } from '../models/upload-file.model';
+import { UploadFile, UploadFileStatus } from '../models/upload-file.model';
 import { PageTemplate, PageRequest } from './util/PageTemplate';
 import { UploadFileFilterDto } from './dto/upload-file-filter.dto';
 
@@ -26,6 +26,10 @@ export class UploadFileService extends AbstractService<UploadFile> {
 
   buscarPorId(id: number): Observable<UploadFile> {
     return this.getById(id);
+  }
+
+  buscarStatusPorId(id: number): Observable<UploadFileStatus> {
+    return this.getCustom<UploadFileStatus>(`/${id}/status`);
   }
 
   remover(id: number): Observable<null> {
