@@ -21,7 +21,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
   user-select: none;
 
   &:hover:not(.uploading) {
@@ -43,7 +45,8 @@
   }
 }
 
-.drop-content, .processando-box {
+.drop-content,
+.processando-box {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,7 +94,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
+  padding: 4px 0;
 }
 
 // A tabela de erros (app-upload-erros-table) é a única parte deste layout que deve
@@ -114,7 +118,9 @@ app-upload-totais-cards {
   border-radius: 8px;
   @include c.status-theme('error');
 
-  mat-icon { flex-shrink: 0; }
+  mat-icon {
+    flex-shrink: 0;
+  }
 }
 
 .erro-codigo {
