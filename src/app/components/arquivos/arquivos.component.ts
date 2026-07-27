@@ -13,7 +13,7 @@ import {
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { UploadFileService } from '../../services/upload-file.service';
-import { UploadFile } from '../../models/upload-file.model';
+import { UploadFile, parseErrosProcessamento } from '../../models/upload-file.model';
 import { PageTemplate } from '../../services/util/PageTemplate';
 import { UploadResumoDialogComponent } from '../../shared/components/upload-resumo-dialog/upload-resumo-dialog.component';
 
@@ -109,7 +109,7 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
 
   verResumo(arquivo: UploadFile): void {
     this.dialog.open(UploadResumoDialogComponent, {
-      width: '520px',
+      width: this.temErros(arquivo) ? '60vw' : '520px',
       data: { arquivo },
     });
   }
@@ -147,16 +147,22 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
     return this.downloading.has(id);
   }
 
-  statusClass(status: string): string {
-    switch (status) {
+  temErros(arquivo: UploadFile): boolean {
+    return parseErrosProcessamento(arquivo.resultado_processamento).length > 0;
+  }
+
+  statusClass(arquivo: UploadFile): string {
+    if (this.temErros(arquivo)) return 'status-chip--erro';
+    switch (arquivo.status) {
       case 'PROCESSADO': return 'status-chip--sucesso';
       case 'ERRO':        return 'status-chip--erro';
       default:            return 'status-chip--processando';
     }
   }
 
-  statusLabel(status: string): string {
-    switch (status) {
+  statusLabel(arquivo: UploadFile): string {
+    if (this.temErros(arquivo)) return 'Erro';
+    switch (arquivo.status) {
       case 'PROCESSADO': return 'Processado';
       case 'ERRO':        return 'Erro';
       default:            return 'Processando';

@@ -3,7 +3,14 @@
 <mat-dialog-content class="resumo-content">
   <p class="arquivo-nome">{{ arquivo.nome_arquivo }}</p>
 
-  @if (temErro) {
+  @if (mensagem) {
+    <div class="mensagem-destaque" [class.mensagem-destaque--erro]="temErro" [class.mensagem-destaque--sucesso]="!temErro">
+      <mat-icon>{{ temErro ? 'error_outline' : 'check_circle' }}</mat-icon>
+      <p>{{ mensagem }}</p>
+    </div>
+  }
+
+  @if (temErro && arquivo.error_code) {
     <div class="erro-box">
       <mat-icon>error_outline</mat-icon>
       <div>
@@ -11,14 +18,20 @@
         <textarea class="erro-mensagem" readonly rows="6">{{ arquivo.error_message }}</textarea>
       </div>
     </div>
-  } @else if (resumo.length) {
+  }
+
+  @if (resumo.length) {
     <dl class="resumo-lista">
       @for (item of resumo; track item.chave) {
         <dt>{{ item.chave }}</dt>
         <dd>{{ item.valor }}</dd>
       }
     </dl>
-  } @else {
+  }
+
+  @if (temErro) {
+    <app-upload-erros-table [erros]="errosDetalhados" />
+  } @else if (!mensagem && !resumo.length) {
     <p class="sem-resumo">Ainda não há um resumo disponível para este arquivo.</p>
   }
 </mat-dialog-content>

@@ -1,9 +1,28 @@
 @use '../../../../styles/abstracts/colors' as c;
 
+.resumo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .arquivo-nome {
-  font-weight: 500;
-  margin: 0 0 16px;
+  font-weight: 600;
+  margin: 0;
   word-break: break-all;
+}
+
+.mensagem-destaque {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+
+  p { margin: 0; font-weight: 500; }
+
+  &--sucesso { @include c.status-theme('success'); }
+  &--erro    { @include c.status-theme('error'); }
 }
 
 .resumo-lista {

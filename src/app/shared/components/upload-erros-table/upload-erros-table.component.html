@@ -1,0 +1,31 @@
+@if (erros.length) {
+  <mat-table [dataSource]="pagedErros" class="upload-erros-table">
+
+    <ng-container matColumnDef="linha">
+      <mat-header-cell *matHeaderCellDef class="col-linha">Linha</mat-header-cell>
+      <mat-cell *matCellDef="let erro" class="col-linha">{{ erro.linha ?? '-' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="descricao">
+      <mat-header-cell *matHeaderCellDef class="col-descricao">Descrição</mat-header-cell>
+      <mat-cell *matCellDef="let erro" class="col-descricao">{{ erro.descricao ?? '(sem descrição)' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="erro">
+      <mat-header-cell *matHeaderCellDef class="col-erro">Erro</mat-header-cell>
+      <mat-cell *matCellDef="let erro" class="col-erro">{{ erro.erro }}</mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns" />
+    <mat-row *matRowDef="let erro; columns: displayedColumns" />
+  </mat-table>
+
+  @if (erros.length > pageSize) {
+    <mat-paginator
+      [length]="erros.length"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [hidePageSize]="true"
+      (page)="onPage($event)" />
+  }
+}

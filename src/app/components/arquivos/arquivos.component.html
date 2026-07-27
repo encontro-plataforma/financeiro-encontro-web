@@ -53,8 +53,8 @@
       <ng-container matColumnDef="status">
         <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
         <mat-cell *matCellDef="let row">
-          <span class="status-chip" [ngClass]="statusClass(row.status)">
-            {{ statusLabel(row.status) }}
+          <span class="status-chip" [ngClass]="statusClass(row)">
+            {{ statusLabel(row) }}
           </span>
         </mat-cell>
       </ng-container>

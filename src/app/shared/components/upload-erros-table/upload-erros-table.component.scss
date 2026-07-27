@@ -1,0 +1,24 @@
+@use '../../../../styles/abstracts/colors' as c;
+
+.upload-erros-table {
+  width: 100%;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.col-linha {
+  min-width: 56px;
+  max-width: 56px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.col-descricao {
+  min-width: 160px;
+  flex: 1;
+}
+
+.col-erro {
+  flex: 2;
+  color: c.status-color('error', 'text');
+}

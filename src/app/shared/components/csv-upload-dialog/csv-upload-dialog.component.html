@@ -51,53 +51,34 @@
 
   @if (etapa === 'concluido') {
     <div class="resumo-box">
-      @if (temErro) {
+      <p class="arquivo-nome">{{ upload?.nome_arquivo }}</p>
+
+      <div class="mensagem-destaque" [class.mensagem-destaque--erro]="temErro" [class.mensagem-destaque--sucesso]="!temErro">
+        <mat-icon>{{ temErro ? 'error_outline' : 'check_circle' }}</mat-icon>
+        <p>{{ mensagem ?? (temErro ? 'Processamento concluído com erros.' : 'Processamento concluído com sucesso.') }}</p>
+      </div>
+
+      @if (temErro && upload?.error_code) {
         <div class="erro-box">
           <mat-icon>error_outline</mat-icon>
           <div>
-            @if (upload?.error_code) {
-              <p class="erro-codigo">{{ upload.error_code }}</p>
-              <p class="erro-mensagem">{{ upload.error_message }}</p>
-            } @else {
-              <p class="erro-mensagem">Processamento concluído com erros.</p>
-            }
+            <p class="erro-codigo">{{ upload?.error_code }}</p>
+            <p class="erro-mensagem">{{ upload?.error_message }}</p>
           </div>
         </div>
+      }
 
-        @if (resumo.length) {
-          <dl class="resumo-lista">
-            @for (item of resumo; track item.chave) {
-              <dt>{{ item.chave }}</dt>
-              <dd>{{ item.valor }}</dd>
-            }
-          </dl>
-        }
+      @if (resumo.length) {
+        <dl class="resumo-lista">
+          @for (item of resumo; track item.chave) {
+            <dt>{{ item.chave }}</dt>
+            <dd>{{ item.valor }}</dd>
+          }
+        </dl>
+      }
 
-        @if (errosDetalhados.length) {
-          <div class="erros-lista">
-            @for (erro of errosDetalhados; track $index) {
-              <div class="erro-item">
-                <span class="erro-item-linha">Linha {{ erro.linha ?? '-' }}</span>
-                <span class="erro-item-descricao">{{ erro.descricao ?? '(sem descrição)' }}</span>
-                <span class="erro-item-texto">{{ erro.erro }}</span>
-              </div>
-            }
-          </div>
-        }
-      } @else {
-        <div class="sucesso-box">
-          <mat-icon>check_circle</mat-icon>
-          <p>Processamento concluído com sucesso.</p>
-        </div>
-
-        @if (resumo.length) {
-          <dl class="resumo-lista">
-            @for (item of resumo; track item.chave) {
-              <dt>{{ item.chave }}</dt>
-              <dd>{{ item.valor }}</dd>
-            }
-          </dl>
-        }
+      @if (temErro) {
+        <app-upload-erros-table [erros]="errosDetalhados" />
       }
     </div>
   }

@@ -22,7 +22,15 @@ import { environment } from '../../../../environments/environment';
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ToastService } from '../toast/toast.service';
 import { UploadFileService } from '../../../services/upload-file.service';
-import { UploadFile } from '../../../models/upload-file.model';
+import { UploadErrosTableComponent } from '../upload-erros-table/upload-erros-table.component';
+import {
+  UploadErroProcessamento,
+  UploadFile,
+  UploadResumoItem,
+  parseErrosProcessamento,
+  parseMensagemProcessamento,
+  parseResumoProcessamento,
+} from '../../../models/upload-file.model';
 import { StatusProcessamento } from '../../../models/constants/status-processamento';
 
 export interface CsvUploadDialogData {
@@ -32,34 +40,14 @@ export interface CsvUploadDialogData {
 
 type Etapa = 'selecao' | 'enviando' | 'processando' | 'concluido';
 
-interface ResumoItem {
-  chave: string;
-  valor: string;
-}
-
-interface ErroItem {
-  linha: number | null;
-  descricao: string | null;
-  erro: string;
-}
-
-const CHAVES_OCULTAS = ['detalhes_ignorados', 'detalhes_erros'];
-
-const ROTULOS: Record<string, string> = {
-  inseridos: 'Inseridos',
-  atualizados: 'Atualizados',
-  ignorados: 'Ignorados',
-  duplicados: 'Duplicados',
-  erros: 'Erros',
-  mensagem: 'Mensagem',
-};
-
 const POLLING_INTERVAL_MS = 5000;
+const WIDTH_PADRAO = '70vw';
+const WIDTH_ERRO = '60vw';
 
 @Component({
   selector: 'app-csv-upload-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialGlobalModule],
+  imports: [CommonModule, MaterialGlobalModule, UploadErrosTableComponent],
   templateUrl: './csv-upload-dialog.component.html',
   styleUrl: './csv-upload-dialog.component.scss',
 })
@@ -77,9 +65,9 @@ export class CsvUploadDialogComponent implements OnDestroy {
     return dialog.open<CsvUploadDialogComponent, CsvUploadDialogData, boolean>(
       CsvUploadDialogComponent,
       {
-        width: '70vw',
+        width: WIDTH_PADRAO,
         height: '80vh',
-        maxWidth: '70vw',
+        maxWidth: '90vw',
         disableClose: true,
         data,
         ...config,
@@ -198,6 +186,7 @@ export class CsvUploadDialogComponent implements OnDestroy {
       next: (upload) => {
         this.upload = upload;
         this.etapa = 'concluido';
+        if (this.temErro) this.dialogRef.updateSize(WIDTH_ERRO);
         this.cdr.detectChanges();
       },
       error: () => {
@@ -207,26 +196,16 @@ export class CsvUploadDialogComponent implements OnDestroy {
     });
   }
 
-  get resumo(): ResumoItem[] {
-    if (!this.upload?.resultado_processamento) return [];
-    try {
-      const obj = JSON.parse(this.upload.resultado_processamento);
-      return Object.entries(obj)
-        .filter(([chave]) => !CHAVES_OCULTAS.includes(chave))
-        .map(([chave, valor]) => ({ chave: ROTULOS[chave] ?? chave, valor: String(valor) }));
-    } catch {
-      return [{ chave: 'Resumo', valor: this.upload.resultado_processamento }];
-    }
+  get mensagem(): string | null {
+    return parseMensagemProcessamento(this.upload?.resultado_processamento ?? null);
   }
 
-  get errosDetalhados(): ErroItem[] {
-    if (!this.upload?.resultado_processamento) return [];
-    try {
-      const obj = JSON.parse(this.upload.resultado_processamento);
-      return Array.isArray(obj?.detalhes_erros) ? obj.detalhes_erros : [];
-    } catch {
-      return [];
-    }
+  get resumo(): UploadResumoItem[] {
+    return parseResumoProcessamento(this.upload?.resultado_processamento ?? null);
+  }
+
+  get errosDetalhados(): UploadErroProcessamento[] {
+    return parseErrosProcessamento(this.upload?.resultado_processamento ?? null);
   }
 
   get temErro(): boolean {
