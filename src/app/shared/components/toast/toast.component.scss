@@ -41,8 +41,23 @@
     flex-shrink: 0;
     width: 32px;
     height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    // Sem isso, o padding do mat-icon-button continua calculado a partir do
+    // tamanho padrão (40px), descentralizando o ícone dentro do botão de 32px.
+    --mdc-icon-button-state-layer-size: 32px;
 
-    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+    }
   }
 
   &--success {
