@@ -72,6 +72,7 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
       tipo:          [TipoLancamento.TODOS],
       status:        [StatusLancamento.TODOS],
       finalidade_id: [-1],
+      descricao:     [''],
     });
 
     this.formFilters.valueChanges.pipe(
@@ -159,13 +160,14 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
   }
 
   private buildFilter() {
-    const { data_inicio, data_fim, tipo, status, finalidade_id } = this.formFilters.value;
+    const { data_inicio, data_fim, tipo, status, finalidade_id, descricao } = this.formFilters.value;
     return {
       ...(data_inicio && { data_inicio: moment(data_inicio).format('YYYY-MM-DDT00:00:00') }),
       ...(data_fim    && { data_fim: moment(data_fim).format('YYYY-MM-DDT23:59:59') }),
       ...(tipo        && { tipo }),
       ...(status      && { status }),
       ...(finalidade_id !== -1 && { finalidade_id: Number(finalidade_id) }),
+      ...(descricao?.trim() && { descricao: descricao.trim() }),
     };
   }
 }
