@@ -22,7 +22,7 @@ import { environment } from '../../../../environments/environment';
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ToastService } from '../toast/toast.service';
 import { UploadFileService } from '../../../services/upload-file.service';
-import { UploadResumoComponent, getUploadResumoInfo } from '../upload-resumo/upload-resumo.component';
+import { UploadResumoComponent } from '../upload-resumo/upload-resumo.component';
 import { UploadFile } from '../../../models/upload-file.model';
 import { StatusProcessamento } from '../../../models/constants/status-processamento';
 
@@ -184,7 +184,7 @@ export class CsvUploadDialogComponent implements OnDestroy {
         this.upload = upload;
         this.etapa = 'concluido';
 
-        const { temErro, dialogWidth, dialogHeight } = getUploadResumoInfo(upload);
+        const { temErro, dialogWidth, dialogHeight } = UploadResumoComponent.getInfo(upload);
         this.temErro = temErro;
         this.dialogRef.updateSize(dialogWidth, dialogHeight);
 

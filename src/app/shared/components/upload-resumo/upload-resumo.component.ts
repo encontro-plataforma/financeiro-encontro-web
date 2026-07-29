@@ -13,32 +13,10 @@ import {
   parseResumoProcessamento,
 } from '../../../models/upload-file.model';
 
-// Tamanho do dialog (CsvUploadDialogComponent ou UploadResumoDialogComponent) quando
-// exibindo este componente. Não é exportado: quem abre o dialog não escolhe o
-// tamanho, só chama getUploadResumoInfo(upload) e usa o que vier de volta — assim os
-// dois dialogs se comportam sempre igual, sem cada tela decidir por conta própria.
-const WIDTH = '680px';
-const WIDTH_ERRO = '80vw';
-const HEIGHT_ERRO = '90vh';
-
 export interface UploadResumoInfo {
   temErro: boolean;
   dialogWidth: string;
   dialogHeight?: string;
-}
-
-/**
- * A partir do UploadFile, diz se o resumo tem erros e qual largura/altura o dialog
- * que for exibi-lo deve usar. Sem erro: largo o bastante para os cards de totais
- * caberem numa linha só, altura livre (encolhe para o conteúdo). Com erro: bem maior
- * nos dois eixos, para caber a tabela de erros embaixo.
- */
-export function getUploadResumoInfo(upload: UploadFile): UploadResumoInfo {
-  const temErro = upload.status === 'ERRO' || parseErrosProcessamento(upload.resultado_processamento).length > 0;
-
-  return temErro
-    ? { temErro, dialogWidth: WIDTH_ERRO, dialogHeight: HEIGHT_ERRO }
-    : { temErro, dialogWidth: WIDTH };
 }
 
 /**
@@ -55,6 +33,28 @@ export function getUploadResumoInfo(upload: UploadFile): UploadResumoInfo {
   styleUrl: './upload-resumo.component.scss',
 })
 export class UploadResumoComponent implements OnChanges {
+  // Tamanho do dialog (CsvUploadDialogComponent ou UploadResumoDialogComponent) quando
+  // exibindo este componente. Privados: quem abre o dialog não escolhe o tamanho, só
+  // chama UploadResumoComponent.getInfo(upload) e usa o que vier de volta — assim os
+  // dois dialogs se comportam sempre igual, sem cada tela decidir por conta própria.
+  private static readonly WIDTH = '680px';
+  private static readonly WIDTH_ERRO = '80vw';
+  private static readonly HEIGHT_ERRO = '90vh';
+
+  /**
+   * A partir do UploadFile, diz se o resumo tem erros e qual largura/altura o dialog
+   * que for exibi-lo deve usar. Sem erro: largo o bastante para os cards de totais
+   * caberem numa linha só, altura livre (encolhe para o conteúdo). Com erro: bem maior
+   * nos dois eixos, para caber a tabela de erros embaixo.
+   */
+  static getInfo(upload: UploadFile): UploadResumoInfo {
+    const temErro = upload.status === 'ERRO' || parseErrosProcessamento(upload.resultado_processamento).length > 0;
+
+    return temErro
+      ? { temErro, dialogWidth: this.WIDTH_ERRO, dialogHeight: this.HEIGHT_ERRO }
+      : { temErro, dialogWidth: this.WIDTH };
+  }
+
   @Input({ required: true }) upload!: UploadFile;
 
   // Calculados uma única vez quando `upload` muda (não getters): um getter que
