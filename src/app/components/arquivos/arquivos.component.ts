@@ -15,7 +15,7 @@ import { ToastService } from '../../shared/components/toast/toast.service';
 import { UploadFileService } from '../../services/upload-file.service';
 import { UploadFile, parseErrosProcessamento } from '../../models/upload-file.model';
 import { PageTemplate } from '../../services/util/PageTemplate';
-import { UploadResumoDialogComponent } from '../../shared/components/upload-resumo-dialog/upload-resumo-dialog.component';
+import { UploadResumoDialogComponent } from './upload-resumo-dialog/upload-resumo-dialog.component';
 
 @Component({
   selector: 'app-arquivos',

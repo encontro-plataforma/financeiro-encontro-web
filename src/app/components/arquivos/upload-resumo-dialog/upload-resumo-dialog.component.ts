@@ -2,8 +2,8 @@ import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-import { MaterialGlobalModule } from '../../modules/material.imports.module';
-import { UploadResumoComponent } from '../upload-resumo/upload-resumo.component';
+import { MaterialGlobalModule } from '../../../shared/modules/material.imports.module';
+import { UploadResumoComponent } from '../../../shared/components/upload-resumo/upload-resumo.component';
 import { UploadFile } from '../../../models/upload-file.model';
 
 export interface UploadResumoDialogData {
