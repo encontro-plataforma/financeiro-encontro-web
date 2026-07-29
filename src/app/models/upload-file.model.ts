@@ -47,21 +47,25 @@ function parseResultado(resultadoProcessamento: string | null): Record<string, u
   }
 }
 
-/** Mensagem de resumo em destaque (ex: "Processamento concluído. 5 inseridos..."). */
-export function parseMensagemProcessamento(resultadoProcessamento: string | null): string | null {
-  const obj = parseResultado(resultadoProcessamento);
-  return typeof obj?.['mensagem'] === 'string' ? (obj['mensagem'] as string) : null;
-}
+// /** Mensagem de resumo em destaque (ex: "Processamento concluído. 5 inseridos..."). */
+// export function parseMensagemProcessamento(resultadoProcessamento: string | null): string | null {
+//   const obj = parseResultado(resultadoProcessamento);
+//   return typeof obj?.['mensagem'] === 'string' ? (obj['mensagem'] as string) : null;
+// }
 
 /** Lista de erros linha-a-linha ocorridos durante o processamento do arquivo. */
-export function parseErrosProcessamento(resultadoProcessamento: string | null): UploadErroProcessamento[] {
+export function parseErrosProcessamento(
+  resultadoProcessamento: string | null,
+): UploadErroProcessamento[] {
   const obj = parseResultado(resultadoProcessamento);
   const detalhes = obj?.['detalhes_erros'];
   return Array.isArray(detalhes) ? detalhes : [];
 }
 
 /** Lista chave/valor (contagens) para exibição nos cards de totais. */
-export function parseResumoProcessamento(resultadoProcessamento: string | null): UploadResumoItem[] {
+export function parseResumoProcessamento(
+  resultadoProcessamento: string | null,
+): UploadResumoItem[] {
   if (!resultadoProcessamento) return [];
   const obj = parseResultado(resultadoProcessamento);
 

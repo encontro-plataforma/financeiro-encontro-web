@@ -1,19 +1,23 @@
 <div class="arquivos-page">
-
   <div class="page-header">
     <h1 class="page-title">Arquivos Enviados</h1>
-
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Buscar por nome</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Nome do arquivo..." />
-      @if (search) {
-        <button matSuffix mat-icon-button (click)="search = ''; onSearchChange()">
-          <mat-icon>close</mat-icon>
-        </button>
-      }
-    </mat-form-field>
   </div>
+
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Buscar por nome</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      [(ngModel)]="search"
+      (ngModelChange)="onSearchChange()"
+      placeholder="Nome do arquivo..."
+    />
+    @if (search) {
+      <button matSuffix mat-icon-button (click)="search = ''; onSearchChange()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
 
   @if (loading) {
     <mat-progress-bar mode="indeterminate" />
@@ -21,12 +25,11 @@
 
   <mat-card appearance="outlined" class="table-card">
     <mat-table [dataSource]="result.items" class="arquivos-table">
-
       <!-- Data de processamento -->
       <ng-container matColumnDef="processado_em">
         <mat-header-cell *matHeaderCellDef>Importado em</mat-header-cell>
         <mat-cell *matCellDef="let row">
-          {{ row.processado_em | date:'dd/MM/yyyy HH:mm' }}
+          {{ row.processado_em | date: 'dd/MM/yyyy HH:mm' }}
         </mat-cell>
       </ng-container>
 
@@ -67,7 +70,8 @@
             mat-icon-button
             matTooltip="Ver resumo do processamento"
             [disabled]="row.status === 'PROCESSANDO'"
-            (click)="verResumo(row)">
+            (click)="verResumo(row)"
+          >
             <mat-icon>info</mat-icon>
           </button>
 
@@ -75,7 +79,8 @@
             mat-icon-button
             matTooltip="Baixar arquivo"
             [disabled]="isDownloading(row.id)"
-            (click)="download(row)">
+            (click)="download(row)"
+          >
             @if (isDownloading(row.id)) {
               <mat-spinner diameter="20" />
             } @else {
@@ -83,18 +88,14 @@
             }
           </button>
 
-          <button
-            mat-icon-button
-            matTooltip="Excluir arquivo"
-            color="warn"
-            (click)="deletar(row)">
+          <button mat-icon-button matTooltip="Excluir arquivo" color="warn" (click)="deletar(row)">
             <mat-icon>delete</mat-icon>
           </button>
         </mat-cell>
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns" />
-      <mat-row *matRowDef="let row; columns: displayedColumns;" />
+      <mat-row *matRowDef="let row; columns: displayedColumns" />
 
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" [colSpan]="displayedColumns.length">
@@ -106,7 +107,6 @@
           }
         </td>
       </tr>
-
     </mat-table>
 
     <mat-paginator
@@ -115,8 +115,8 @@
       [pageSize]="pageSize"
       [pageSizeOptions]="[10, 25, 50]"
       showFirstLastButtons
-      (page)="onPage($event)">
+      (page)="onPage($event)"
+    >
     </mat-paginator>
   </mat-card>
-
 </div>

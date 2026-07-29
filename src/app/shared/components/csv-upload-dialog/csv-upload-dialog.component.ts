@@ -184,9 +184,9 @@ export class CsvUploadDialogComponent implements OnDestroy {
         this.upload = upload;
         this.etapa = 'concluido';
 
-        const { temErro, dialogWidth, dialogHeight } = UploadResumoComponent.getInfo(upload);
+        const { temErro, minWidth, minHeight } = UploadResumoComponent.getInfo(upload);
         this.temErro = temErro;
-        this.dialogRef.updateSize(dialogWidth, dialogHeight);
+        this.dialogRef.updateSize(minWidth, minHeight);
 
         if (temErro) {
           this.toast.error({ message: 'Processamento concluído com erros.' });

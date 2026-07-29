@@ -1,4 +1,11 @@
-import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  AfterViewInit,
+  ChangeDetectorRef,
+  ViewEncapsulation,
+} from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -23,31 +30,28 @@ import { UploadResumoComponent } from '../../shared/components/upload-resumo/upl
   standalone: true,
   imports: [CommonModule, DatePipe, FormsModule, MaterialGlobalModule, MaterialFormsModule],
   templateUrl: './arquivos.component.html',
-  styleUrl:    './arquivos.component.scss',
+  styleUrl: './arquivos.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class ArquivosComponent implements OnInit, AfterViewInit {
   private uploadFileService = inject(UploadFileService);
-  private dialog            = inject(MatDialog);
-  private toast             = inject(ToastService);
-  private cdr                = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
+  private toast = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
 
   result: PageTemplate<UploadFile> = new PageTemplate<UploadFile>();
-  loading       = false;
-  pageIndex     = 0;
-  pageSize      = 10;
-  search        = '';
-  downloading   = new Set<number>();
+  loading = false;
+  pageIndex = 0;
+  pageSize = 10;
+  search = '';
+  downloading = new Set<number>();
 
   displayedColumns = ['processado_em', 'nome_arquivo', 'tamanho', 'status', 'acoes'];
 
   private searchSubject = new Subject<string>();
 
   ngOnInit(): void {
-    this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-    ).subscribe(() => {
+    this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.pageIndex = 0;
       this.load();
     });
@@ -63,7 +67,7 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
 
   onPage(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
-    this.pageSize  = event.pageSize;
+    this.pageSize = event.pageSize;
     this.load();
   }
 
@@ -76,7 +80,7 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
       )
       .subscribe({
         next: (data) => {
-          this.result  = data;
+          this.result = data;
           this.loading = false;
           this.cdr.detectChanges();
         },
@@ -92,8 +96,8 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
     this.uploadFileService.download(arquivo.id).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
-        const a   = document.createElement('a');
-        a.href     = url;
+        const a = document.createElement('a');
+        a.href = url;
         a.download = arquivo.nome_arquivo;
         document.body.appendChild(a);
         a.click();
@@ -109,41 +113,43 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
   }
 
   verResumo(arquivo: UploadFile): void {
-    const { dialogWidth, dialogHeight } = UploadResumoComponent.getInfo(arquivo);
+    const { minWidth, minHeight } = UploadResumoComponent.getInfo(arquivo);
     this.dialog.open(UploadResumoDialogComponent, {
-      // Mesma lógica de tamanho usada pelo CsvUploadDialogComponent — os dois
-      // dialogs exibem o mesmo <app-upload-resumo>, então devem se comportar igual.
-      width: dialogWidth,
-      height: dialogHeight,
+      minWidth,
+      minHeight,
       data: { arquivo },
     });
   }
 
   deletar(arquivo: UploadFile): void {
-    this.dialog.open(ConfirmDialogComponent, {
-      width: '420px',
-      data: {
-        title:   'Confirmar exclusão',
-        message: `Deseja excluir o arquivo "${arquivo.nome_arquivo}"? Esta ação não pode ser desfeita.`,
-      },
-    }).afterClosed().subscribe((ok: boolean) => {
-      if (!ok) return;
-      this.uploadFileService.remover(arquivo.id).subscribe({
-        next: () => {
-          this.toast.success({ message: 'Arquivo excluído com sucesso.' });
-          if (this.result.items.length === 1 && this.pageIndex > 0) {
-            this.pageIndex--;
-          }
-          this.load();
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        width: '420px',
+        data: {
+          title: 'Confirmar exclusão',
+          message: `Deseja excluir o arquivo "${arquivo.nome_arquivo}"? Esta ação não pode ser desfeita.`,
         },
-        error: (err) => this.toast.error({ message: err?.error?.detail ?? 'Erro ao excluir arquivo.' }),
+      })
+      .afterClosed()
+      .subscribe((ok: boolean) => {
+        if (!ok) return;
+        this.uploadFileService.remover(arquivo.id).subscribe({
+          next: () => {
+            this.toast.success({ message: 'Arquivo excluído com sucesso.' });
+            if (this.result.items.length === 1 && this.pageIndex > 0) {
+              this.pageIndex--;
+            }
+            this.load();
+          },
+          error: (err) =>
+            this.toast.error({ message: err?.error?.detail ?? 'Erro ao excluir arquivo.' }),
+        });
       });
-    });
   }
 
   formatBytes(bytes: number | null): string {
     if (bytes == null) return '—';
-    if (bytes < 1024)        return `${bytes} B`;
+    if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
@@ -159,18 +165,24 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
   statusClass(arquivo: UploadFile): string {
     if (this.temErros(arquivo)) return 'status-chip--erro';
     switch (arquivo.status) {
-      case 'PROCESSADO': return 'status-chip--sucesso';
-      case 'ERRO':        return 'status-chip--erro';
-      default:            return 'status-chip--processando';
+      case 'PROCESSADO':
+        return 'status-chip--sucesso';
+      case 'ERRO':
+        return 'status-chip--erro';
+      default:
+        return 'status-chip--processando';
     }
   }
 
   statusLabel(arquivo: UploadFile): string {
     if (this.temErros(arquivo)) return 'Erro';
     switch (arquivo.status) {
-      case 'PROCESSADO': return 'Processado';
-      case 'ERRO':        return 'Erro';
-      default:            return 'Processando';
+      case 'PROCESSADO':
+        return 'Processado';
+      case 'ERRO':
+        return 'Erro';
+      default:
+        return 'Processando';
     }
   }
 }

@@ -8,9 +8,6 @@ mat-dialog-actions {
   height: 100%;
   max-height: none !important; // Material limita mat-dialog-content a 65vh por padrão
   overflow: hidden;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
 }
-
-// O resumo em si (nome do arquivo, mensagem, cards de totais, tabela de erros) é o
-// app-upload-resumo compartilhado — ele já cuida do próprio flex:1/gap internamente.
