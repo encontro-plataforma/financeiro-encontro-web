@@ -2,8 +2,8 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageEvent } from '@angular/material/paginator';
 
-import { MaterialGlobalModule } from '../../modules/material.imports.module';
-import { UploadErroProcessamento } from '../../../models/upload-file.model';
+import { MaterialGlobalModule } from '../../../modules/material.imports.module';
+import { UploadErroProcessamento } from '../../../../models/upload-file.model';
 
 @Component({
   selector: 'app-upload-erros-table',

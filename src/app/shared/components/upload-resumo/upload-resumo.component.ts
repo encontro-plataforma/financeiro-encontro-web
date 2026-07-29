@@ -2,8 +2,8 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
-import { UploadErrosTableComponent } from '../upload-erros-table/upload-erros-table.component';
-import { UploadTotaisCardsComponent } from '../upload-totais-cards/upload-totais-cards.component';
+import { UploadErrosTableComponent } from './upload-erros-table/upload-erros-table.component';
+import { UploadTotaisCardsComponent } from './upload-totais-cards/upload-totais-cards.component';
 import {
   UploadErroProcessamento,
   UploadFile,

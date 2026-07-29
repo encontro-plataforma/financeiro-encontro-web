@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { MaterialGlobalModule } from '../../modules/material.imports.module';
-import { UploadResumoItem } from '../../../models/upload-file.model';
+import { MaterialGlobalModule } from '../../../modules/material.imports.module';
+import { UploadResumoItem } from '../../../../models/upload-file.model';
 
 @Component({
   selector: 'app-upload-totais-cards',

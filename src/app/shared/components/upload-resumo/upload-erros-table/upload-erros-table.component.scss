@@ -1,4 +1,4 @@
-@use '../../../../styles/abstracts/colors' as c;
+@use '../../../../../styles/abstracts/colors' as c;
 
 // O host preenche o espaço restante do dialog (o pai é sempre um flex column);
 // só a tabela em si rola internamente — o paginador, quando presente, fica fixo embaixo.
