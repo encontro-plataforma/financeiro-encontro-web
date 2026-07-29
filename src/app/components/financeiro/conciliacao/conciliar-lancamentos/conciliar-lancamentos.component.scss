@@ -70,7 +70,10 @@
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  // 365px (min-width do .conciliacao-card) + 16px (margin: 8px de cada lado) = 381px de
+  // rodapé mínimo por card; abaixo de 384px o card não cabe mais na coluna e ela quebra
+  // para a linha de baixo em vez de espremer o conteúdo do card.
+  grid-template-columns: repeat(auto-fill, minmax(384px, 1fr));
   // gap: 16px;
   align-items: start;
 }
