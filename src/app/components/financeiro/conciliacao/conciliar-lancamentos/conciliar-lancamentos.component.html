@@ -1,5 +1,4 @@
 <div class="conciliar-page">
-
   <!-- cabeçalho -->
   <div class="page-header">
     <div class="header-left">
@@ -8,26 +7,6 @@
       </button>
       <h1 class="page-title">Conciliar Lançamentos</h1>
     </div>
-
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Buscar por descrição</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Digite para filtrar..." [disabled]="auditando" />
-      @if (search) {
-        <button matSuffix mat-icon-button (click)="search = ''; onSearchChange()" [disabled]="auditando">
-          <mat-icon>close</mat-icon>
-        </button>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="tipo-field">
-      <mat-label>Tipo</mat-label>
-      <mat-select [(ngModel)]="tipoFiltro" (ngModelChange)="onTipoFiltroChange()" [disabled]="auditando">
-        @for (op of tipoOptions; track op.value) {
-          <mat-option [value]="op.value">{{ op.name }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
 
     <button
       mat-flat-button
@@ -42,6 +21,43 @@
         Processar Conciliação
       }
     </button>
+  </div>
+
+  <div class="filter-line">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar por descrição</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Digite para filtrar..."
+        [disabled]="auditando"
+      />
+      @if (search) {
+        <button
+          matSuffix
+          mat-icon-button
+          (click)="search = ''; onSearchChange()"
+          [disabled]="auditando"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="tipo-field">
+      <mat-label>Tipo</mat-label>
+      <mat-select
+        [(ngModel)]="tipoFiltro"
+        (ngModelChange)="onTipoFiltroChange()"
+        [disabled]="auditando"
+      >
+        @for (op of tipoOptions; track op.value) {
+          <mat-option [value]="op.value">{{ op.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <!-- loading inicial -->
@@ -77,7 +93,8 @@
           <app-conciliacao-card
             [lancamento]="item"
             [finalidades]="finalidades"
-            (conciliado)="onConciliado(item)">
+            (conciliado)="onConciliado(item)"
+          >
           </app-conciliacao-card>
         </div>
       }
@@ -98,5 +115,4 @@
       <span>Todos os {{ visibleCount }} lançamentos carregados</span>
     </div>
   }
-
 </div>

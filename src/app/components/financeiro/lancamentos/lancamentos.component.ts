@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup }               from '@angular/forms';
 import { Router }                               from '@angular/router';
 import { MatDialog }                            from '@angular/material/dialog';
 import { PageEvent }                            from '@angular/material/paginator';
+import { Subscription }                         from 'rxjs';
 import { debounceTime }                         from 'rxjs/operators';
 import moment                                   from 'moment';
 
@@ -55,6 +56,8 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
   pageIndex  = 0;
   pageSize   = 10;
 
+  private loadSub?: Subscription;
+
   finalidades: Finalidade[] = [];
   tipoOpcoes   = TipoLancamento.optionsAll;
   statusOpcoes = StatusLancamento.optionsAll;
@@ -72,6 +75,7 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
       tipo:          [TipoLancamento.TODOS],
       status:        [StatusLancamento.TODOS],
       finalidade_id: [-1],
+      descricao:     [''],
     });
 
     this.formFilters.valueChanges.pipe(
@@ -99,16 +103,20 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
   load(): void {
     this.loading = true;
     const filters = this.buildFilter();
-    
-    this.lancamentoService.list(filters, { skip: this.pageIndex * this.pageSize, limit: this.pageSize })
+
+    // Cancela a requisição anterior ainda em andamento — sem isso, uma resposta
+    // atrasada de uma busca antiga (ex: filtro "J") pode sobrescrever o resultado
+    // de uma busca mais recente (ex: filtro "Jo") que respondeu mais rápido.
+    this.loadSub?.unsubscribe();
+    this.loadSub = this.lancamentoService.list(filters, { skip: this.pageIndex * this.pageSize, limit: this.pageSize })
     .subscribe({
-      next: (data) => { 
-        this.result = data; 
+      next: (data) => {
+        this.result = data;
         this.loading = false;
         this.cdr.detectChanges();
       },
-      error: () => { 
-        this.loading = false; 
+      error: () => {
+        this.loading = false;
         this.cdr.detectChanges();
       }
     });
@@ -159,13 +167,14 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
   }
 
   private buildFilter() {
-    const { data_inicio, data_fim, tipo, status, finalidade_id } = this.formFilters.value;
+    const { data_inicio, data_fim, tipo, status, finalidade_id, descricao } = this.formFilters.value;
     return {
       ...(data_inicio && { data_inicio: moment(data_inicio).format('YYYY-MM-DDT00:00:00') }),
       ...(data_fim    && { data_fim: moment(data_fim).format('YYYY-MM-DDT23:59:59') }),
       ...(tipo        && { tipo }),
       ...(status      && { status }),
       ...(finalidade_id !== -1 && { finalidade_id: Number(finalidade_id) }),
+      ...(descricao?.trim() && { descricao: descricao.trim() }),
     };
   }
 }

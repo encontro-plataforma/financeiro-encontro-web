@@ -27,6 +27,26 @@ export class ErrorHandlerService {
       return 'Sem conexão com o servidor. Verifique sua internet ou tente novamente.';
     }
 
+    // Tenta usar o campo "detail" retornado pelo FastAPI antes de cair nos
+    // fallbacks genéricos por status — senão mensagens específicas do backend
+    // (ex. validações de negócio) nunca chegam ao usuário.
+    const detail = err.error?.detail;
+
+    if (detail) {
+      // Erros de validação do Pydantic (422): detail é um array de objetos
+      if (Array.isArray(detail)) {
+        const msgs = detail
+          .map((d: { msg?: string }) => d.msg)
+          .filter(Boolean)
+          .join('; ');
+        if (msgs) return msgs;
+      }
+      // Detalhe como string simples (400, 404, etc.)
+      if (typeof detail === 'string') {
+        return detail;
+      }
+    }
+
     // Fallbacks por status HTTP
     switch (err.status) {
       case 400: return 'Requisição inválida.';
@@ -38,25 +58,6 @@ export class ErrorHandlerService {
       case 500: return 'Erro interno do servidor. Tente novamente mais tarde.';
     }
 
-    // Tenta usar o campo "detail" retornado pelo FastAPI
-    const detail = err.error?.detail;
-
-    if (detail) {
-      // Erros de validação do Pydantic (422): detail é um array de objetos
-      if (Array.isArray(detail)) {
-        const msgs = detail
-          .map((d: { msg?: string }) => d.msg)
-          .filter(Boolean)
-          .join('; ');
-        return msgs || 'Dados inválidos na requisição.';
-      }
-      // Detalhe como string simples (400, 404, etc.)
-      if (typeof detail === 'string') {
-        return detail;
-      }
-    }
-
-    // Fallbacks por status HTTP
     return `Erro ${err.status}: ${err.statusText || 'desconhecido'}.`;
   }
 }

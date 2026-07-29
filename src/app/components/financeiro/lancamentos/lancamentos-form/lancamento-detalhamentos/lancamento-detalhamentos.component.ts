@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject }
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 
 import { MaterialGlobalModule } from '../../../../../shared/modules/material.imports.module';
 import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -45,6 +46,9 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
 
   detalhamentos: Detalhamento[] = [];
   loading = false;
+  pageIndex = 0;
+  readonly pageSize = 5;
+  readonly displayedColumns = ['tipo', 'detalhe', 'valor', 'acoes'];
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['lancamentoId'] && this.lancamentoId) {
@@ -52,8 +56,18 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
     }
   }
 
+  get pagedDetalhamentos(): Detalhamento[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.detalhamentos.slice(start, start + this.pageSize);
+  }
+
+  onPage(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+  }
+
   load(): void {
     this.loading = true;
+    this.pageIndex = 0;
     this.detalhamentoService.listAll({ lancamento_id: this.lancamentoId }).subscribe({
       next: (data) => {
         this.detalhamentos = data;

@@ -4,7 +4,6 @@
 }
 
 <mat-dialog-content class="picker-content" [class.picker-content--com-tipo]="tipo">
-
   @if (!tipo) {
     <p class="escolha-titulo">O que você quer detalhar?</p>
     <div class="escolha-opcoes">
@@ -50,15 +49,45 @@
       <p class="lista-vazia">Nenhum detalhamento vinculado a este lançamento.</p>
     }
 
-    @for (det of detalhamentos; track det.id) {
-      <div class="lista-item">
-        <span class="lista-item__tipo">{{ tipoLabel(det.tipo) }}</span>
-        <span class="lista-item__nome">{{ det.detalhe_nome }}</span>
-        <span class="lista-item__valor">{{ det.valor | currency:'BRL' }}</span>
-        <button mat-icon-button color="warn" matTooltip="Remover" (click)="excluir(det)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
+    @if (!loadingLista && detalhamentos.length > 0) {
+      <mat-table [dataSource]="pagedDetalhamentos" class="resumo-table">
+        <ng-container matColumnDef="tipo">
+          <mat-header-cell *matHeaderCellDef class="col-tipo">Tipo</mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-tipo">{{ tipoLabel(det.tipo) }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="detalhe">
+          <mat-header-cell *matHeaderCellDef class="col-detalhe">Detalhe</mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-detalhe">{{ detalheDisplay(det) }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="valor">
+          <mat-header-cell *matHeaderCellDef class="col-valor">Valor</mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-valor">{{
+            det.valor | currency: 'BRL'
+          }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <mat-header-cell *matHeaderCellDef class="col-acoes"></mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-acoes">
+            <button mat-icon-button color="warn" matTooltip="Remover" (click)="excluir(det)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="resumoColumns" />
+        <mat-row *matRowDef="let det; columns: resumoColumns" />
+      </mat-table>
+
+      <mat-paginator
+        [length]="detalhamentos.length"
+        [pageSize]="resumoPageSize"
+        [pageIndex]="resumoPageIndex"
+        [hidePageSize]="true"
+        (page)="onResumoPage($event)"
+      />
     }
   }
 
@@ -89,10 +118,9 @@
     }
 
     <mat-table [dataSource]="resultInscricao.items" class="picker-table">
-
       <ng-container matColumnDef="dt_pagamento">
         <mat-header-cell *matHeaderCellDef>Dt. Pagamento</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.dt_pagamento | date:'dd/MM/yyyy' }}</mat-cell>
+        <mat-cell *matCellDef="let row">{{ row.dt_pagamento | date: 'dd/MM/yyyy' }}</mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="nome">
@@ -112,19 +140,34 @@
 
       <ng-container matColumnDef="pagamento">
         <mat-header-cell *matHeaderCellDef>Valor Pago</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.pagamento | currency:'BRL' }}</mat-cell>
+        <mat-cell *matCellDef="let row">{{ row.pagamento | currency: 'BRL' }}</mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="observacao">
         <mat-header-cell *matHeaderCellDef class="col-observacao">Observação</mat-header-cell>
-        <mat-cell *matCellDef="let row" class="col-observacao">{{ row.observacao ?? '—' }}</mat-cell>
+        <mat-cell *matCellDef="let row" class="col-observacao">{{
+          row.observacao ?? '—'
+        }}</mat-cell>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="['dt_pagamento','nome','apelido','nome_pagador','pagamento','observacao']" />
+      <mat-header-row
+        *matHeaderRowDef="[
+          'dt_pagamento',
+          'nome',
+          'apelido',
+          'nome_pagador',
+          'pagamento',
+          'observacao',
+        ]"
+      />
       <mat-row
-        *matRowDef="let row; columns: ['dt_pagamento','nome','apelido','nome_pagador','pagamento','observacao'];"
+        *matRowDef="
+          let row;
+          columns: ['dt_pagamento', 'nome', 'apelido', 'nome_pagador', 'pagamento', 'observacao']
+        "
         class="picker-row"
-        (click)="selecionarInscricao(row)" />
+        (click)="selecionarInscricao(row)"
+      />
 
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell empty-row" colspan="6">
@@ -133,7 +176,6 @@
           }
         </td>
       </tr>
-
     </mat-table>
 
     <mat-paginator
@@ -141,20 +183,28 @@
       [pageSize]="pageSize"
       [pageIndex]="pageIndex"
       [pageSizeOptions]="[8, 16, 24]"
-      (page)="onPage($event)" />
+      (page)="onPage($event)"
+    />
   }
-
 </mat-dialog-content>
 
 <mat-dialog-actions>
   @if (!tipo) {
-    <button mat-button class="btn" (click)="fechar()">Fechar</button>
+    <button mat-stroked-button class="btn" (click)="fechar()">Fechar</button>
   }
   @if (tipo) {
-    <button mat-stroked-button class="btn" [disabled]="salvando" (click)="voltarEscolha()">Voltar</button>
+    <button mat-stroked-button class="btn" [disabled]="salvando" (click)="voltarEscolha()">
+      Voltar
+    </button>
   }
   @if (tipo === 'OFERTA' || tipo === 'OUTRO') {
-    <button mat-flat-button color="primary" class="btn" [disabled]="salvando" (click)="salvarSimples()">
+    <button
+      mat-flat-button
+      color="primary"
+      class="btn"
+      [disabled]="salvando"
+      (click)="salvarSimples()"
+    >
       @if (salvando) {
         <mat-spinner diameter="18" />
       } @else {

@@ -17,13 +17,32 @@
       <p class="detalhamentos-vazio">Nenhum detalhamento vinculado a este lançamento.</p>
     }
 
-    @for (det of detalhamentos; track det.id) {
-      <div class="detalhamento-item">
-        <div class="detalhamento-linha1">
-          <span class="detalhamento-tipo">{{ tipoLabel(det.tipo) }}</span>
-          <span class="detalhamento-nome">{{ det.detalhe_nome }}</span>
-          <span class="detalhamento-valor">{{ det.valor | currency:'BRL' }}</span>
-          <span class="detalhamento-acoes">
+    @if (!loading && detalhamentos.length > 0) {
+      <mat-table [dataSource]="pagedDetalhamentos" class="detalhamentos-table">
+
+        <ng-container matColumnDef="tipo">
+          <mat-header-cell *matHeaderCellDef>Tipo</mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-tipo">{{ tipoLabel(det.tipo) }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="detalhe">
+          <mat-header-cell *matHeaderCellDef>Detalhe</mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-detalhe">
+            <span class="detalhe-nome">{{ det.detalhe_nome }}</span>
+            @if (det.observacao_efetiva) {
+              <span class="detalhe-observacao">{{ det.observacao_efetiva }}</span>
+            }
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="valor">
+          <mat-header-cell *matHeaderCellDef class="col-valor">Valor</mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-valor">{{ det.valor | currency:'BRL' }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <mat-header-cell *matHeaderCellDef class="col-acoes"></mat-header-cell>
+          <mat-cell *matCellDef="let det" class="col-acoes">
             <button
               mat-icon-button
               matTooltip="Ir para a inscrição"
@@ -34,12 +53,19 @@
             <button mat-icon-button color="warn" matTooltip="Remover" (click)="excluir(det)">
               <mat-icon>delete</mat-icon>
             </button>
-          </span>
-        </div>
-        @if (det.observacao_efetiva) {
-          <div class="detalhamento-linha2">{{ det.observacao_efetiva }}</div>
-        }
-      </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns" />
+        <mat-row *matRowDef="let det; columns: displayedColumns" />
+      </mat-table>
+
+      <mat-paginator
+        [length]="detalhamentos.length"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [hidePageSize]="true"
+        (page)="onPage($event)" />
     }
 
   </mat-card-content>

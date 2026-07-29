@@ -1,11 +1,5 @@
 @use '../../../styles/abstracts/colors' as c;
 
-.arquivos-page {
-  padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
 .page-header {
   display: flex;
   align-items: center;
@@ -23,7 +17,7 @@
 }
 
 .search-field {
-  width: 300px;
+  width: 400px;
   min-width: 200px;
 }
 
@@ -40,7 +34,6 @@ mat-progress-bar {
 // ─── Tabela ──────────────────────────────────────────────────────────────────
 
 .arquivos-table {
-
   .mat-column-nome_arquivo {
     // tamanho livre — ocupa o espaço restante
     overflow: hidden;
@@ -75,9 +68,15 @@ mat-progress-bar {
     font-size: 0.72rem;
     font-weight: 600;
 
-    &.status-chip--sucesso     { @include c.status-chip('success'); }
-    &.status-chip--erro        { @include c.status-chip('error'); }
-    &.status-chip--processando { @include c.status-chip('warning'); }
+    &.status-chip--sucesso {
+      @include c.status-chip('success');
+    }
+    &.status-chip--erro {
+      @include c.status-chip('error');
+    }
+    &.status-chip--processando {
+      @include c.status-chip('warning');
+    }
   }
 
   // ─── Nome com ícone ──────────────────────────────────────────────────────

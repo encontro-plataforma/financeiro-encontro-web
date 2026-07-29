@@ -1,0 +1,13 @@
+mat-dialog-actions {
+  padding: 8px 24px;
+}
+
+.resumo-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: none !important; // Material limita mat-dialog-content a 65vh por padrão
+  overflow: hidden;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}

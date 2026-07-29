@@ -27,9 +27,18 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 
-  &.chip-receita  { background: #e8f5e9; color: #2e7d32; }
-  &.chip-despesa  { background: #fce4ec; color: #c62828; }
-  &.chip-forma    { background: var(--mat-sys-surface-variant); color: var(--mat-sys-on-surface-variant); }
+  &.chip-receita {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  &.chip-despesa {
+    background: #fce4ec;
+    color: #c62828;
+  }
+  &.chip-forma {
+    background: var(--mat-sys-surface-variant);
+    color: var(--mat-sys-on-surface-variant);
+  }
 }
 
 .card-header-info {
@@ -52,8 +61,12 @@
   font-weight: 700;
   white-space: nowrap;
 
-  &.valor-receita { color: #2e7d32; }
-  &.valor-despesa { color: #c62828; }
+  &.valor-receita {
+    color: #2e7d32;
+  }
+  &.valor-despesa {
+    color: #c62828;
+  }
 }
 
 .card-data,
@@ -92,12 +105,24 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 4px;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--mat-sys-surface-container-highest);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  margin: -12px 0 12px 0;
 }
 
 .detalhamentos-label {
   font-size: 0.85rem;
   color: var(--mat-sys-on-surface-variant);
+}
+
+.btn-link-detalhamento {
+  --mat-icon-button-container-shape: 4px;
+  --mat-icon-button-state-layer-size: 36px;
+  --mat-icon-button-icon-color: var(--mat-sys-on-primary);
+  background-color: var(--mat-sys-primary);
 }
 
 .btn-conciliar {

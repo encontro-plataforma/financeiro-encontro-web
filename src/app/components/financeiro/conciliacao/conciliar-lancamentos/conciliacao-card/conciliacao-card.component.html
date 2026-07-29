@@ -41,7 +41,7 @@
       @if (lancamento.tipo === TipoLancamento.RECEITA) {
         <div class="detalhamentos-row">
           <span class="detalhamentos-label">Detalhamentos ({{ lancamento.quantidade_detalhamentos }})</span>
-          <button mat-icon-button matTooltip="Vincular detalhamento" (click)="abrirDetalhamentos()">
+          <button mat-icon-button class="btn-link-detalhamento" matTooltip="Vincular detalhamento" (click)="abrirDetalhamentos()">
             <mat-icon>link</mat-icon>
           </button>
         </div>

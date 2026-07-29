@@ -49,38 +49,14 @@
     </div>
   }
 
-  @if (etapa === 'concluido') {
-    <div class="resumo-box">
-      @if (temErro) {
-        <div class="erro-box">
-          <mat-icon>error_outline</mat-icon>
-          <div>
-            <p class="erro-codigo">{{ upload?.error_code }}</p>
-            <p class="erro-mensagem">{{ upload?.error_message }}</p>
-          </div>
-        </div>
-      } @else {
-        <div class="sucesso-box">
-          <mat-icon>check_circle</mat-icon>
-          <p>Processamento concluído com sucesso.</p>
-        </div>
-
-        @if (resumo.length) {
-          <dl class="resumo-lista">
-            @for (item of resumo; track item.chave) {
-              <dt>{{ item.chave }}</dt>
-              <dd>{{ item.valor }}</dd>
-            }
-          </dl>
-        }
-      }
-    </div>
+  @if (etapa === 'concluido' && upload) {
+    <app-upload-resumo [upload]="upload" />
   }
 
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-flat-button color="primary" [disabled]="etapa === 'enviando' || etapa === 'processando'" (click)="fechar()">
+  <button mat-flat-button color="primary" class="btn" [disabled]="etapa === 'enviando' || etapa === 'processando'" (click)="fechar()">
     Fechar
   </button>
 </mat-dialog-actions>

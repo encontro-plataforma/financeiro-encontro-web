@@ -1,9 +1,15 @@
-@use '../../../../styles/abstracts/colors' as c;
+mat-dialog-actions {
+  padding: 8px 24px;
+}
 
 .upload-dialog-content {
   display: flex;
   flex-direction: column;
-  min-height: 300px;
+  height: 100%;
+  max-height: none !important; // Material limita mat-dialog-content a 65vh por padrão
+  overflow: hidden;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
 }
 
 .drop-zone {
@@ -16,7 +22,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
   user-select: none;
 
   &:hover:not(.uploading) {
@@ -38,7 +46,8 @@
   }
 }
 
-.drop-content, .processando-box {
+.drop-content,
+.processando-box {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -79,61 +88,5 @@
   opacity: 0.7;
 }
 
-// ─── Resumo final ─────────────────────────────────────────────────────────────
-
-.resumo-box {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px 0;
-}
-
-.sucesso-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 8px;
-  @include c.status-theme('success');
-
-  p { margin: 0; }
-}
-
-.erro-box {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  @include c.status-theme('error');
-
-  mat-icon { flex-shrink: 0; }
-}
-
-.erro-codigo {
-  margin: 0 0 6px;
-  font-weight: 600;
-  font-size: 0.8rem;
-}
-
-.erro-mensagem {
-  margin: 0;
-  font-size: 0.85rem;
-}
-
-.resumo-lista {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 8px 16px;
-  margin: 0;
-
-  dt {
-    color: var(--mat-sys-on-surface-variant);
-    font-size: 0.85rem;
-  }
-
-  dd {
-    margin: 0;
-    font-weight: 500;
-  }
-}
+// O resumo final (nome do arquivo, mensagem, cards de totais, tabela de erros) é
+// o app-upload-resumo compartilhado — ele já cuida do próprio flex:1/gap internamente.

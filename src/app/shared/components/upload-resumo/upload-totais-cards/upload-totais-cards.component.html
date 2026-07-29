@@ -1,0 +1,10 @@
+@if (totais.length) {
+  <div class="totais-row">
+    @for (item of totais; track item.chave) {
+      <mat-card appearance="outlined" class="totais-card">
+        <span class="totais-card-label">{{ item.chave }}</span>
+        <span class="totais-card-valor">{{ item.valor }}</span>
+      </mat-card>
+    }
+  </div>
+}

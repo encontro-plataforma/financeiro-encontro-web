@@ -1,7 +1,20 @@
-import { Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  inject,
+  Inject,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { Subscription, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -9,55 +22,60 @@ import { environment } from '../../../../environments/environment';
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ToastService } from '../toast/toast.service';
 import { UploadFileService } from '../../../services/upload-file.service';
+import { UploadResumoComponent } from '../upload-resumo/upload-resumo.component';
 import { UploadFile } from '../../../models/upload-file.model';
+import { StatusProcessamento } from '../../../models/constants/status-processamento';
 
 export interface CsvUploadDialogData {
-  titulo:   string;
+  titulo: string;
   endpoint: string;
 }
 
 type Etapa = 'selecao' | 'enviando' | 'processando' | 'concluido';
 
-interface ResumoItem {
-  chave: string;
-  valor: string;
-}
-
-const ROTULOS: Record<string, string> = {
-  inseridos:   'Inseridos',
-  atualizados: 'Atualizados',
-  ignorados:   'Ignorados',
-  mensagem:    'Mensagem',
-};
-
 const POLLING_INTERVAL_MS = 5000;
+/** Largura/altura da etapa de seleção de arquivo — independente do tamanho do resumo final. */
+const WIDTH_PADRAO = '70vw';
 
 @Component({
   selector: 'app-csv-upload-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialGlobalModule],
+  imports: [CommonModule, MaterialGlobalModule, UploadResumoComponent],
   templateUrl: './csv-upload-dialog.component.html',
   styleUrl: './csv-upload-dialog.component.scss',
 })
 export class CsvUploadDialogComponent implements OnDestroy {
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
 
   /** Abre o dialog já com o tamanho padrão (80% altura, 70% largura, centralizado). */
-  static open(dialog: MatDialog, data: CsvUploadDialogData, config?: MatDialogConfig): MatDialogRef<CsvUploadDialogComponent, boolean> {
-    return dialog.open<CsvUploadDialogComponent, CsvUploadDialogData, boolean>(CsvUploadDialogComponent, {
-      width: '70vw',
-      height: '80vh',
-      maxWidth: '70vw',
-      disableClose: true,
-      data,
-      ...config,
-    });
+  static open(
+    dialog: MatDialog,
+    data: CsvUploadDialogData,
+    config?: MatDialogConfig,
+  ): MatDialogRef<CsvUploadDialogComponent, boolean> {
+    return dialog.open<CsvUploadDialogComponent, CsvUploadDialogData, boolean>(
+      CsvUploadDialogComponent,
+      {
+        width: WIDTH_PADRAO,
+        height: '80vh',
+        maxWidth: '90vw',
+        disableClose: true,
+        data,
+        ...config,
+      },
+    );
   }
 
   etapa: Etapa = 'selecao';
-  dragOver    = false;
+  dragOver = false;
   nomeArquivo = '';
   upload: UploadFile | null = null;
+
+  // Usado só para o toast e o valor de retorno de fechar() (o corpo do resumo em si
+  // é recalculado de novo, independentemente, dentro do <app-upload-resumo>).
+  temErro = false;
 
   private pollingSub?: Subscription;
 
@@ -114,7 +132,9 @@ export class CsvUploadDialogComponent implements OnDestroy {
     }
 
     if (file.size > 3 * 1024 * 1024) {
-      this.toast.error({ message: 'Arquivo está acima do limite permitido de tamanho de dados (3 MB).' });
+      this.toast.error({
+        message: 'Arquivo está acima do limite permitido de tamanho de dados (3 MB).',
+      });
       return;
     }
 
@@ -124,53 +144,63 @@ export class CsvUploadDialogComponent implements OnDestroy {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    this.http.post<{ upload_id: number; status: string }>(
-      `${environment.API_URL}${this.data.endpoint}`,
-      formData,
-      { withCredentials: true },
-    ).subscribe({
-      next: (resposta) => {
-        this.etapa = 'processando';
-        this.iniciarPolling(resposta.upload_id);
-      },
-      error: (err) => {
-        this.etapa = 'selecao';
-        this.toast.error({ message: err?.error?.detail ?? 'Erro ao enviar o arquivo.' });
-      },
-    });
+    this.http
+      .post<{
+        upload_id: number;
+        status: string;
+      }>(`${environment.API_URL}${this.data.endpoint}`, formData, { withCredentials: true })
+      .subscribe({
+        next: (resposta) => {
+          this.etapa = 'processando';
+          this.iniciarPolling(resposta.upload_id);
+        },
+        error: (err) => {
+          this.etapa = 'selecao';
+          this.toast.error({ message: err?.error?.detail ?? 'Erro ao enviar o arquivo.' });
+        },
+      });
   }
 
   private iniciarPolling(uploadId: number): void {
-    this.pollingSub = timer(0, POLLING_INTERVAL_MS).pipe(
-      switchMap(() => this.uploadFileService.buscarPorId(uploadId)),
-    ).subscribe({
+    this.pollingSub = timer(0, POLLING_INTERVAL_MS)
+      .pipe(switchMap(() => this.uploadFileService.buscarStatusPorId(uploadId)))
+      .subscribe({
+        next: (statusResp) => {
+          if (statusResp.status === StatusProcessamento.PROCESSANDO) return;
+          this.pollingSub?.unsubscribe();
+          this.carregarResultado(uploadId);
+        },
+        error: () => {
+          this.pollingSub?.unsubscribe();
+          this.toast.error({ message: 'Erro ao consultar o status do processamento.' });
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  private carregarResultado(uploadId: number): void {
+    this.uploadFileService.buscarPorId(uploadId).subscribe({
       next: (upload) => {
-        if (upload.status === 'PROCESSANDO') return;
         this.upload = upload;
-        this.etapa  = 'concluido';
-        this.pollingSub?.unsubscribe();
+        this.etapa = 'concluido';
+
+        const { temErro, minWidth, minHeight } = UploadResumoComponent.getInfo(upload);
+        this.temErro = temErro;
+        this.dialogRef.updateSize(minWidth, minHeight);
+
+        if (temErro) {
+          this.toast.error({ message: 'Processamento concluído com erros.' });
+        } else {
+          this.toast.success({ message: 'Processamento concluído com sucesso.' });
+        }
+
+        this.cdr.detectChanges();
       },
       error: () => {
-        this.pollingSub?.unsubscribe();
-        this.toast.error({ message: 'Erro ao consultar o status do processamento.' });
+        this.toast.error({ message: 'Erro ao buscar os dados do processamento.' });
+        this.cdr.detectChanges();
       },
     });
-  }
-
-  get resumo(): ResumoItem[] {
-    if (!this.upload?.resultado_processamento) return [];
-    try {
-      const obj = JSON.parse(this.upload.resultado_processamento);
-      return Object.entries(obj)
-        .filter(([chave]) => chave !== 'detalhes_ignorados')
-        .map(([chave, valor]) => ({ chave: ROTULOS[chave] ?? chave, valor: String(valor) }));
-    } catch {
-      return [{ chave: 'Resumo', valor: this.upload.resultado_processamento }];
-    }
-  }
-
-  get temErro(): boolean {
-    return this.upload?.status === 'ERRO';
   }
 
   fechar(): void {

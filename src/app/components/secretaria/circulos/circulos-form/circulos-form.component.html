@@ -1,5 +1,4 @@
 <div class="p-6">
-
   <!-- ─── Header ───────────────────────────────────────────────────────────── -->
   <div class="flex items-center gap-3 mb-6">
     <button mat-icon-button (click)="voltar()" matTooltip="Voltar">
@@ -19,9 +18,8 @@
   <mat-card appearance="outlined">
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="salvar()" class="grid grid-cols-12 gap-4 items-start">
-
         <!-- Nome -->
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-8">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-12">
           <mat-label>Nome</mat-label>
           <input matInput formControlName="nome" placeholder="Ex: AMARELO, AZUL..." />
           @if (form.get('nome')?.hasError('required') && form.get('nome')?.touched) {
@@ -34,15 +32,13 @@
 
         <!-- Cor -->
         <div class="col-span-12 md:col-span-4 flex flex-col gap-1">
-          <label class="cor-label">Cor</label>
+          <label class="cor-label">Selecionar a Cor:</label>
           <div
             class="cor-picker"
             [style.background-color]="form.get('rgb')?.value"
             (click)="abrirSeletorCor()"
             matTooltip="Clique para escolher a cor"
-          >
-            <mat-icon>colorize</mat-icon>
-          </div>
+          ></div>
           <input
             #colorInput
             type="color"
@@ -55,10 +51,22 @@
 
         <!-- Ações -->
         <div class="col-span-12 flex justify-end gap-3 pt-2">
-          <button mat-stroked-button type="button" (click)="voltar()" [disabled]="saving" class="btn">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="voltar()"
+            [disabled]="saving"
+            class="btn"
+          >
             Cancelar
           </button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="saving || loading" class="btn btn--icon-left">
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="saving || loading"
+            class="btn btn--icon-left"
+          >
             @if (saving) {
               <mat-spinner diameter="18" class="btn__spinner" />
             } @else {
@@ -67,9 +75,7 @@
             {{ updatePage ? 'Salvar alterações' : 'Criar círculo' }}
           </button>
         </div>
-
       </form>
     </mat-card-content>
   </mat-card>
-
 </div>

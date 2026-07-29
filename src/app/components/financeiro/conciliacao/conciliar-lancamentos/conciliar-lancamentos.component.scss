@@ -1,5 +1,4 @@
 .conciliar-page {
-  padding: 24px;
   margin: 0 auto;
 }
 
@@ -23,6 +22,12 @@
   font-size: 1.4rem;
   font-weight: 600;
   color: var(--mat-sys-on-surface);
+}
+
+.filter-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .search-field {
@@ -52,13 +57,23 @@
     opacity: 0.35;
   }
 
-  h2 { margin: 0; font-size: 1.25rem; font-weight: 500; }
-  p  { margin: 0; opacity: 0.7; }
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+  p {
+    margin: 0;
+    opacity: 0.7;
+  }
 }
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  // 365px (min-width do .conciliacao-card) + 16px (margin: 8px de cada lado) = 381px de
+  // rodapé mínimo por card; abaixo de 384px o card não cabe mais na coluna e ela quebra
+  // para a linha de baixo em vez de espremer o conteúdo do card.
+  grid-template-columns: repeat(auto-fill, minmax(384px, 1fr));
   // gap: 16px;
   align-items: start;
 }
@@ -70,9 +85,9 @@
   opacity: 1;
   transition:
     max-height 350ms ease-in-out,
-    opacity    200ms ease-in-out,
-    margin     350ms ease-in-out,
-    padding    350ms ease-in-out;
+    opacity 200ms ease-in-out,
+    margin 350ms ease-in-out,
+    padding 350ms ease-in-out;
 
   &.card-leaving {
     max-height: 0;
@@ -103,5 +118,9 @@
   font-size: 0.85rem;
   opacity: 0.7;
 
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }

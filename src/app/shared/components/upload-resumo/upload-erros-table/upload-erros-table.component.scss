@@ -1,0 +1,54 @@
+@use '../../../../../styles/abstracts/colors' as c;
+
+// O host preenche o espaço restante do dialog (o pai é sempre um flex column);
+// só a tabela em si rola internamente — o paginador, quando presente, fica fixo embaixo.
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.upload-erros-table {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--mat-sys-surface-container-low);
+
+  // Tabela compacta: cabeçalho e linhas mais baixos (tokens oficiais de
+  // density/typography do mat-table) e texto menor — cabe mais conteúdo
+  // sem sobrar espaço vazio em volta do texto.
+  --mat-table-header-container-height: 36px;
+  --mat-table-row-item-container-height: 32px;
+  --mat-table-header-headline-size: 0.7rem;
+  --mat-table-header-headline-line-height: 1rem;
+  --mat-table-row-item-label-text-size: 0.75rem;
+  --mat-table-row-item-label-text-line-height: 1rem;
+}
+
+// O :host aplica overflow-y:auto na própria tabela (não há uma área de body
+// separada no CDK table), então o "congelamento" do header é via sticky — a
+// linha de header fica fixa no topo enquanto só o conteúdo (as linhas) rola.
+.upload-erros-header {
+  z-index: 2;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.col-linha {
+  min-width: 76px;
+  max-width: 76px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.col-descricao {
+  min-width: 160px;
+  flex: 1;
+}
+
+.col-erro {
+  flex: 2;
+  color: c.status-color('error', 'text');
+}
