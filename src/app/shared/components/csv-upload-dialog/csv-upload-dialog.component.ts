@@ -24,6 +24,11 @@ import { ToastService } from '../toast/toast.service';
 import { UploadFileService } from '../../../services/upload-file.service';
 import { UploadResumoComponent } from '../upload-resumo/upload-resumo.component';
 import {
+  UPLOAD_RESUMO_HEIGHT_ERRO,
+  UPLOAD_RESUMO_WIDTH,
+  UPLOAD_RESUMO_WIDTH_ERRO,
+} from '../upload-resumo/upload-resumo-sizes';
+import {
   UploadErroProcessamento,
   UploadFile,
   parseErrosProcessamento,
@@ -38,10 +43,8 @@ export interface CsvUploadDialogData {
 type Etapa = 'selecao' | 'enviando' | 'processando' | 'concluido';
 
 const POLLING_INTERVAL_MS = 5000;
+/** Largura/altura da etapa de seleção de arquivo — independente do tamanho do resumo final. */
 const WIDTH_PADRAO = '70vw';
-const WIDTH_ERRO = '80vw';
-const HEIGHT_ERRO = '90vh';
-const HEIGHT_SUCESSO = '60vh';
 
 @Component({
   selector: 'app-csv-upload-dialog',
@@ -194,10 +197,12 @@ export class CsvUploadDialogComponent implements OnDestroy {
         this.etapa = 'concluido';
 
         if (this.temErro) {
-          this.dialogRef.updateSize(WIDTH_ERRO, HEIGHT_ERRO);
+          this.dialogRef.updateSize(UPLOAD_RESUMO_WIDTH_ERRO, UPLOAD_RESUMO_HEIGHT_ERRO);
           this.toast.error({ message: 'Processamento concluído com erros.' });
         } else {
-          this.dialogRef.updateSize(WIDTH_PADRAO, HEIGHT_SUCESSO);
+          // Sem height: volta pro tamanho livre (encolhe pro conteúdo), igual ao
+          // UploadResumoDialogComponent quando não há erro.
+          this.dialogRef.updateSize(UPLOAD_RESUMO_WIDTH);
           this.toast.success({ message: 'Processamento concluído com sucesso.' });
         }
 

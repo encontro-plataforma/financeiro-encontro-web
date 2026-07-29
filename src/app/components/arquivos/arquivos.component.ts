@@ -16,6 +16,11 @@ import { UploadFileService } from '../../services/upload-file.service';
 import { UploadFile, parseErrosProcessamento } from '../../models/upload-file.model';
 import { PageTemplate } from '../../services/util/PageTemplate';
 import { UploadResumoDialogComponent } from './upload-resumo-dialog/upload-resumo-dialog.component';
+import {
+  UPLOAD_RESUMO_HEIGHT_ERRO,
+  UPLOAD_RESUMO_WIDTH,
+  UPLOAD_RESUMO_WIDTH_ERRO,
+} from '../../shared/components/upload-resumo/upload-resumo-sizes';
 
 @Component({
   selector: 'app-arquivos',
@@ -110,11 +115,11 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
   verResumo(arquivo: UploadFile): void {
     const comErro = this.temErros(arquivo);
     this.dialog.open(UploadResumoDialogComponent, {
-      // Sem erro: largo o bastante pra caber os 4 cards de totais numa linha só,
-      // altura livre (encolhe pro tamanho do conteúdo). Com erro: bem maior nos
-      // dois eixos pra caber a tabela de erros embaixo.
-      width: comErro ? '80vw' : '680px',
-      height: comErro ? '90vh' : undefined,
+      // Mesmas constantes usadas pelo CsvUploadDialogComponent ao mostrar o
+      // resumo — os dois dialogs exibem o mesmo <app-upload-resumo>, então devem
+      // se comportar igual quanto a tamanho.
+      width: comErro ? UPLOAD_RESUMO_WIDTH_ERRO : UPLOAD_RESUMO_WIDTH,
+      height: comErro ? UPLOAD_RESUMO_HEIGHT_ERRO : undefined,
       data: { arquivo },
     });
   }
