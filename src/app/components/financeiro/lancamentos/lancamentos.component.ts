@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup }               from '@angular/forms';
 import { Router }                               from '@angular/router';
 import { MatDialog }                            from '@angular/material/dialog';
 import { PageEvent }                            from '@angular/material/paginator';
+import { Subscription }                         from 'rxjs';
 import { debounceTime }                         from 'rxjs/operators';
 import moment                                   from 'moment';
 
@@ -55,6 +56,8 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
   pageIndex  = 0;
   pageSize   = 10;
 
+  private loadSub?: Subscription;
+
   finalidades: Finalidade[] = [];
   tipoOpcoes   = TipoLancamento.optionsAll;
   statusOpcoes = StatusLancamento.optionsAll;
@@ -100,16 +103,20 @@ export class LancamentosComponent implements OnInit, AfterViewInit {
   load(): void {
     this.loading = true;
     const filters = this.buildFilter();
-    
-    this.lancamentoService.list(filters, { skip: this.pageIndex * this.pageSize, limit: this.pageSize })
+
+    // Cancela a requisição anterior ainda em andamento — sem isso, uma resposta
+    // atrasada de uma busca antiga (ex: filtro "J") pode sobrescrever o resultado
+    // de uma busca mais recente (ex: filtro "Jo") que respondeu mais rápido.
+    this.loadSub?.unsubscribe();
+    this.loadSub = this.lancamentoService.list(filters, { skip: this.pageIndex * this.pageSize, limit: this.pageSize })
     .subscribe({
-      next: (data) => { 
-        this.result = data; 
+      next: (data) => {
+        this.result = data;
         this.loading = false;
         this.cdr.detectChanges();
       },
-      error: () => { 
-        this.loading = false; 
+      error: () => {
+        this.loading = false;
         this.cdr.detectChanges();
       }
     });
