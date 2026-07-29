@@ -11,20 +11,29 @@
     max-width: 64px;
   }
 
-  .mat-column-nome {
+  .mat-column-acoes {
+    max-width: 100px;
+    justify-content: flex-end;
+  }
+
+  .col-center {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .detalhes-cell {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+  }
+
+  .detalhes-apelido {
     font-weight: 500;
   }
 
-  .mat-column-auditado {
-    max-width: 100px;
-  }
-
-  .clickable-row {
-    cursor: pointer;
-
-    &:hover {
-      background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
-    }
+  .detalhes-sub {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
   }
 
   .empty-row {

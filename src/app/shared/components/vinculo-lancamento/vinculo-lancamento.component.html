@@ -11,8 +11,15 @@
             &nbsp;·&nbsp;
             {{ lancamentoVinculado.valor | currency:'BRL' }}
           </p>
+          @if (lancamentoVinculado.observacao) {
+            <p class="vinculo-observacao">{{ lancamentoVinculado.observacao }}</p>
+          }
         </div>
         <div class="vinculo-acoes">
+          <button mat-stroked-button [disabled]="processando" (click)="verLancamento()">
+            <mat-icon>open_in_new</mat-icon>
+            Ver Lançamento
+          </button>
           <button mat-stroked-button [disabled]="processando" (click)="trocar()">
             <mat-icon>swap_horiz</mat-icon>
             Trocar

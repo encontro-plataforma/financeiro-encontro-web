@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
@@ -29,11 +30,20 @@ export class VinculoLancamentoComponent {
   @Output() vinculado = new EventEmitter<void>();
 
   private dialog              = inject(MatDialog);
+  private router               = inject(Router);
   private detalhamentoService = inject(DetalhamentoService);
   private toast                = inject(ToastService);
   private errorHandler         = inject(ErrorHandlerService);
 
   processando = false;
+
+  verLancamento(): void {
+    if (!this.lancamentoVinculado) return;
+
+    this.router.navigate(['/lancamentos', this.lancamentoVinculado.id, 'editar'], {
+      state: { returnUrl: this.router.url },
+    });
+  }
 
   ligar(): void {
     if (!this.valorPagamento) {

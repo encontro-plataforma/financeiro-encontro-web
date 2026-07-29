@@ -27,6 +27,7 @@ export interface Encontreiro {
   criado_em:             string;
   auditado:              boolean;
   detalhamento_id:       number | null;
+  lancamento_vinculado_id: number | null;
   lancamento_vinculado:  Lancamento | null;
 }
 

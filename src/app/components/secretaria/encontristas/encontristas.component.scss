@@ -11,29 +11,38 @@
     max-width: 64px;
   }
 
-  .mat-column-nome {
-    font-weight: 500;
-  }
-
   .mat-column-carta,
   .mat-column-album {
     max-width: 70px;
   }
 
-  .mat-column-auditado {
+  .mat-column-acoes {
     max-width: 100px;
+    justify-content: flex-end;
+  }
+
+  .col-center {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .detalhes-cell {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+  }
+
+  .detalhes-apelido {
+    font-weight: 500;
+  }
+
+  .detalhes-sub {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
   }
 
   .icon-sim { color: c.status-color('success', 'accent'); }
   .icon-nao { color: var(--mat-sys-on-surface-variant); opacity: 0.4; }
-
-  .clickable-row {
-    cursor: pointer;
-
-    &:hover {
-      background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
-    }
-  }
 
   .empty-row {
     display: flex;

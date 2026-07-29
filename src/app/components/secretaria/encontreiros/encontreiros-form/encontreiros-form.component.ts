@@ -105,7 +105,12 @@ export class EncontreirosFormComponent implements OnInit {
   }
 
   voltar(): void {
-    this.router.navigate(['/secretaria/encontreiros']);
+    const returnUrl: string | undefined = window.history.state?.returnUrl;
+    if (returnUrl) {
+      this.router.navigateByUrl(returnUrl);
+    } else {
+      this.router.navigate(['/secretaria/encontreiros']);
+    }
   }
 
   private buildPayload() {

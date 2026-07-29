@@ -18,8 +18,8 @@ import {
   MaterialFormsModule,
 } from '../../../shared/modules/material.imports.module';
 import { MultiSelectComponent, MultiSelectItem } from '../../../shared/components/multi-select/multi-select.component';
-import { AuditadoBadgeComponent } from '../../../shared/components/auditado-badge/auditado-badge.component';
 import { CsvUploadDialogComponent } from '../../../shared/components/csv-upload-dialog/csv-upload-dialog.component';
+import { TelefoneBrPipe } from '../../../shared/pipes/telefone-br.pipe';
 import { ErrorHandlerService } from '../../../shared/services/error-handler.service';
 import { EncontristaService } from '../../../services/encontrista.service';
 import { CirculoService } from '../../../services/circulo.service';
@@ -38,7 +38,7 @@ const SEM_CIRCULO_ID = 0;
     MaterialGlobalModule,
     MaterialFormsModule,
     MultiSelectComponent,
-    AuditadoBadgeComponent,
+    TelefoneBrPipe,
   ],
   templateUrl: './encontristas.component.html',
   styleUrl: './encontristas.component.scss',
@@ -71,8 +71,8 @@ export class EncontristasComponent implements OnInit, AfterViewInit {
   ];
 
   displayedColumns = [
-    'id', 'dt_entrega', 'nome', 'apelido', 'telefone', 'circulo', 'idade',
-    'padrinho', 'carta', 'album', 'camisa', 'auditado',
+    'id', 'dt_entrega', 'detalhes', 'circulo', 'idade',
+    'padrinho', 'carta', 'album', 'camisa', 'acoes',
   ];
 
   private searchSubject = new Subject<string>();
@@ -158,6 +158,12 @@ export class EncontristasComponent implements OnInit, AfterViewInit {
 
   editar(id: number): void {
     this.router.navigate(['/secretaria/encontristas', id, 'editar']);
+  }
+
+  verLancamento(lancamentoId: number): void {
+    this.router.navigate(['/lancamentos', lancamentoId, 'editar'], {
+      state: { returnUrl: this.router.url },
+    });
   }
 
   enviarCsv(): void {
