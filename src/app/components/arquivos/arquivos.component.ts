@@ -16,11 +16,7 @@ import { UploadFileService } from '../../services/upload-file.service';
 import { UploadFile, parseErrosProcessamento } from '../../models/upload-file.model';
 import { PageTemplate } from '../../services/util/PageTemplate';
 import { UploadResumoDialogComponent } from './upload-resumo-dialog/upload-resumo-dialog.component';
-import {
-  UPLOAD_RESUMO_HEIGHT_ERRO,
-  UPLOAD_RESUMO_WIDTH,
-  UPLOAD_RESUMO_WIDTH_ERRO,
-} from '../../shared/components/upload-resumo/upload-resumo-sizes';
+import { getUploadResumoInfo } from '../../shared/components/upload-resumo/upload-resumo.component';
 
 @Component({
   selector: 'app-arquivos',
@@ -113,13 +109,12 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
   }
 
   verResumo(arquivo: UploadFile): void {
-    const comErro = this.temErros(arquivo);
+    const { dialogWidth, dialogHeight } = getUploadResumoInfo(arquivo);
     this.dialog.open(UploadResumoDialogComponent, {
-      // Mesmas constantes usadas pelo CsvUploadDialogComponent ao mostrar o
-      // resumo — os dois dialogs exibem o mesmo <app-upload-resumo>, então devem
-      // se comportar igual quanto a tamanho.
-      width: comErro ? UPLOAD_RESUMO_WIDTH_ERRO : UPLOAD_RESUMO_WIDTH,
-      height: comErro ? UPLOAD_RESUMO_HEIGHT_ERRO : undefined,
+      // Mesma lógica de tamanho usada pelo CsvUploadDialogComponent — os dois
+      // dialogs exibem o mesmo <app-upload-resumo>, então devem se comportar igual.
+      width: dialogWidth,
+      height: dialogHeight,
       data: { arquivo },
     });
   }

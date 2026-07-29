@@ -13,6 +13,34 @@ import {
   parseResumoProcessamento,
 } from '../../../models/upload-file.model';
 
+// Tamanho do dialog (CsvUploadDialogComponent ou UploadResumoDialogComponent) quando
+// exibindo este componente. Não é exportado: quem abre o dialog não escolhe o
+// tamanho, só chama getUploadResumoInfo(upload) e usa o que vier de volta — assim os
+// dois dialogs se comportam sempre igual, sem cada tela decidir por conta própria.
+const WIDTH = '680px';
+const WIDTH_ERRO = '80vw';
+const HEIGHT_ERRO = '90vh';
+
+export interface UploadResumoInfo {
+  temErro: boolean;
+  dialogWidth: string;
+  dialogHeight?: string;
+}
+
+/**
+ * A partir do UploadFile, diz se o resumo tem erros e qual largura/altura o dialog
+ * que for exibi-lo deve usar. Sem erro: largo o bastante para os cards de totais
+ * caberem numa linha só, altura livre (encolhe para o conteúdo). Com erro: bem maior
+ * nos dois eixos, para caber a tabela de erros embaixo.
+ */
+export function getUploadResumoInfo(upload: UploadFile): UploadResumoInfo {
+  const temErro = upload.status === 'ERRO' || parseErrosProcessamento(upload.resultado_processamento).length > 0;
+
+  return temErro
+    ? { temErro, dialogWidth: WIDTH_ERRO, dialogHeight: HEIGHT_ERRO }
+    : { temErro, dialogWidth: WIDTH };
+}
+
 /**
  * Corpo visual do resumo de um upload processado (nome do arquivo, mensagem em
  * destaque, cards de totais e tabela de erros quando houver). Usado tanto pelo

@@ -22,17 +22,8 @@ import { environment } from '../../../../environments/environment';
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ToastService } from '../toast/toast.service';
 import { UploadFileService } from '../../../services/upload-file.service';
-import { UploadResumoComponent } from '../upload-resumo/upload-resumo.component';
-import {
-  UPLOAD_RESUMO_HEIGHT_ERRO,
-  UPLOAD_RESUMO_WIDTH,
-  UPLOAD_RESUMO_WIDTH_ERRO,
-} from '../upload-resumo/upload-resumo-sizes';
-import {
-  UploadErroProcessamento,
-  UploadFile,
-  parseErrosProcessamento,
-} from '../../../models/upload-file.model';
+import { UploadResumoComponent, getUploadResumoInfo } from '../upload-resumo/upload-resumo.component';
+import { UploadFile } from '../../../models/upload-file.model';
 import { StatusProcessamento } from '../../../models/constants/status-processamento';
 
 export interface CsvUploadDialogData {
@@ -82,9 +73,8 @@ export class CsvUploadDialogComponent implements OnDestroy {
   nomeArquivo = '';
   upload: UploadFile | null = null;
 
-  // Usados só para decidir o resize do dialog e o toast (o corpo do resumo em si é
-  // recalculado de novo, independentemente, dentro do <app-upload-resumo>).
-  errosDetalhados: UploadErroProcessamento[] = [];
+  // Usado só para o toast e o valor de retorno de fechar() (o corpo do resumo em si
+  // é recalculado de novo, independentemente, dentro do <app-upload-resumo>).
   temErro = false;
 
   private pollingSub?: Subscription;
@@ -192,17 +182,15 @@ export class CsvUploadDialogComponent implements OnDestroy {
     this.uploadFileService.buscarPorId(uploadId).subscribe({
       next: (upload) => {
         this.upload = upload;
-        this.errosDetalhados = parseErrosProcessamento(upload.resultado_processamento);
-        this.temErro = upload.status === 'ERRO' || this.errosDetalhados.length > 0;
         this.etapa = 'concluido';
 
-        if (this.temErro) {
-          this.dialogRef.updateSize(UPLOAD_RESUMO_WIDTH_ERRO, UPLOAD_RESUMO_HEIGHT_ERRO);
+        const { temErro, dialogWidth, dialogHeight } = getUploadResumoInfo(upload);
+        this.temErro = temErro;
+        this.dialogRef.updateSize(dialogWidth, dialogHeight);
+
+        if (temErro) {
           this.toast.error({ message: 'Processamento concluído com erros.' });
         } else {
-          // Sem height: volta pro tamanho livre (encolhe pro conteúdo), igual ao
-          // UploadResumoDialogComponent quando não há erro.
-          this.dialogRef.updateSize(UPLOAD_RESUMO_WIDTH);
           this.toast.success({ message: 'Processamento concluído com sucesso.' });
         }
 
