@@ -1,5 +1,3 @@
-@use '../../../../styles/abstracts/colors' as c;
-
 mat-dialog-actions {
   padding: 8px 24px;
 }
@@ -91,49 +89,5 @@ mat-dialog-actions {
   opacity: 0.7;
 }
 
-// ─── Resumo final ─────────────────────────────────────────────────────────────
-
-.resumo-box {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 4px 0;
-}
-
-// A tabela de erros (app-upload-erros-table) é a única parte deste layout que deve
-// crescer para ocupar o espaço restante e rolar internamente — os demais blocos
-// (nome do arquivo, cards de totais, erro-box) mantêm o tamanho natural.
-.arquivo-nome-field,
-.erro-box,
-app-upload-totais-cards {
-  flex-shrink: 0;
-}
-
-.arquivo-nome-field {
-  width: 100%;
-}
-
-.erro-box {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  @include c.status-theme('error');
-
-  mat-icon {
-    flex-shrink: 0;
-  }
-}
-
-.erro-codigo {
-  margin: 0 0 6px;
-  font-weight: 600;
-  font-size: 0.8rem;
-}
-
-.erro-mensagem {
-  margin: 0;
-  font-size: 0.85rem;
-}
+// O resumo final (nome do arquivo, mensagem, cards de totais, tabela de erros) é
+// o app-upload-resumo compartilhado — ele já cuida do próprio flex:1/gap internamente.

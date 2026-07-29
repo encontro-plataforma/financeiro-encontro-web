@@ -1,35 +1,7 @@
 <h2 mat-dialog-title>Resumo do processamento</h2>
 
 <mat-dialog-content class="resumo-content">
-  <mat-form-field appearance="outline" class="arquivo-nome-field no-hint">
-    <mat-label>Nome do Arquivo</mat-label>
-    <input matInput [value]="arquivo.nome_arquivo" readonly />
-  </mat-form-field>
-
-  @if (mensagem) {
-    <div class="mensagem-destaque" [class.mensagem-destaque--erro]="temErro" [class.mensagem-destaque--sucesso]="!temErro">
-      <mat-icon>{{ temErro ? 'error_outline' : 'check_circle' }}</mat-icon>
-      <p>{{ mensagem }}</p>
-    </div>
-  }
-
-  @if (temErro && arquivo.error_code) {
-    <div class="erro-box">
-      <mat-icon>error_outline</mat-icon>
-      <div>
-        <p class="erro-codigo">{{ arquivo.error_code }}</p>
-        <textarea class="erro-mensagem" readonly rows="6">{{ arquivo.error_message }}</textarea>
-      </div>
-    </div>
-  }
-
-  <app-upload-totais-cards [totais]="resumo" />
-
-  @if (temErro) {
-    <app-upload-erros-table [erros]="errosDetalhados" />
-  } @else if (!mensagem && !resumo.length) {
-    <p class="sem-resumo">Ainda não há um resumo disponível para este arquivo.</p>
-  }
+  <app-upload-resumo [upload]="arquivo" />
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">

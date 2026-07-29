@@ -49,29 +49,8 @@
     </div>
   }
 
-  @if (etapa === 'concluido') {
-    <div class="resumo-box">
-      <mat-form-field appearance="outline" class="arquivo-nome-field no-hint">
-        <mat-label>Nome do Arquivo</mat-label>
-        <input matInput [value]="upload?.nome_arquivo" readonly />
-      </mat-form-field>
-
-      @if (temErro && upload?.error_code) {
-        <div class="erro-box">
-          <mat-icon>error_outline</mat-icon>
-          <div>
-            <p class="erro-codigo">{{ upload?.error_code }}</p>
-            <p class="erro-mensagem">{{ upload?.error_message }}</p>
-          </div>
-        </div>
-      }
-
-      <app-upload-totais-cards [totais]="resumo" />
-
-      @if (temErro) {
-        <app-upload-erros-table [erros]="errosDetalhados" />
-      }
-    </div>
+  @if (etapa === 'concluido' && upload) {
+    <app-upload-resumo [upload]="upload" />
   }
 
 </mat-dialog-content>

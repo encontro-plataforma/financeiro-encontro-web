@@ -22,14 +22,11 @@ import { environment } from '../../../../environments/environment';
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ToastService } from '../toast/toast.service';
 import { UploadFileService } from '../../../services/upload-file.service';
-import { UploadErrosTableComponent } from '../upload-erros-table/upload-erros-table.component';
-import { UploadTotaisCardsComponent } from '../upload-totais-cards/upload-totais-cards.component';
+import { UploadResumoComponent } from '../upload-resumo/upload-resumo.component';
 import {
   UploadErroProcessamento,
   UploadFile,
-  UploadResumoItem,
   parseErrosProcessamento,
-  parseResumoProcessamento,
 } from '../../../models/upload-file.model';
 import { StatusProcessamento } from '../../../models/constants/status-processamento';
 
@@ -49,7 +46,7 @@ const HEIGHT_SUCESSO = '60vh';
 @Component({
   selector: 'app-csv-upload-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialGlobalModule, UploadErrosTableComponent, UploadTotaisCardsComponent],
+  imports: [CommonModule, MaterialGlobalModule, UploadResumoComponent],
   templateUrl: './csv-upload-dialog.component.html',
   styleUrl: './csv-upload-dialog.component.scss',
 })
@@ -82,10 +79,8 @@ export class CsvUploadDialogComponent implements OnDestroy {
   nomeArquivo = '';
   upload: UploadFile | null = null;
 
-  // Calculados uma única vez ao carregar o resultado (não getters): recalculá-los a cada
-  // ciclo de change detection devolveria um array novo a cada vez e resetaria a paginação
-  // da tabela de erros (o [erros] do filho dispararia ngOnChanges a cada CD).
-  resumo: UploadResumoItem[] = [];
+  // Usados só para decidir o resize do dialog e o toast (o corpo do resumo em si é
+  // recalculado de novo, independentemente, dentro do <app-upload-resumo>).
   errosDetalhados: UploadErroProcessamento[] = [];
   temErro = false;
 
@@ -194,7 +189,6 @@ export class CsvUploadDialogComponent implements OnDestroy {
     this.uploadFileService.buscarPorId(uploadId).subscribe({
       next: (upload) => {
         this.upload = upload;
-        this.resumo = parseResumoProcessamento(upload.resultado_processamento);
         this.errosDetalhados = parseErrosProcessamento(upload.resultado_processamento);
         this.temErro = upload.status === 'ERRO' || this.errosDetalhados.length > 0;
         this.etapa = 'concluido';
