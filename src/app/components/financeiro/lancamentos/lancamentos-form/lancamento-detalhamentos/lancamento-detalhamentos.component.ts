@@ -10,6 +10,7 @@ import { ToastService } from '../../../../../shared/components/toast/toast.servi
 import { ErrorHandlerService } from '../../../../../shared/services/error-handler.service';
 import { DetalhamentoService } from '../../../../../services/detalhamento.service';
 import { Detalhamento } from '../../../../../models/detalhamento.model';
+import { Lancamento } from '../../../../../models/lancamento.model';
 import {
   DetalhamentoPickerDialogComponent,
   DetalhamentoPickerDialogData,
@@ -36,6 +37,7 @@ const LABEL_POR_TIPO: Record<string, string> = {
 })
 export class LancamentoDetalhamentosComponent implements OnChanges {
   @Input() lancamentoId!: number;
+  @Input() lancamento?: Lancamento | null;
 
   private detalhamentoService = inject(DetalhamentoService);
   private dialog                = inject(MatDialog);
@@ -87,7 +89,7 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
       {
         width: '800px',
         maxWidth: '95vw',
-        data: { lancamentoId: this.lancamentoId },
+        data: { lancamentoId: this.lancamentoId, lancamento: this.lancamento },
       },
     ).afterClosed().subscribe((criado) => {
       if (criado) this.load();

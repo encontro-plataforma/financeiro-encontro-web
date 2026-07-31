@@ -1,5 +1,24 @@
 # Histórico de Versões
 
+## [0.2.3] — 2026-07-31
+
+### Adicionado
+- Dialog de vínculo de inscrição: novo campo "Buscar por nome do pagador" ao lado de "Buscar por nome ou
+  apelido" (usa o novo filtro `nome_pagador` da API)
+- Dialog de vínculo de inscrição: card de referência do lançamento sendo detalhado — descrição em destaque,
+  data de pagamento + observação, e "Ainda Falta Vincular o Valor de R$ X" recalculado a cada vínculo criado
+
+### Alterado
+- Dialog de vínculo de inscrição: tabela de inscrições ganhou header fixo (sticky) com rolagem própria (até
+  50% da altura da tela), fonte menor, e colunas Dt. Pagamento/Apelido/Valor Pago mais estreitas (data
+  centralizada, valor à direita sem "R$")
+- Dialog de vínculo de inscrição: título passa a mostrar "Selecionando detalhamento para Inscrição de
+  Encontreiro/Encontrista" quando esse passo está ativo, no lugar do texto fixo "Incluir detalhamento"
+
+### Corrigido
+- `EncontreirosFormComponent`/`EncontristasFormComponent`: faltava importar `MaterialDatepickerModule` — o
+  datepicker do formulário quebrava com "No provider found for DateAdapter" ao entrar na tela de detalhe
+
 ## [0.2.2] — 2026-07-26
 
 ### Corrigido
