@@ -3,7 +3,20 @@
 
     <div class="detalhamentos-header">
       <h3 class="detalhamentos-titulo">Detalhamentos</h3>
-      <button mat-flat-button color="primary" class="btn btn--icon-left" (click)="incluir()">
+      <button
+        mat-flat-button
+        color="primary"
+        class="btn btn--icon-left"
+        [disabled]="!podeIncluir"
+        [matTooltip]="
+          podeIncluir
+            ? ''
+            : lancamento?.status === 'CONCILIADO'
+              ? 'Lançamento conciliado não pode receber novos detalhamentos. Desconcilie primeiro.'
+              : 'Lançamentos de despesa não podem ter detalhamentos vinculados.'
+        "
+        (click)="incluir()"
+      >
         <mat-icon>add</mat-icon>
         Incluir
       </button>
