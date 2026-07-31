@@ -1,6 +1,22 @@
-<h2 mat-dialog-title>Incluir detalhamento</h2>
+<h2 mat-dialog-title>{{ tituloDialog }}</h2>
 @if (subtitulo) {
   <p class="picker-subtitulo">{{ subtitulo }}</p>
+}
+
+@if (data.lancamento) {
+  <div class="lancamento-referencia">
+    <p class="lancamento-referencia__nome">{{ data.lancamento.descricao }}</p>
+    <p class="lancamento-referencia__linha2">
+      <span class="lancamento-referencia__obs"
+        >{{ data.lancamento.data_pagamento | date: 'dd/MM/yyyy' }} -
+        {{ data.lancamento.observacao || '—' }}</span
+      >
+      <span class="lancamento-referencia__resto"
+        >Ainda Falta Vincular o Valor de R$
+        {{ restanteVincular | number: '1.2-2' : 'pt-BR' }}</span
+      >
+    </p>
+  </div>
 }
 
 <mat-dialog-content class="picker-content" [class.picker-content--com-tipo]="tipo">
@@ -107,76 +123,100 @@
   }
 
   @if (tipo === 'INSCRICAO_ENCONTREIRO' || tipo === 'INSCRICAO_ENCONTRISTA') {
-    <mat-form-field appearance="outline" floatLabel="always" class="w-full">
-      <mat-label>Buscar por nome ou apelido</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput [(ngModel)]="searchInscricao" (ngModelChange)="onSearchInscricaoChange()" />
-    </mat-form-field>
+    <div class="search-row">
+      <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+        <mat-label>Buscar por nome ou apelido</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [(ngModel)]="searchInscricao"
+          (ngModelChange)="onSearchInscricaoChange()"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+        <mat-label>Buscar por nome do pagador</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [(ngModel)]="searchNomePagador"
+          (ngModelChange)="onSearchInscricaoChange()"
+        />
+      </mat-form-field>
+    </div>
 
     @if (loading) {
       <mat-progress-bar mode="indeterminate" />
     }
 
-    <mat-table [dataSource]="resultInscricao.items" class="picker-table">
-      <ng-container matColumnDef="dt_pagamento">
-        <mat-header-cell *matHeaderCellDef>Dt. Pagamento</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.dt_pagamento | date: 'dd/MM/yyyy' }}</mat-cell>
-      </ng-container>
+    <div class="picker-table-wrapper">
+      <mat-table [dataSource]="resultInscricao.items" class="picker-table">
+        <ng-container matColumnDef="dt_pagamento">
+          <mat-header-cell *matHeaderCellDef class="col-dt-pagamento"
+            >Dt. Pagamento</mat-header-cell
+          >
+          <mat-cell *matCellDef="let row" class="col-dt-pagamento">{{
+            row.dt_pagamento | date: 'dd/MM/yyyy'
+          }}</mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="nome">
-        <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.nome }}</mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="nome">
+          <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.nome }}</mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="apelido">
-        <mat-header-cell *matHeaderCellDef>Apelido</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.apelido ?? '—' }}</mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="apelido">
+          <mat-header-cell *matHeaderCellDef class="col-apelido">Apelido</mat-header-cell>
+          <mat-cell *matCellDef="let row" class="col-apelido">{{ row.apelido ?? '—' }}</mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="nome_pagador">
-        <mat-header-cell *matHeaderCellDef>Nome do Pagador</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.nome_pagador ?? '—' }}</mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="nome_pagador">
+          <mat-header-cell *matHeaderCellDef>Nome do Pagador</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.nome_pagador ?? '—' }}</mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="pagamento">
-        <mat-header-cell *matHeaderCellDef>Valor Pago</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.pagamento | currency: 'BRL' }}</mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="pagamento">
+          <mat-header-cell *matHeaderCellDef class="col-pagamento">Valor Pago</mat-header-cell>
+          <mat-cell *matCellDef="let row" class="col-pagamento">{{
+            row.pagamento | number: '1.2-2' : 'pt-BR'
+          }}</mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="observacao">
-        <mat-header-cell *matHeaderCellDef class="col-observacao">Observação</mat-header-cell>
-        <mat-cell *matCellDef="let row" class="col-observacao">{{
-          row.observacao ?? '—'
-        }}</mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="observacao">
+          <mat-header-cell *matHeaderCellDef class="col-observacao">Observação</mat-header-cell>
+          <mat-cell *matCellDef="let row" class="col-observacao">{{
+            row.observacao ?? '—'
+          }}</mat-cell>
+        </ng-container>
 
-      <mat-header-row
-        *matHeaderRowDef="[
-          'dt_pagamento',
-          'nome',
-          'apelido',
-          'nome_pagador',
-          'pagamento',
-          'observacao',
-        ]"
-      />
-      <mat-row
-        *matRowDef="
-          let row;
-          columns: ['dt_pagamento', 'nome', 'apelido', 'nome_pagador', 'pagamento', 'observacao']
-        "
-        class="picker-row"
-        (click)="selecionarInscricao(row)"
-      />
+        <mat-header-row
+          *matHeaderRowDef="[
+            'dt_pagamento',
+            'nome',
+            'apelido',
+            'nome_pagador',
+            'pagamento',
+            'observacao',
+          ]"
+        />
+        <mat-row
+          *matRowDef="
+            let row;
+            columns: ['dt_pagamento', 'nome', 'apelido', 'nome_pagador', 'pagamento', 'observacao']
+          "
+          class="picker-row"
+          (click)="selecionarInscricao(row)"
+        />
 
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell empty-row" colspan="6">
-          @if (!loading) {
-            <span>Nenhuma inscrição pendente de auditoria encontrada</span>
-          }
-        </td>
-      </tr>
-    </mat-table>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-row" colspan="6">
+            @if (!loading) {
+              <span>Nenhuma inscrição pendente de auditoria encontrada</span>
+            }
+          </td>
+        </tr>
+      </mat-table>
+    </div>
 
     <mat-paginator
       [length]="resultInscricao.total"

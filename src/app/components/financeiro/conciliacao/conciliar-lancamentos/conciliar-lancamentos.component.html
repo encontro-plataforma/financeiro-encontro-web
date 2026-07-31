@@ -5,7 +5,12 @@
       <button mat-icon-button (click)="voltar()" matTooltip="Voltar aos Lançamentos">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <h1 class="page-title">Conciliar Lançamentos</h1>
+      <h1 class="page-title">
+        Conciliar Lançamentos
+        @if (!loading) {
+          <span class="page-title__total">({{ totalPendente }})</span>
+        }
+      </h1>
     </div>
 
     <button

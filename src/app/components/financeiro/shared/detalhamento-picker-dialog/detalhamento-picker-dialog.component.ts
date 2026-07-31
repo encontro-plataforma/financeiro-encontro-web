@@ -18,9 +18,11 @@ import { EncontreiroService } from '../../../../services/encontreiro.service';
 import { EncontristaService } from '../../../../services/encontrista.service';
 import { PageTemplate } from '../../../../services/util/PageTemplate';
 import { Detalhamento } from '../../../../models/detalhamento.model';
+import { Lancamento } from '../../../../models/lancamento.model';
 
 export interface DetalhamentoPickerDialogData {
   lancamentoId: number;
+  lancamento?: Lancamento | null;
 }
 
 type TipoEscolha = 'OFERTA' | 'OUTRO' | 'INSCRICAO_ENCONTREIRO' | 'INSCRICAO_ENCONTRISTA';
@@ -78,6 +80,7 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
   resultInscricao: PageTemplate<PickerRow> = new PageTemplate<PickerRow>();
   loading = false;
   searchInscricao = '';
+  searchNomePagador = '';
   pageIndex = 0;
   pageSize = 8;
 
@@ -94,8 +97,22 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
     this.carregarLista();
   }
 
+  get tituloDialog(): string {
+    if (this.tipo && this.isInscricao(this.tipo)) {
+      return `Selecionando detalhamento para ${LABEL_POR_TIPO[this.tipo]}`;
+    }
+    return 'Incluir detalhamento';
+  }
+
   get subtitulo(): string {
-    return this.tipo ? `Selecionando detalhamento para ${LABEL_POR_TIPO[this.tipo]}` : '';
+    if (!this.tipo || this.isInscricao(this.tipo)) return '';
+    return `Selecionando detalhamento para ${LABEL_POR_TIPO[this.tipo]}`;
+  }
+
+  get restanteVincular(): number {
+    if (!this.data.lancamento) return 0;
+    const somaAtual = this.detalhamentos.reduce((acc, det) => acc + (det.valor ?? 0), 0);
+    return this.data.lancamento.valor - somaAtual;
   }
 
   private carregarLista(): void {
@@ -140,6 +157,7 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
     if (tipo === 'INSCRICAO_ENCONTREIRO' || tipo === 'INSCRICAO_ENCONTRISTA') {
       this.pageIndex = 0;
       this.searchInscricao = '';
+      this.searchNomePagador = '';
       this.dialogRef.updateSize('60vw');
       this.loadInscricoes();
     } else {
@@ -153,7 +171,7 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
   }
 
   onSearchInscricaoChange(): void {
-    this.searchSubject.next(this.searchInscricao);
+    this.searchSubject.next(`${this.searchInscricao}|${this.searchNomePagador}`);
   }
 
   onPage(event: PageEvent): void {
@@ -167,6 +185,7 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
 
     const filtro = {
       ...(this.searchInscricao ? { nome_ou_apelido: this.searchInscricao } : {}),
+      ...(this.searchNomePagador ? { nome_pagador: this.searchNomePagador } : {}),
       auditado: false,
     };
     const pagination = {

@@ -22,6 +22,12 @@
   font-size: 1.4rem;
   font-weight: 600;
   color: var(--mat-sys-on-surface);
+
+  &__total {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--mat-sys-on-surface-variant);
+  }
 }
 
 .filter-line {

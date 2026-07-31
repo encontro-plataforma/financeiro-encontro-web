@@ -56,6 +56,7 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
 
   items: CardItem[]     = [];
   finalidades: Finalidade[] = [];
+  totalPendente = 0;
   loading     = false;
   loadingMore = false;
   allLoaded   = false;
@@ -149,6 +150,9 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (page) => {
           const newItems: CardItem[] = page.items.map(l => ({ ...l, _leaving: false }));
+          if (excludeIds.length === 0) {
+            this.totalPendente = page.total;
+          }
           this.items       = [...this.items, ...newItems];
           this.allLoaded   = page.total < PAGE_SIZE;
           this.loading     = false;
@@ -165,6 +169,7 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
 
   onConciliado(item: CardItem): void {
     item._leaving = true;
+    this.totalPendente = Math.max(0, this.totalPendente - 1);
     this.cdr.detectChanges();
 
     setTimeout(() => {
