@@ -64,6 +64,7 @@
         <mat-progress-bar mode="indeterminate" />
       }
 
+      <div class="table-scroll">
       <mat-table [dataSource]="result.items" class="encontristas-table">
 
         <ng-container matColumnDef="id">
@@ -127,18 +128,20 @@
         <ng-container matColumnDef="acoes">
           <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
           <mat-cell *matCellDef="let row">
+            <button
+              mat-icon-button
+              [disabled]="!row.lancamento_vinculado_id"
+              [matTooltip]="row.lancamento_vinculado_id ? 'Ver lançamento vinculado' : 'Inscrição ainda não auditada'"
+              (click)="verLancamento(row.lancamento_vinculado_id)">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
             <button mat-icon-button matTooltip="Editar" (click)="editar(row.id)">
               <mat-icon>edit</mat-icon>
             </button>
-            @if (row.lancamento_vinculado_id) {
-              <button mat-icon-button matTooltip="Ver lançamento vinculado" (click)="verLancamento(row.lancamento_vinculado_id)">
-                <mat-icon>open_in_new</mat-icon>
-              </button>
-            }
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns" />
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="listagem-header-row" />
         <mat-row *matRowDef="let row; columns: displayedColumns;" />
 
         <tr class="mat-row" *matNoDataRow>
@@ -151,6 +154,7 @@
         </tr>
 
       </mat-table>
+      </div>
 
       <mat-paginator
         [length]="result.total"

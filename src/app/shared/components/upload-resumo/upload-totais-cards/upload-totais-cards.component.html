@@ -1,7 +1,17 @@
 @if (totais.length) {
   <div class="totais-row">
     @for (item of totais; track item.chave) {
-      <mat-card appearance="outlined" class="totais-card">
+      <mat-card
+        appearance="outlined"
+        class="totais-card"
+        [class.totais-card--clicavel]="clicavel(item)"
+        [class.totais-card--erro]="clicavel(item) && tipoCard(item) === 'erros'"
+        [class.totais-card--duplicado]="clicavel(item) && tipoCard(item) === 'duplicados'"
+        [class.totais-card--ativo]="clicavel(item) && tabelaAtiva === tipoCard(item)"
+        [attr.role]="clicavel(item) ? 'button' : null"
+        [attr.tabindex]="clicavel(item) ? 0 : null"
+        (click)="onCardClick(item)"
+        (keydown.enter)="onCardClick(item)">
         <span class="totais-card-label">{{ item.chave }}</span>
         <span class="totais-card-valor">{{ item.valor }}</span>
       </mat-card>
