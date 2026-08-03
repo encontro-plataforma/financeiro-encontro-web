@@ -7,6 +7,7 @@ import moment from 'moment';
 import {
   MaterialGlobalModule,
   MaterialFormsModule,
+  MaterialDatepickerModule,
 } from '../../../../shared/modules/material.imports.module';
 import { AuditadoBadgeComponent } from '../../../../shared/components/auditado-badge/auditado-badge.component';
 import { VinculoLancamentoComponent } from '../../../../shared/components/vinculo-lancamento/vinculo-lancamento.component';
@@ -26,6 +27,7 @@ import { Circulo } from '../../../../models/circulo.model';
     CommonModule,
     MaterialGlobalModule,
     MaterialFormsModule,
+    MaterialDatepickerModule,
     AuditadoBadgeComponent,
     VinculoLancamentoComponent,
   ],
@@ -118,7 +120,12 @@ export class EncontristasFormComponent implements OnInit {
   }
 
   voltar(): void {
-    this.router.navigate(['/secretaria/encontristas']);
+    const returnUrl: string | undefined = window.history.state?.returnUrl;
+    if (returnUrl) {
+      this.router.navigateByUrl(returnUrl);
+    } else {
+      this.router.navigate(['/secretaria/encontristas']);
+    }
   }
 
   private buildPayload() {

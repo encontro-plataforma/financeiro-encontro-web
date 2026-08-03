@@ -85,9 +85,17 @@
           <mat-label>Tipo</mat-label>
           <mat-select formControlName="tipo">
             @for (op of tipoOpcoes; track op.value) {
-              <mat-option [value]="op.value">{{ op.name }}</mat-option>
+              <mat-option
+                [value]="op.value"
+                [disabled]="op.value === TipoLancamento.DESPESA && (lancamento?.quantidade_detalhamentos ?? 0) > 0"
+              >
+                {{ op.name }}
+              </mat-option>
             }
           </mat-select>
+          @if ((lancamento?.quantidade_detalhamentos ?? 0) > 0) {
+            <mat-hint>Remova os detalhamentos vinculados para poder mudar para Despesa</mat-hint>
+          }
           @if (form.get('tipo')?.hasError('required') && form.get('tipo')?.touched) {
             <mat-error>Tipo é obrigatório</mat-error>
           }
@@ -130,7 +138,7 @@
           <button mat-stroked-button type="button" (click)="voltar()" [disabled]="saving" class="btn">
             Cancelar
           </button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="saving || loading" class="btn btn--icon-left">
+          <button mat-flat-button color="primary" type="submit" [disabled]="saving || loading || isConciliado" class="btn btn--icon-left">
             @if (saving) {
               <mat-spinner diameter="18" class="btn__spinner" />
             } @else {
@@ -146,7 +154,11 @@
 
   <!-- ─── Detalhamentos vinculados ──────────────────────────────────────────── -->
   @if (updatePage && lancamentoId) {
-    <app-lancamento-detalhamentos [lancamentoId]="lancamentoId" />
+    <app-lancamento-detalhamentos
+      [lancamentoId]="lancamentoId"
+      [lancamento]="lancamento"
+      (alterado)="onDetalhamentosAlterado()"
+    />
   }
 
 </div>

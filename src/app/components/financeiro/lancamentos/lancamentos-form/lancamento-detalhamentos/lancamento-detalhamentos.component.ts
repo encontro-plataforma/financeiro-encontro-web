@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,6 +10,9 @@ import { ToastService } from '../../../../../shared/components/toast/toast.servi
 import { ErrorHandlerService } from '../../../../../shared/services/error-handler.service';
 import { DetalhamentoService } from '../../../../../services/detalhamento.service';
 import { Detalhamento } from '../../../../../models/detalhamento.model';
+import { Lancamento } from '../../../../../models/lancamento.model';
+import { TipoLancamento } from '../../../../../models/constants/tipo-lancamento';
+import { StatusLancamento } from '../../../../../models/constants/status-lancamento';
 import {
   DetalhamentoPickerDialogComponent,
   DetalhamentoPickerDialogData,
@@ -36,6 +39,11 @@ const LABEL_POR_TIPO: Record<string, string> = {
 })
 export class LancamentoDetalhamentosComponent implements OnChanges {
   @Input() lancamentoId!: number;
+  @Input() lancamento?: Lancamento | null;
+
+  /** Emitido após incluir ou remover um detalhamento — o pai deve recarregar o
+   * lançamento (o status pode ter mudado: remover desconcilia automaticamente). */
+  @Output() alterado = new EventEmitter<void>();
 
   private detalhamentoService = inject(DetalhamentoService);
   private dialog                = inject(MatDialog);
@@ -54,6 +62,14 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
     if (changes['lancamentoId'] && this.lancamentoId) {
       this.load();
     }
+  }
+
+  get podeIncluir(): boolean {
+    return (
+      !!this.lancamento &&
+      this.lancamento.tipo === TipoLancamento.RECEITA &&
+      this.lancamento.status !== StatusLancamento.CONCILIADO
+    );
   }
 
   get pagedDetalhamentos(): Detalhamento[] {
@@ -87,10 +103,13 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
       {
         width: '800px',
         maxWidth: '95vw',
-        data: { lancamentoId: this.lancamentoId },
+        data: { lancamentoId: this.lancamentoId, lancamento: this.lancamento },
       },
     ).afterClosed().subscribe((criado) => {
-      if (criado) this.load();
+      if (criado) {
+        this.load();
+        this.alterado.emit();
+      }
     });
   }
 
@@ -121,6 +140,7 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
         next: () => {
           this.toast.success({ message: 'Detalhamento removido com sucesso.' });
           this.load();
+          this.alterado.emit();
         },
         error: (err) => this.errorHandler.handler(err),
       });

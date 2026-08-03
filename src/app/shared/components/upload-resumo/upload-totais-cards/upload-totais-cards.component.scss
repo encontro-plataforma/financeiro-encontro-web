@@ -1,3 +1,5 @@
+@use '../../../../../styles/abstracts/colors' as c;
+
 .totais-row {
   display: flex;
   gap: 12px;
@@ -11,6 +13,28 @@
   flex-direction: column;
   gap: 6px;
   padding: 16px;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+
+  &--clicavel {
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mat-sys-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  &--erro { @include c.status-chip('error'); }
+  &--duplicado { @include c.status-chip('duplicado'); }
+
+  // Card selecionado no momento (a tabela embaixo mostra os dados dele).
+  &--ativo {
+    box-shadow: 0 0 0 2px var(--mat-sys-primary) inset;
+  }
 }
 
 .totais-card-label {

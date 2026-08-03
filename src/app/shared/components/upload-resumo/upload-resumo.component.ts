@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { UploadErrosTableComponent } from './upload-erros-table/upload-erros-table.component';
-import { UploadTotaisCardsComponent } from './upload-totais-cards/upload-totais-cards.component';
+import { UploadDuplicadosTableComponent } from './upload-duplicados-table/upload-duplicados-table.component';
+import { UploadTotaisCardsComponent, UploadTabelaTipo } from './upload-totais-cards/upload-totais-cards.component';
 import {
+  UploadDuplicadoProcessamento,
   UploadErroProcessamento,
   UploadFile,
   UploadResumoItem,
+  parseDuplicadosProcessamento,
   parseErrosProcessamento,
   parseResumoProcessamento,
 } from '../../../models/upload-file.model';
@@ -31,6 +34,7 @@ export interface UploadResumoInfo {
     CommonModule,
     MaterialGlobalModule,
     UploadErrosTableComponent,
+    UploadDuplicadosTableComponent,
     UploadTotaisCardsComponent,
   ],
   templateUrl: './upload-resumo.component.html',
@@ -52,16 +56,18 @@ export class UploadResumoComponent implements OnChanges {
 
   /**
    * A partir do UploadFile, diz se o resumo tem erros e qual largura/altura o dialog
-   * que for exibi-lo deve usar. Sem erro: largo o bastante para os cards de totais
-   * caberem numa linha só, altura livre (encolhe para o conteúdo). Com erro: bem maior
-   * nos dois eixos, para caber a tabela de erros embaixo.
+   * que for exibi-lo deve usar. Sem erro nem duplicado: largo o bastante para os
+   * cards de totais caberem numa linha só, altura livre (encolhe para o conteúdo).
+   * Com erro ou duplicado (qualquer um dos dois pode abrir uma tabela embaixo dos
+   * cards): bem maior nos dois eixos, para caber a tabela.
    */
   static getInfo(upload: UploadFile): UploadResumoInfo {
     const temErro =
       upload.status === 'ERRO' ||
       parseErrosProcessamento(upload.resultado_processamento).length > 0;
+    const temDuplicados = parseDuplicadosProcessamento(upload.resultado_processamento).length > 0;
 
-    return temErro
+    return temErro || temDuplicados
       ? { temErro, minWidth: this.WIDTH_ERRO, minHeight: this.HEIGHT_ERRO }
       : { temErro, minWidth: this.WIDTH };
   }
@@ -70,19 +76,27 @@ export class UploadResumoComponent implements OnChanges {
 
   // Calculados uma única vez quando `upload` muda (não getters): um getter que
   // reparseia o JSON a cada change detection devolveria um array novo a cada vez e
-  // resetaria a paginação da tabela de erros (o [erros] do filho dispararia
-  // ngOnChanges a cada CD).
-  // mensagem: string | null = null;
+  // resetaria a paginação da tabela ativa (o [erros]/[duplicados] do filho
+  // dispararia ngOnChanges a cada CD).
   resumo: UploadResumoItem[] = [];
   errosDetalhados: UploadErroProcessamento[] = [];
+  duplicadosDetalhados: UploadDuplicadoProcessamento[] = [];
   temErro = false;
+  temDuplicados = false;
+
+  /** Qual tabela mostrar abaixo dos cards — alternada clicando no card de Erros/Duplicados. */
+  tabelaAtiva: UploadTabelaTipo = 'erros';
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['upload']) return;
 
-    // this.mensagem = parseMensagemProcessamento(this.upload.resultado_processamento);
     this.resumo = parseResumoProcessamento(this.upload.resultado_processamento);
     this.errosDetalhados = parseErrosProcessamento(this.upload.resultado_processamento);
+    this.duplicadosDetalhados = parseDuplicadosProcessamento(this.upload.resultado_processamento);
     this.temErro = this.upload.status === 'ERRO' || this.errosDetalhados.length > 0;
+    this.temDuplicados = this.duplicadosDetalhados.length > 0;
+    // Erros ganha prioridade quando os dois existem; se só houver duplicados,
+    // começa mostrando a tabela de duplicados.
+    this.tabelaAtiva = this.temErro ? 'erros' : 'duplicados';
   }
 }

@@ -5,26 +5,78 @@
   color: #fff !important;
 }
 
+// Único elemento com o override de altura/scroll — o resto da tela (filtros,
+// paginador) não é afetado. O header fica congelado (sticky) enquanto só as
+// linhas passam por baixo dele.
+.table-scroll {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+// position:sticky é aplicado inline pelo Material (via sticky:true no
+// matHeaderRowDef) — aqui só o necessário pra não ficar transparente/sem
+// destaque ao rolar por baixo.
+.listagem-header-row {
+  z-index: 2;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .encontreiros-table {
 
+  // A coluna Detalhes é a única que cresce livremente (ocupa o espaço restante);
+  // todas as outras têm max-width pra ficar do tamanho do próprio conteúdo.
   .mat-column-id {
     max-width: 64px;
   }
 
-  .mat-column-nome {
+  .mat-column-dt_inscricao {
+    max-width: 110px;
+  }
+
+  .mat-column-equipe {
+    max-width: 160px;
+  }
+
+  .mat-column-camisa {
+    max-width: 90px;
+  }
+
+  .mat-column-situacao_camisa {
+    max-width: 140px;
+  }
+
+  .mat-column-acoes {
+    max-width: 110px;
+    justify-content: flex-end;
+  }
+
+  .col-center {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .detalhes-cell {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 8px 0;
+  }
+
+  .detalhes-apelido,
+  .detalhes-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .detalhes-apelido {
     font-weight: 500;
   }
 
-  .mat-column-auditado {
-    max-width: 100px;
-  }
-
-  .clickable-row {
-    cursor: pointer;
-
-    &:hover {
-      background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
-    }
+  .detalhes-sub {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
   }
 
   .empty-row {

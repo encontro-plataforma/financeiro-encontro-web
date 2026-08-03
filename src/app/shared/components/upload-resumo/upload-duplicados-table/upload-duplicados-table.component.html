@@ -1,0 +1,36 @@
+@if (duplicados.length) {
+  <mat-table [dataSource]="pagedDuplicados" class="upload-duplicados-table">
+
+    <ng-container matColumnDef="linha">
+      <mat-header-cell *matHeaderCellDef class="col-linha">Linha</mat-header-cell>
+      <mat-cell *matCellDef="let dup" class="col-linha">{{ dup.linha ?? '-' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="descricao">
+      <mat-header-cell *matHeaderCellDef class="col-descricao">Descrição</mat-header-cell>
+      <mat-cell *matCellDef="let dup" class="col-descricao">{{ dup.descricao ?? '(sem descrição)' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="valor">
+      <mat-header-cell *matHeaderCellDef class="col-valor">Valor</mat-header-cell>
+      <mat-cell *matCellDef="let dup" class="col-valor">{{ dup.valor | currency:'BRL' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="data">
+      <mat-header-cell *matHeaderCellDef class="col-data">Data</mat-header-cell>
+      <mat-cell *matCellDef="let dup" class="col-data">{{ dup.data | date:'dd/MM/yyyy' }}</mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="upload-duplicados-header" />
+    <mat-row *matRowDef="let dup; columns: displayedColumns" />
+  </mat-table>
+
+  @if (duplicados.length > pageSize) {
+    <mat-paginator
+      [length]="duplicados.length"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [hidePageSize]="true"
+      (page)="onPage($event)" />
+  }
+}

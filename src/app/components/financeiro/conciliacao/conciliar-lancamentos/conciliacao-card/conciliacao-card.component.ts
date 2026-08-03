@@ -65,7 +65,11 @@ export class ConciliacaoCardComponent implements OnInit {
   abrirDetalhamentos(): void {
     this.dialog.open<DetalhamentoPickerDialogComponent, DetalhamentoPickerDialogData, boolean>(
       DetalhamentoPickerDialogComponent,
-      { width: '700px', maxWidth: '95vw', data: { lancamentoId: this.lancamento.id } },
+      {
+        width: '700px',
+        maxWidth: '95vw',
+        data: { lancamentoId: this.lancamento.id, lancamento: this.lancamento },
+      },
     ).afterClosed().subscribe((alterado) => {
       if (!alterado) return;
       this.lancamentoService.buscarPorId(this.lancamento.id).subscribe((atualizado) => {

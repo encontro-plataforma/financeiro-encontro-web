@@ -53,6 +53,7 @@ export class LancamentosFormComponent implements OnInit {
   }
 
   readonly StatusLancamento = StatusLancamento;
+  readonly TipoLancamento = TipoLancamento;
 
   get isConciliado(): boolean {
     return this.lancamento?.status === StatusLancamento.CONCILIADO;
@@ -115,6 +116,7 @@ export class LancamentosFormComponent implements OnInit {
           finalidade_id: data.finalidade_id,
           observacao: data.observacao,
         });
+        this.syncFormEnabledState();
         this.loading = false;
       },
       error: (err) => {
@@ -125,7 +127,24 @@ export class LancamentosFormComponent implements OnInit {
     });
   }
 
-  
+  private syncFormEnabledState(): void {
+    if (this.isConciliado) {
+      this.form.disable();
+    } else {
+      this.form.enable();
+    }
+  }
+
+  onDetalhamentosAlterado(): void {
+    if (!this.lancamentoId) return;
+
+    this.lancamentoService.buscarPorId(this.lancamentoId).subscribe({
+      next: (data) => {
+        this.lancamento = data;
+        this.syncFormEnabledState();
+      },
+    });
+  }
 
   conciliar(): void {
     if (!this.lancamentoId) return;
@@ -142,6 +161,7 @@ export class LancamentosFormComponent implements OnInit {
     }).subscribe({
       next: (data) => {
         this.lancamento = data;
+        this.syncFormEnabledState();
         this.toast.success({ message: 'Lançamento conciliado com sucesso.' });
       },
       error: (err) => this.errorHandler.handler(err),
@@ -155,6 +175,7 @@ export class LancamentosFormComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.lancamento = data;
+          this.syncFormEnabledState();
           this.toast.success({ message: 'Lançamento desconciliado.' });
         },
         error: (err) => this.errorHandler.handler(err),
@@ -183,6 +204,17 @@ export class LancamentosFormComponent implements OnInit {
     }
 
     const payload = this.buildPayload();
+
+    if (payload.tipo === TipoLancamento.RECEITA) {
+      const soma = this.lancamento?.soma_detalhamentos ?? 0;
+      if (payload.valor < soma) {
+        this.toast.warning({
+          message: `O valor não pode ser menor que a soma dos detalhamentos já vinculados (R$ ${soma.toFixed(2)}).`,
+        });
+        return;
+      }
+    }
+
     this.saving = true;
 
     const req$ =

@@ -5,14 +5,45 @@
   color: #fff !important;
 }
 
+// Único elemento com o override de altura/scroll — o resto da tela (filtros,
+// paginador) não é afetado. O header fica congelado (sticky) enquanto só as
+// linhas passam por baixo dele.
+.table-scroll {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+// position:sticky é aplicado inline pelo Material (via sticky:true no
+// matHeaderRowDef) — aqui só o necessário pra não ficar transparente/sem
+// destaque ao rolar por baixo.
+.listagem-header-row {
+  z-index: 2;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .encontristas-table {
 
+  // A coluna Detalhes é a única que cresce livremente (ocupa o espaço restante);
+  // todas as outras têm max-width pra ficar do tamanho do próprio conteúdo.
   .mat-column-id {
     max-width: 64px;
   }
 
-  .mat-column-nome {
-    font-weight: 500;
+  .mat-column-dt_entrega {
+    max-width: 110px;
+  }
+
+  .mat-column-circulo {
+    max-width: 140px;
+  }
+
+  .mat-column-idade {
+    max-width: 80px;
+  }
+
+  .mat-column-padrinho {
+    max-width: 160px;
   }
 
   .mat-column-carta,
@@ -20,20 +51,45 @@
     max-width: 70px;
   }
 
-  .mat-column-auditado {
-    max-width: 100px;
+  .mat-column-camisa {
+    max-width: 90px;
+  }
+
+  .mat-column-acoes {
+    max-width: 110px;
+    justify-content: flex-end;
+  }
+
+  .col-center {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .detalhes-cell {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 8px 0;
+  }
+
+  .detalhes-apelido,
+  .detalhes-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .detalhes-apelido {
+    font-weight: 500;
+  }
+
+  .detalhes-sub {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
   }
 
   .icon-sim { color: c.status-color('success', 'accent'); }
   .icon-nao { color: var(--mat-sys-on-surface-variant); opacity: 0.4; }
-
-  .clickable-row {
-    cursor: pointer;
-
-    &:hover {
-      background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
-    }
-  }
 
   .empty-row {
     display: flex;

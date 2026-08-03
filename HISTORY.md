@@ -1,5 +1,35 @@
 # Histórico de Versões
 
+
+## [0.2.3] — 2026-07-31
+
+### Adicionado
+- Dialog de vínculo de inscrição: novo campo "Buscar por nome do pagador" ao lado de "Buscar por nome ou
+  apelido" (usa o novo filtro `nome_pagador` da API)
+- Dialog de vínculo de inscrição: card de referência do lançamento sendo detalhado — descrição em destaque,
+  data de pagamento + observação, e "Ainda Falta Vincular o Valor de R$ X" recalculado a cada vínculo criado
+- Tela de Editar Lançamento: botão "Incluir" de Detalhamento fica desabilitado quando o lançamento (como
+  carregado do servidor) é de Despesa ou já está Conciliado — só reflete o valor persistido, não o que está
+  sendo editado ao vivo no formulário; só muda depois de salvar e reabrir a tela (ou ao incluir/remover um
+  detalhamento, que agora recarrega o lançamento)
+- Tela de Editar Lançamento: opção "Despesa" do campo Tipo fica desabilitada enquanto houver Detalhamentos
+  vinculados
+- Tela de Editar Lançamento: ao salvar um lançamento de Receita, valida no cliente que o valor não seja menor
+  que a soma dos Detalhamentos já vinculados (mesma regra do backend, com aviso imediato)
+- Tela de Editar Lançamento: formulário inteiro fica desabilitado quando o lançamento está Conciliado (exceto
+  o botão Desconciliar); remover um Detalhamento desconcilia automaticamente e reabilita a edição
+
+### Alterado
+- Dialog de vínculo de inscrição: tabela de inscrições ganhou header fixo (sticky) com rolagem própria (até
+  50% da altura da tela), fonte menor, e colunas Dt. Pagamento/Apelido/Valor Pago mais estreitas (data
+  centralizada, valor à direita sem "R$")
+- Dialog de vínculo de inscrição: título passa a mostrar "Selecionando detalhamento para Inscrição de
+  Encontreiro/Encontrista" quando esse passo está ativo, no lugar do texto fixo "Incluir detalhamento"
+
+### Corrigido
+- `EncontreirosFormComponent`/`EncontristasFormComponent`: faltava importar `MaterialDatepickerModule` — o
+  datepicker do formulário quebrava com "No provider found for DateAdapter" ao entrar na tela de detalhe
+
 ## [0.2.2] — 2026-07-26
 
 ### Corrigido

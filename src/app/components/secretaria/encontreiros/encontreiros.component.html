@@ -61,6 +61,7 @@
         <mat-progress-bar mode="indeterminate" />
       }
 
+      <div class="table-scroll">
       <mat-table [dataSource]="result.items" class="encontreiros-table">
 
         <ng-container matColumnDef="id">
@@ -73,19 +74,14 @@
           <mat-cell *matCellDef="let row">{{ row.dt_inscricao | date:'dd/MM/yyyy' }}</mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="nome">
-          <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.nome }}</mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="apelido">
-          <mat-header-cell *matHeaderCellDef>Apelido</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.apelido ?? '—' }}</mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="telefone">
-          <mat-header-cell *matHeaderCellDef>Telefone</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.telefone ?? '—' }}</mat-cell>
+        <ng-container matColumnDef="detalhes">
+          <mat-header-cell *matHeaderCellDef>Detalhes</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="detalhes-cell">
+              <span class="detalhes-apelido">{{ row.apelido ?? '—' }}</span>
+              <span class="detalhes-sub">{{ row.nome }} | {{ row.telefone ? (row.telefone | telefoneBR) : '—' }}</span>
+            </div>
+          </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="equipe">
@@ -94,8 +90,8 @@
         </ng-container>
 
         <ng-container matColumnDef="camisa">
-          <mat-header-cell *matHeaderCellDef>Camisa</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.camisa ?? '—' }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef class="col-center">Camisa</mat-header-cell>
+          <mat-cell *matCellDef="let row" class="col-center">{{ row.camisa ?? '—' }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="situacao_camisa">
@@ -103,15 +99,24 @@
           <mat-cell *matCellDef="let row">{{ getSituacaoLabel(row.situacao_camisa) }}</mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="auditado">
-          <mat-header-cell *matHeaderCellDef>Auditado</mat-header-cell>
+        <ng-container matColumnDef="acoes">
+          <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <app-auditado-badge [auditado]="row.auditado" />
+            <button
+              mat-icon-button
+              [disabled]="!row.lancamento_vinculado_id"
+              [matTooltip]="row.lancamento_vinculado_id ? 'Ver lançamento vinculado' : 'Inscrição ainda não auditada'"
+              (click)="verLancamento(row.lancamento_vinculado_id)">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Editar" (click)="editar(row.id)">
+              <mat-icon>edit</mat-icon>
+            </button>
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns" />
-        <mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row" (click)="editar(row.id)" />
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="listagem-header-row" />
+        <mat-row *matRowDef="let row; columns: displayedColumns;" />
 
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
@@ -123,6 +128,7 @@
         </tr>
 
       </mat-table>
+      </div>
 
       <mat-paginator
         [length]="result.total"
