@@ -7,5 +7,7 @@ export interface LancamentoFilterDto {
   finalidade_ids?:  number[];     // lista — pizza graph + dashboard filter
   forma_pagamento?: string[];
   descricao?:       string;
+  valor_min?:       number;
+  valor_max?:       number;
   exclude_ids?:     number[];
 }

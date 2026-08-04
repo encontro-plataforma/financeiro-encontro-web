@@ -92,6 +92,8 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
       status: [StatusLancamento.TODOS],
       finalidade_id: [-1],
       descricao: [''],
+      valor_min: [''],
+      valor_max: [''],
     });
 
     // init filter state and restore into form
@@ -203,9 +205,18 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
     return '-';
   }
 
+  /** Campo vazio deve significar "sem filtro" — nunca 0 (`Number('')` é 0). */
+  private parseValorFiltro(valor: unknown): number | null {
+    if (valor === '' || valor === null || valor === undefined) return null;
+    const num = Number(valor);
+    return Number.isFinite(num) ? num : null;
+  }
+
   private buildFilter() {
-    const { data_inicio, data_fim, tipo, status, finalidade_id, descricao } =
+    const { data_inicio, data_fim, tipo, status, finalidade_id, descricao, valor_min, valor_max } =
       this.formFilters.value;
+    const valorMin = this.parseValorFiltro(valor_min);
+    const valorMax = this.parseValorFiltro(valor_max);
     return {
       ...(data_inicio && { data_inicio: moment(data_inicio).format('YYYY-MM-DDT00:00:00') }),
       ...(data_fim && { data_fim: moment(data_fim).format('YYYY-MM-DDT23:59:59') }),
@@ -213,6 +224,8 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
       ...(status && { status }),
       ...(finalidade_id !== -1 && { finalidade_id: Number(finalidade_id) }),
       ...(descricao?.trim() && { descricao: descricao.trim() }),
+      ...(valorMin !== null && { valor_min: valorMin }),
+      ...(valorMax !== null && { valor_max: valorMax }),
     };
   }
 }
