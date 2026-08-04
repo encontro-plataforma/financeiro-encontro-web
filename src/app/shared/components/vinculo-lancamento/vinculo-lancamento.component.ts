@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { LancamentoPickerDialogComponent } from '../lancamento-picker-dialog/lancamento-picker-dialog.component';
+import { LancamentoPickerDialogComponent } from './lancamento-picker-dialog/lancamento-picker-dialog.component';
 import { ToastService } from '../toast/toast.service';
 import { ErrorHandlerService } from '../../services/error-handler.service';
 import { DetalhamentoService } from '../../../services/detalhamento.service';

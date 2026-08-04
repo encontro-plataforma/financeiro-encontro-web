@@ -86,8 +86,9 @@ src/
 │   │   ├── dto/                # DTOs de filtro para cada endpoint
 │   │   └── util/               # Utilitários (PageTemplate)
 │   ├── shared/                  # Compartilhado por todo o app
-│   │   ├── components/          # confirm-dialog, csv-upload-dialog, lancamento-picker-dialog,
-│   │   │                        # vinculo-lancamento, toast, upload-resumo-dialog, multi-select, auditado-badge
+│   │   ├── components/          # confirm-dialog, csv-upload-dialog,
+│   │   │                        # vinculo-lancamento/ (+ lancamento-picker-dialog/, uso exclusivo dele),
+│   │   │                        # toast, upload-resumo-dialog, multi-select, auditado-badge
 │   │   ├── modules/             # Módulos agregadores do Angular Material
 │   │   ├── pipes/               # ex.: currency-br.pipe
 │   │   └── services/            # ex.: error-handler.service

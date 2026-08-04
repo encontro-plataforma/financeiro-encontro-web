@@ -1,6 +1,6 @@
-<div class="p-6">
+<div class="h-full flex flex-col min-h-0">
   <!-- ─── Header ───────────────────────────────────────────────────────────── -->
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-6 flex-none">
     <h1 class="text-2xl font-medium text-on-surface">Círculos</h1>
     <button mat-flat-button color="primary" class="btn btn--icon-left" (click)="criar()">
       <mat-icon>add</mat-icon>
@@ -9,7 +9,7 @@
   </div>
 
   <!-- ─── Filtros ───────────────────────────────────────────────────────────── -->
-  <mat-card class="mb-6" appearance="outlined">
+  <mat-card class="mb-6 flex-none" appearance="outlined">
     <mat-card-content class="!pb-0">
       <div class="grid grid-cols-12 gap-x-4 items-start">
         <mat-form-field
@@ -36,58 +36,64 @@
   </mat-card>
 
   <!-- ─── Tabela ────────────────────────────────────────────────────────────── -->
-  <mat-card appearance="outlined">
-    <mat-card-content class="!p-0">
+  <mat-card appearance="outlined" class="flex-1 min-h-0 flex flex-col overflow-hidden">
+    <mat-card-content class="!p-0 flex-1 min-h-0 !flex flex-col overflow-hidden">
       @if (loading) {
-        <mat-progress-bar mode="indeterminate" />
+        <mat-progress-bar mode="indeterminate" class="flex-none" />
       }
 
-      <mat-table [dataSource]="result.items" class="circulos-table">
-        <ng-container matColumnDef="id">
-          <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.id }}</mat-cell>
-        </ng-container>
+      <div class="table-scroll flex-1 min-h-0 overflow-y-auto">
+        <mat-table [dataSource]="result.items" class="circulos-table">
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.id }}</mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="nome">
-          <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.nome }}</mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="nome">
+            <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.nome }}</mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="rgb">
-          <mat-header-cell *matHeaderCellDef>Cor</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <span class="cor-swatch" [style.background-color]="row.rgb" [matTooltip]="row.rgb">{{
-              row.rgb
-            }}</span>
-          </mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="rgb">
+            <mat-header-cell *matHeaderCellDef>Cor</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span class="cor-swatch" [style.background-color]="row.rgb" [matTooltip]="row.rgb">{{
+                row.rgb
+              }}</span>
+            </mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="acoes">
-          <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <button mat-icon-button color="primary" matTooltip="Editar" (click)="editar(row.id)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" matTooltip="Excluir" (click)="deletar(row)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="acoes">
+            <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <button mat-icon-button color="primary" matTooltip="Editar" (click)="editar(row.id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="Excluir" (click)="deletar(row)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns" />
-        <mat-row *matRowDef="let row; columns: displayedColumns" />
+          <mat-header-row
+            *matHeaderRowDef="displayedColumns; sticky: true"
+            class="listagem-header-row"
+          />
+          <mat-row *matRowDef="let row; columns: displayedColumns" />
 
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
-            @if (!loading) {
-              <mat-icon>label_off</mat-icon>
-              <span>Nenhum círculo encontrado</span>
-            }
-          </td>
-        </tr>
-      </mat-table>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
+              @if (!loading) {
+                <mat-icon>label_off</mat-icon>
+                <span>Nenhum círculo encontrado</span>
+              }
+            </td>
+          </tr>
+        </mat-table>
+      </div>
 
       <mat-paginator
+        class="flex-none"
         [length]="result.total"
         [pageSize]="pageSize"
         [pageIndex]="pageIndex"

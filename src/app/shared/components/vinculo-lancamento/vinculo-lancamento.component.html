@@ -7,9 +7,9 @@
         <div class="vinculo-dados">
           <p class="vinculo-descricao">{{ lancamentoVinculado.descricao }}</p>
           <p class="vinculo-detalhe">
-            {{ lancamentoVinculado.data_pagamento | date:'dd/MM/yyyy' }}
+            {{ lancamentoVinculado.data_pagamento | date: 'dd/MM/yyyy' }}
             &nbsp;·&nbsp;
-            {{ lancamentoVinculado.valor | currency:'BRL' }}
+            {{ lancamentoVinculado.valor | currency: 'BRL' }}
           </p>
           @if (lancamentoVinculado.observacao) {
             <p class="vinculo-observacao">{{ lancamentoVinculado.observacao }}</p>
@@ -33,7 +33,13 @@
     } @else {
       <div class="vinculo-info">
         <p class="vinculo-vazio">Esta inscrição ainda não está ligada a nenhum lançamento.</p>
-        <button mat-flat-button color="primary" [disabled]="processando" (click)="ligar()">
+        <button
+          mat-flat-button
+          color="primary"
+          class="btn"
+          [disabled]="processando"
+          (click)="ligar()"
+        >
           <mat-icon>link</mat-icon>
           Ligar a um lançamento
         </button>

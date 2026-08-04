@@ -1,7 +1,6 @@
-<div class="p-6">
-
+<div class="h-full flex flex-col min-h-0">
   <!-- ─── Header ───────────────────────────────────────────────────────────── -->
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-6 flex-none">
     <h1 class="text-2xl font-medium text-on-surface">Lançamentos</h1>
     <div class="flex gap-3">
       <button mat-flat-button class="btn btn--icon-left btn-verde" (click)="enviarCsv()">
@@ -16,25 +15,46 @@
   </div>
 
   <!-- ─── Filtros ───────────────────────────────────────────────────────────── -->
-  <mat-card class="mb-6" appearance="outlined">
+  <mat-card class="mb-6 flex-none" appearance="outlined">
     <mat-card-content class="!pb-0">
       <div [formGroup]="formFilters" class="grid grid-cols-12 gap-x-4 items-start">
-
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
           <mat-label>Data início</mat-label>
-          <input matInput [matDatepicker]="pickerInicio" formControlName="data_inicio" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerInicio"
+            formControlName="data_inicio"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerInicio" />
           <mat-datepicker #pickerInicio />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
           <mat-label>Data fim</mat-label>
-          <input matInput [matDatepicker]="pickerFim" formControlName="data_fim" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerFim"
+            formControlName="data_fim"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerFim" />
           <mat-datepicker #pickerFim />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
           <mat-label>Tipo</mat-label>
           <mat-select formControlName="tipo">
             @for (op of tipoOpcoes; track op.value) {
@@ -43,7 +63,11 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
           <mat-label>Status</mat-label>
           <mat-select formControlName="status">
             @for (op of statusOpcoes; track op.value) {
@@ -52,7 +76,11 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
           <mat-label>Finalidade</mat-label>
           <mat-select formControlName="finalidade_id">
             <mat-option [value]="-1">Todas</mat-option>
@@ -62,113 +90,122 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
           <mat-label>Descrição</mat-label>
           <mat-icon matPrefix>search</mat-icon>
-          <input matInput formControlName="descricao" placeholder="Buscar por descrição...">
+          <input matInput formControlName="descricao" placeholder="Buscar por descrição..." />
         </mat-form-field>
-
       </div>
     </mat-card-content>
   </mat-card>
 
   <!-- ─── Tabela ────────────────────────────────────────────────────────────── -->
-  <mat-card appearance="outlined">
-    <mat-card-content class="!p-0">
-
+  <mat-card appearance="outlined" class="flex-1 min-h-0 flex flex-col overflow-hidden">
+    <mat-card-content class="!p-0 flex-1 min-h-0 !flex flex-col overflow-hidden">
       @if (loading) {
-        <mat-progress-bar mode="indeterminate" />
+        <mat-progress-bar mode="indeterminate" class="flex-none" />
       }
 
-      <mat-table [dataSource]="result.items" class="lancamentos-table">
+      <div class="table-scroll flex-1 min-h-0 overflow-y-auto">
+        <mat-table [dataSource]="result.items" class="lancamentos-table">
+          <!-- Data de Pagamento -->
+          <ng-container matColumnDef="data_pagamento">
+            <mat-header-cell *matHeaderCellDef>Data</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{ row.data_pagamento | date: 'dd/MM/yyyy' }}
+            </mat-cell>
+          </ng-container>
 
-        <!-- Data de Pagamento -->
-        <ng-container matColumnDef="data_pagamento">
-          <mat-header-cell *matHeaderCellDef>Data</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            {{ row.data_pagamento | date:'dd/MM/yyyy' }}
-          </mat-cell>
-        </ng-container>
+          <!-- Status -->
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span
+                class="status-chip"
+                [class.status-chip--conciliado]="row.status === StatusLancamento.CONCILIADO"
+                [class.status-chip--nao-conciliado]="row.status === StatusLancamento.NAO_CONCILIADO"
+              >
+                {{ StatusLancamento.getDescription(row.status) }}
+              </span>
+            </mat-cell>
+          </ng-container>
 
-        <!-- Status -->
-        <ng-container matColumnDef="status">
-          <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <span class="status-chip"
-                  [class.status-chip--conciliado]="row.status === StatusLancamento.CONCILIADO"
-                  [class.status-chip--nao-conciliado]="row.status === StatusLancamento.NAO_CONCILIADO">
-              {{ StatusLancamento.getDescription(row.status) }}
-            </span>
-          </mat-cell>
-        </ng-container>
+          <!-- Descrição -->
+          <ng-container matColumnDef="descricao">
+            <mat-header-cell *matHeaderCellDef>Descrição</mat-header-cell>
+            <mat-cell *matCellDef="let row" [matTooltip]="row.descricao">
+              {{ row.descricao }}
+            </mat-cell>
+          </ng-container>
 
-        <!-- Descrição -->
-        <ng-container matColumnDef="descricao">
-          <mat-header-cell *matHeaderCellDef>Descrição</mat-header-cell>
-          <mat-cell *matCellDef="let row" [matTooltip]="row.descricao">
-            {{ row.descricao }}
-          </mat-cell>
-        </ng-container>
+          <!-- Finalidade -->
+          <ng-container matColumnDef="finalidade">
+            <mat-header-cell *matHeaderCellDef>Finalidade</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ getFinalidade(row) }}</mat-cell>
+          </ng-container>
 
-        <!-- Finalidade -->
-        <ng-container matColumnDef="finalidade">
-          <mat-header-cell *matHeaderCellDef>Finalidade</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ getFinalidade(row) }}</mat-cell>
-        </ng-container>
+          <!-- Forma de Pagamento -->
+          <ng-container matColumnDef="forma_pagamento">
+            <mat-header-cell *matHeaderCellDef>Forma Pgto</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{ FormaPagamento.getDescription(row.forma_pagamento) }}
+            </mat-cell>
+          </ng-container>
 
-        <!-- Forma de Pagamento -->
-        <ng-container matColumnDef="forma_pagamento">
-          <mat-header-cell *matHeaderCellDef>Forma Pgto</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            {{ FormaPagamento.getDescription(row.forma_pagamento) }}
-          </mat-cell>
-        </ng-container>
+          <!-- Valor -->
+          <ng-container matColumnDef="valor">
+            <mat-header-cell *matHeaderCellDef>Valor</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span
+                [class.valor--despesa]="row.tipo === TipoLancamento.DESPESA"
+                [class.valor--receita]="row.tipo === TipoLancamento.RECEITA"
+              >
+                {{ row.valor | currencyBR }}
+              </span>
+            </mat-cell>
+          </ng-container>
 
-        <!-- Valor -->
-        <ng-container matColumnDef="valor">
-          <mat-header-cell *matHeaderCellDef>Valor</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <span [class.valor--despesa]="row.tipo === TipoLancamento.DESPESA"
-                  [class.valor--receita]="row.tipo === TipoLancamento.RECEITA">
-              {{ row.valor | currencyBR }}
-            </span>
-          </mat-cell>
-        </ng-container>
+          <!-- Ações -->
+          <ng-container matColumnDef="acoes">
+            <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <button mat-icon-button color="primary" matTooltip="Editar" (click)="editar(row.id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="Excluir" (click)="deletar(row)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
 
-        <!-- Ações -->
-        <ng-container matColumnDef="acoes">
-          <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <button mat-icon-button color="primary" matTooltip="Editar" (click)="editar(row.id)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" matTooltip="Excluir" (click)="deletar(row)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </mat-cell>
-        </ng-container>
+          <mat-header-row
+            *matHeaderRowDef="displayedColumns; sticky: true"
+            class="listagem-header-row"
+          />
+          <mat-row *matRowDef="let row; columns: displayedColumns" />
 
-        <mat-header-row *matHeaderRowDef="displayedColumns" />
-        <mat-row *matRowDef="let row; columns: displayedColumns;" />
-
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
-            <mat-icon>receipt_long</mat-icon>
-            <span>Nenhum lançamento encontrado</span>
-          </td>
-        </tr>
-
-      </mat-table>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
+              <mat-icon>receipt_long</mat-icon>
+              <span>Nenhum lançamento encontrado</span>
+            </td>
+          </tr>
+        </mat-table>
+      </div>
 
       <mat-paginator
+        class="flex-none"
         [length]="result.total"
         [pageSize]="pageSize"
         [pageIndex]="pageIndex"
         [pageSizeOptions]="[10, 25, 50]"
         (page)="onPage($event)"
-        showFirstLastButtons />
-
+        showFirstLastButtons
+      />
     </mat-card-content>
   </mat-card>
-
 </div>

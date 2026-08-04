@@ -1,5 +1,4 @@
-<div class="p-6">
-
+<div class="">
   <!-- ─── Header ───────────────────────────────────────────────────────────── -->
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
@@ -25,17 +24,26 @@
   <mat-card appearance="outlined">
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="salvar()" class="grid grid-cols-12 gap-4">
-
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Data de Entrega</mat-label>
-          <input matInput [matDatepicker]="pickerEntrega" formControlName="dt_entrega" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerEntrega"
+            formControlName="dt_entrega"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerEntrega" />
           <mat-datepicker #pickerEntrega />
         </mat-form-field>
 
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Validade</mat-label>
-          <input matInput [matDatepicker]="pickerValidade" formControlName="dt_validade" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerValidade"
+            formControlName="dt_validade"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerValidade" />
           <mat-datepicker #pickerValidade />
         </mat-form-field>
@@ -67,7 +75,12 @@
 
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Data de Nascimento</mat-label>
-          <input matInput [matDatepicker]="pickerNascimento" formControlName="dt_nascimento" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerNascimento"
+            formControlName="dt_nascimento"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerNascimento" />
           <mat-datepicker #pickerNascimento />
         </mat-form-field>
@@ -160,7 +173,12 @@
 
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Data de Pagamento</mat-label>
-          <input matInput [matDatepicker]="pickerPagamento" formControlName="dt_pagamento" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerPagamento"
+            formControlName="dt_pagamento"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerPagamento" />
           <mat-datepicker #pickerPagamento />
         </mat-form-field>
@@ -183,10 +201,22 @@
 
         <!-- Ações -->
         <div class="col-span-12 flex justify-end gap-3 pt-2">
-          <button mat-stroked-button type="button" (click)="voltar()" [disabled]="saving" class="btn">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="voltar()"
+            [disabled]="saving"
+            class="btn"
+          >
             Cancelar
           </button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="saving || loading" class="btn btn--icon-left">
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="saving || loading"
+            class="btn btn--icon-left"
+          >
             @if (saving) {
               <mat-spinner diameter="18" class="btn__spinner" />
             } @else {
@@ -195,7 +225,6 @@
             Salvar alterações
           </button>
         </div>
-
       </form>
     </mat-card-content>
   </mat-card>
@@ -208,7 +237,7 @@
       [valorPagamento]="encontrista.pagamento"
       [detalhamentoId]="encontrista.detalhamento_id"
       [lancamentoVinculado]="encontrista.lancamento_vinculado"
-      (vinculado)="onVinculoAlterado()" />
+      (vinculado)="onVinculoAlterado()"
+    />
   }
-
 </div>
