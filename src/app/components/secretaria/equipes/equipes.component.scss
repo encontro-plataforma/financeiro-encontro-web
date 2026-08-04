@@ -1,3 +1,12 @@
+// position:sticky é aplicado inline pelo Material (via sticky:true no
+// matHeaderRowDef) — aqui só o necessário pra não ficar transparente/sem
+// destaque ao rolar por baixo.
+.listagem-header-row {
+  z-index: 2;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .equipes-table {
 
   .mat-column-id {

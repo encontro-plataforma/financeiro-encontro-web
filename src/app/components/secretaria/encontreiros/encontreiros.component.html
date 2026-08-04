@@ -1,14 +1,19 @@
-<div class="p-6">
-
+<div class="h-full flex flex-col min-h-0">
   <!-- ─── Header ───────────────────────────────────────────────────────────── -->
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-6 flex-none">
     <h1 class="text-2xl font-medium text-on-surface">Encontreiros</h1>
     <div class="flex gap-3">
       <button mat-flat-button class="btn btn--icon-left btn-verde" (click)="enviarCsv()">
         <mat-icon>upload_file</mat-icon>
         Enviar CSV
       </button>
-      <button mat-flat-button color="primary" class="btn btn--icon-left" disabled matTooltip="Encontreiros são cadastrados apenas via importação de CSV">
+      <button
+        mat-flat-button
+        color="primary"
+        class="btn btn--icon-left"
+        disabled
+        matTooltip="Encontreiros são cadastrados apenas via importação de CSV"
+      >
         <mat-icon>add</mat-icon>
         Criar
       </button>
@@ -16,14 +21,22 @@
   </div>
 
   <!-- ─── Filtros ───────────────────────────────────────────────────────────── -->
-  <mat-card class="mb-6" appearance="outlined">
+  <mat-card class="mb-6 flex-none" appearance="outlined">
     <mat-card-content class="!pb-0">
       <div class="grid grid-cols-12 gap-x-4 items-start">
-
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
           <mat-label>Nome ou apelido</mat-label>
           <mat-icon matPrefix>search</mat-icon>
-          <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Buscar..." />
+          <input
+            matInput
+            [(ngModel)]="search"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Buscar..."
+          />
         </mat-form-field>
 
         <app-multi-select
@@ -31,16 +44,22 @@
           label="Equipe"
           [items]="equipeItems"
           [selectedIds]="equipeSelecionadas"
-          (selectionChange)="onEquipeChange($event)" />
+          (selectionChange)="onEquipeChange($event)"
+        />
 
         <app-multi-select
           class="col-span-12 md:col-span-6 lg:col-span-3"
           label="Situação da camisa"
           [items]="situacaoItems"
           [selectedIds]="situacaoSelecionadas"
-          (selectionChange)="onSituacaoChange($event)" />
+          (selectionChange)="onSituacaoChange($event)"
+        />
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6 lg:col-span-3">
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
           <mat-label>Auditado</mat-label>
           <mat-select [(ngModel)]="auditadoFiltro" (ngModelChange)="onAuditadoChange()">
             @for (op of auditadoOpcoes; track op.value) {
@@ -48,97 +67,103 @@
             }
           </mat-select>
         </mat-form-field>
-
       </div>
     </mat-card-content>
   </mat-card>
 
   <!-- ─── Tabela ────────────────────────────────────────────────────────────── -->
-  <mat-card appearance="outlined">
-    <mat-card-content class="!p-0">
-
+  <mat-card appearance="outlined" class="flex-1 min-h-0 flex flex-col overflow-hidden">
+    <mat-card-content class="!p-0 flex-1 min-h-0 !flex flex-col overflow-hidden">
       @if (loading) {
-        <mat-progress-bar mode="indeterminate" />
+        <mat-progress-bar mode="indeterminate" class="flex-none" />
       }
 
-      <div class="table-scroll">
-      <mat-table [dataSource]="result.items" class="encontreiros-table">
+      <div class="table-scroll flex-1 min-h-0 overflow-y-auto">
+        <mat-table [dataSource]="result.items" class="encontreiros-table">
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.id }}</mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="id">
-          <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.id }}</mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="dt_inscricao">
+            <mat-header-cell *matHeaderCellDef>Inscrição</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.dt_inscricao | date: 'dd/MM/yyyy' }}</mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="dt_inscricao">
-          <mat-header-cell *matHeaderCellDef>Inscrição</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.dt_inscricao | date:'dd/MM/yyyy' }}</mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="detalhes">
+            <mat-header-cell *matHeaderCellDef>Detalhes</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <div class="detalhes-cell">
+                <span class="detalhes-apelido">{{ row.apelido ?? '—' }}</span>
+                <span class="detalhes-sub"
+                  >{{ row.nome }} | {{ row.telefone ? (row.telefone | telefoneBR) : '—' }}</span
+                >
+              </div>
+            </mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="detalhes">
-          <mat-header-cell *matHeaderCellDef>Detalhes</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <div class="detalhes-cell">
-              <span class="detalhes-apelido">{{ row.apelido ?? '—' }}</span>
-              <span class="detalhes-sub">{{ row.nome }} | {{ row.telefone ? (row.telefone | telefoneBR) : '—' }}</span>
-            </div>
-          </mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="equipe">
+            <mat-header-cell *matHeaderCellDef>Equipe</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.equipe?.nome ?? '—' }}</mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="equipe">
-          <mat-header-cell *matHeaderCellDef>Equipe</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.equipe?.nome ?? '—' }}</mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="camisa">
+            <mat-header-cell *matHeaderCellDef class="col-center">Camisa</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="col-center">{{ row.camisa ?? '—' }}</mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="camisa">
-          <mat-header-cell *matHeaderCellDef class="col-center">Camisa</mat-header-cell>
-          <mat-cell *matCellDef="let row" class="col-center">{{ row.camisa ?? '—' }}</mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="situacao_camisa">
+            <mat-header-cell *matHeaderCellDef>Sit. Camisa</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ getSituacaoLabel(row.situacao_camisa) }}</mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="situacao_camisa">
-          <mat-header-cell *matHeaderCellDef>Sit. Camisa</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ getSituacaoLabel(row.situacao_camisa) }}</mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="acoes">
+            <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <button
+                mat-icon-button
+                [disabled]="!row.lancamento_vinculado_id"
+                [matTooltip]="
+                  row.lancamento_vinculado_id
+                    ? 'Ver lançamento vinculado'
+                    : 'Inscrição ainda não auditada'
+                "
+                (click)="verLancamento(row.lancamento_vinculado_id)"
+              >
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Editar" (click)="editar(row.id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="acoes">
-          <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <button
-              mat-icon-button
-              [disabled]="!row.lancamento_vinculado_id"
-              [matTooltip]="row.lancamento_vinculado_id ? 'Ver lançamento vinculado' : 'Inscrição ainda não auditada'"
-              (click)="verLancamento(row.lancamento_vinculado_id)">
-              <mat-icon>open_in_new</mat-icon>
-            </button>
-            <button mat-icon-button matTooltip="Editar" (click)="editar(row.id)">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </mat-cell>
-        </ng-container>
+          <mat-header-row
+            *matHeaderRowDef="displayedColumns; sticky: true"
+            class="listagem-header-row"
+          />
+          <mat-row *matRowDef="let row; columns: displayedColumns" />
 
-        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="listagem-header-row" />
-        <mat-row *matRowDef="let row; columns: displayedColumns;" />
-
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
-            @if (!loading) {
-              <mat-icon>label_off</mat-icon>
-              <span>Nenhum encontreiro encontrado</span>
-            }
-          </td>
-        </tr>
-
-      </mat-table>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
+              @if (!loading) {
+                <mat-icon>label_off</mat-icon>
+                <span>Nenhum encontreiro encontrado</span>
+              }
+            </td>
+          </tr>
+        </mat-table>
       </div>
 
       <mat-paginator
+        class="flex-none"
         [length]="result.total"
         [pageSize]="pageSize"
         [pageIndex]="pageIndex"
         [pageSizeOptions]="[10, 25, 50]"
         (page)="onPage($event)"
-        showFirstLastButtons />
-
+        showFirstLastButtons
+      />
     </mat-card-content>
   </mat-card>
-
 </div>

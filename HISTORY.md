@@ -1,5 +1,30 @@
 # Histórico de Versões
 
+## [0.3.0] — 2026-07-31
+
+### Adicionado
+- Dialog "Selecionar lançamento" (usado por "Ligar a um lançamento" em Encontreiro/Encontrista) ganhou filtro
+  de Status (Todos/Conciliado/Não Conciliado), com Não Conciliado como padrão, ao lado da busca por descrição
+
+### Alterado
+- Padrão de listagem (header da tabela fixo/sticky, rolagem isolada no corpo, paginação sempre visível
+  embaixo) estendido para Usuários, Círculos, Equipes, Encontreiros, Encontristas, Lançamentos, Relatórios da
+  Secretaria e Finalidades — mesmo comportamento já usado antes só em Encontreiros/Encontristas
+- `LancamentoPickerDialogComponent` movido de `shared/components/lancamento-picker-dialog/` para dentro de
+  `shared/components/vinculo-lancamento/lancamento-picker-dialog/` — é o único consumidor do componente
+- Dialog "Selecionar lançamento": colunas reordenadas para Data/Status/Descrição/Valor (Data, Status e Valor
+  com largura fixa pelo conteúdo; Descrição é a única coluna que cresce livremente), Status centralizado,
+  Valor sem "R$" e alinhado à direita, linhas mais compactas, header fixo com rolagem isolada no corpo da
+  tabela (cresce com o conteúdo até um teto de altura, sem depender de um valor fixo de porcentagem)
+- Todos os campos de filtro/busca dentro de dialogs (`detalhamento-picker-dialog`, "Selecionar lançamento")
+  ganharam a classe `no-hint`, removendo o espaço reservado para hint/erro que não é usado nesses campos
+
+### Corrigido
+- Tela de Relatórios (administração): o texto "Gerar PDF" ficava fora do bloco `@if/@else` do spinner —
+  aparecia junto com o spinner durante o carregamento, em vez de sumir. Corrigido nos dois botões (Livro
+  Caixa e Resumo Geral)
+- Botão "Ligar a um lançamento" (Vínculo Lançamento) sem a classe `btn`, ficando fora do padrão visual dos
+  outros botões
 
 ## [0.2.3] — 2026-07-31
 

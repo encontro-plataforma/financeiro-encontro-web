@@ -93,7 +93,7 @@ Triggered by the "Processar Conciliação" button on `/conciliacao` (`ConciliarL
 
 ### Shared components (`shared/components/`)
 
-`confirm-dialog`, `multi-select`, `toast` (+ `toast.service.ts`, uses the Popover API so toasts render above CDK dialogs), `auditado-badge` (Sim/Não pill), `lancamento-picker-dialog`, `vinculo-lancamento` (link/relink/unlink a Lancamento to an inscription), `csv-upload-dialog`, `upload-resumo` (see above).
+`confirm-dialog`, `multi-select`, `toast` (+ `toast.service.ts`, uses the Popover API so toasts render above CDK dialogs), `auditado-badge` (Sim/Não pill), `vinculo-lancamento` (link/relink/unlink a Lancamento to an inscription; its `lancamento-picker-dialog` subfolder is only used by it, not reused elsewhere), `csv-upload-dialog`, `upload-resumo` (see above).
 
 Note: `detalhamento-picker-dialog`, `auditoria-resumo-dialog`, `conciliar-resto-dialog` are financeiro-scoped under `components/financeiro/shared/`, not `shared/components/` — they're not reused outside that area.
 

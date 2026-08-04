@@ -1,9 +1,10 @@
-<div class="p-6">
-
+<div class="">
   <!-- ─── Header ─────────────────────────────────────────────────────────────── -->
   <div class="mb-6">
     <h1 class="text-2xl font-medium text-on-surface">Relatórios</h1>
-    <p class="text-sm text-gray-500 mt-1">Gere relatórios financeiros para impressão e arquivamento</p>
+    <p class="text-sm text-gray-500 mt-1">
+      Gere relatórios financeiros para impressão e arquivamento
+    </p>
   </div>
 
   <!-- ─── Livro Caixa ─────────────────────────────────────────────────────────── -->
@@ -19,18 +20,31 @@
     </mat-card-header>
 
     <mat-card-content class="!pt-4">
-      <form [formGroup]="formLivroCaixa" (ngSubmit)="gerarLivroCaixa()" class="flex flex-wrap gap-4 items-end">
-
+      <form
+        [formGroup]="formLivroCaixa"
+        (ngSubmit)="gerarLivroCaixa()"
+        class="flex flex-wrap gap-4 items-end"
+      >
         <mat-form-field appearance="outline" floatLabel="always" class="w-48">
           <mat-label>Data início</mat-label>
-          <input matInput [matDatepicker]="pickerLcInicio" formControlName="data_inicio" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerLcInicio"
+            formControlName="data_inicio"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerLcInicio" />
           <mat-datepicker #pickerLcInicio />
         </mat-form-field>
 
         <mat-form-field appearance="outline" floatLabel="always" class="w-48">
           <mat-label>Data fim</mat-label>
-          <input matInput [matDatepicker]="pickerLcFim" formControlName="data_fim" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerLcFim"
+            formControlName="data_fim"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerLcFim" />
           <mat-datepicker #pickerLcFim />
         </mat-form-field>
@@ -40,15 +54,17 @@
           color="primary"
           type="submit"
           class="btn btn--icon-left mb-5"
-          [disabled]="formLivroCaixa.invalid || gerandoLivroCaixa">
+          [disabled]="formLivroCaixa.invalid || gerandoLivroCaixa"
+        >
           @if (gerandoLivroCaixa) {
-            <mat-spinner diameter="18" />
+            <mat-spinner diameter="18" class="btn__spinner" />
           } @else {
             <mat-icon>picture_as_pdf</mat-icon>
           }
-          Gerar PDF
+          @if (!gerandoLivroCaixa) {
+            Gerar PDF
+          }
         </button>
-
       </form>
     </mat-card-content>
   </mat-card>
@@ -66,18 +82,31 @@
     </mat-card-header>
 
     <mat-card-content class="!pt-4">
-      <form [formGroup]="formResumoGeral" (ngSubmit)="gerarResumoGeral()" class="flex flex-wrap gap-4 items-end">
-
+      <form
+        [formGroup]="formResumoGeral"
+        (ngSubmit)="gerarResumoGeral()"
+        class="flex flex-wrap gap-4 items-end"
+      >
         <mat-form-field appearance="outline" floatLabel="always" class="w-48">
           <mat-label>Data início</mat-label>
-          <input matInput [matDatepicker]="pickerRgInicio" formControlName="data_inicio" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerRgInicio"
+            formControlName="data_inicio"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerRgInicio" />
           <mat-datepicker #pickerRgInicio />
         </mat-form-field>
 
         <mat-form-field appearance="outline" floatLabel="always" class="w-48">
           <mat-label>Data fim</mat-label>
-          <input matInput [matDatepicker]="pickerRgFim" formControlName="data_fim" placeholder="DD/MM/AAAA">
+          <input
+            matInput
+            [matDatepicker]="pickerRgFim"
+            formControlName="data_fim"
+            placeholder="DD/MM/AAAA"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="pickerRgFim" />
           <mat-datepicker #pickerRgFim />
         </mat-form-field>
@@ -87,17 +116,18 @@
           color="primary"
           type="submit"
           class="btn btn--icon-left mb-5"
-          [disabled]="formResumoGeral.invalid || gerandoResumoGeral">
+          [disabled]="formResumoGeral.invalid || gerandoResumoGeral"
+        >
           @if (gerandoResumoGeral) {
-            <mat-spinner diameter="18" />
+            <mat-spinner diameter="18" class="btn__spinner" />
           } @else {
             <mat-icon>picture_as_pdf</mat-icon>
           }
-          Gerar PDF
+          @if (!gerandoResumoGeral) {
+            Gerar PDF
+          }
         </button>
-
       </form>
     </mat-card-content>
   </mat-card>
-
 </div>

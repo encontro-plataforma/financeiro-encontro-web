@@ -1,0 +1,85 @@
+<h2 mat-dialog-title>Selecionar Lançamento</h2>
+
+<mat-dialog-content class="picker-content">
+  <div class="search-row pb-1">
+    <mat-form-field appearance="outline" floatLabel="always" class="w-full no-hint">
+      <mat-label>Buscar por descrição</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Descrição do lançamento..."
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" floatLabel="always" class="status-field no-hint">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="statusFiltro" (ngModelChange)="onStatusChange()">
+        @for (op of statusOpcoes; track op.value) {
+          <mat-option [value]="op.value">{{ op.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" class="flex-none" />
+  }
+
+  <div class="picker-table-wrapper">
+    <mat-table [dataSource]="result.items" class="picker-table">
+      <ng-container matColumnDef="data_pagamento">
+        <mat-header-cell *matHeaderCellDef class="col-data">Data</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-data">{{
+          row.data_pagamento | date: 'dd/MM/yyyy'
+        }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef class="col-status">Status</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-status">{{ statusLabel(row.status) }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="descricao">
+        <mat-header-cell *matHeaderCellDef>Descrição</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.descricao }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="valor">
+        <mat-header-cell *matHeaderCellDef class="col-valor">Valor</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-valor">{{
+          row.valor | number: '1.2-2' : 'pt-BR'
+        }}</mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns" />
+      <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="picker-row"
+        (click)="selecionar(row)"
+      />
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
+          @if (!loading) {
+            <span>Nenhum lançamento encontrado</span>
+          }
+        </td>
+      </tr>
+    </mat-table>
+  </div>
+
+  <mat-paginator
+    class="flex-none"
+    [length]="result.total"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[8, 16, 24]"
+    (page)="onPage($event)"
+  />
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" class="btn" (click)="cancelar()">Fechar</button>
+</mat-dialog-actions>

@@ -6,11 +6,12 @@ import { PageEvent } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-import { MaterialGlobalModule, MaterialFormsModule } from '../../modules/material.imports.module';
-import { LancamentoService } from '../../../services/lancamento.service';
-import { Lancamento } from '../../../models/lancamento.model';
-import { TipoLancamento } from '../../../models/constants/tipo-lancamento';
-import { PageTemplate } from '../../../services/util/PageTemplate';
+import { MaterialGlobalModule, MaterialFormsModule } from '../../../modules/material.imports.module';
+import { LancamentoService } from '../../../../services/lancamento.service';
+import { Lancamento } from '../../../../models/lancamento.model';
+import { TipoLancamento } from '../../../../models/constants/tipo-lancamento';
+import { StatusLancamento } from '../../../../models/constants/status-lancamento';
+import { PageTemplate } from '../../../../services/util/PageTemplate';
 
 @Component({
   selector: 'app-lancamento-picker-dialog',
@@ -29,8 +30,10 @@ export class LancamentoPickerDialogComponent implements AfterViewInit {
   pageIndex = 0;
   pageSize  = 8;
   search    = '';
+  statusFiltro = StatusLancamento.NAO_CONCILIADO;
 
-  displayedColumns = ['data_pagamento', 'descricao', 'valor', 'status'];
+  readonly statusOpcoes = StatusLancamento.optionsAll;
+  displayedColumns = ['data_pagamento', 'status', 'descricao', 'valor'];
 
   private searchSubject = new Subject<string>();
 
@@ -52,6 +55,11 @@ export class LancamentoPickerDialogComponent implements AfterViewInit {
     this.searchSubject.next(this.search);
   }
 
+  onStatusChange(): void {
+    this.pageIndex = 0;
+    this.load();
+  }
+
   onPage(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize  = event.pageSize;
@@ -62,7 +70,11 @@ export class LancamentoPickerDialogComponent implements AfterViewInit {
     this.loading = true;
     this.lancamentoService
       .list(
-        { tipo: TipoLancamento.RECEITA, ...(this.search ? { descricao: this.search } : {}) },
+        {
+          tipo: TipoLancamento.RECEITA,
+          ...(this.search ? { descricao: this.search } : {}),
+          ...(this.statusFiltro ? { status: this.statusFiltro } : {}),
+        },
         { skip: this.pageIndex * this.pageSize, limit: this.pageSize, sort: ['data_pagamento:desc'] },
       )
       .subscribe({

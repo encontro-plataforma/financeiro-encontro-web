@@ -5,14 +5,6 @@
   color: #fff !important;
 }
 
-// Único elemento com o override de altura/scroll — o resto da tela (filtros,
-// paginador) não é afetado. O header fica congelado (sticky) enquanto só as
-// linhas passam por baixo dele.
-.table-scroll {
-  max-height: 65vh;
-  overflow-y: auto;
-}
-
 // position:sticky é aplicado inline pelo Material (via sticky:true no
 // matHeaderRowDef) — aqui só o necessário pra não ficar transparente/sem
 // destaque ao rolar por baixo.
