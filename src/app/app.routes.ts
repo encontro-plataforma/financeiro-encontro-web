@@ -175,6 +175,12 @@ export const routes: Routes = [
               },
             ],
           },
+          {
+            path: 'regras',
+            canActivate: [roleGuard],
+            data: { roles: ADMIN },
+            loadComponent: () => import('./components/administracao/regras/regras.component').then(m => m.RegrasComponent),
+          },
         ],
       },
     ],

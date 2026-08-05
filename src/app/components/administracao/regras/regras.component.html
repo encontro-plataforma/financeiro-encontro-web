@@ -1,0 +1,17 @@
+<div class="h-full flex flex-col min-h-0">
+  <div class="flex items-center justify-between mb-6 flex-none">
+    <h1 class="text-2xl font-medium text-on-surface">Regras</h1>
+  </div>
+
+  <div class="regras-scroll flex-1 min-h-0 overflow-y-auto">
+    @if (loading) {
+      <mat-progress-bar mode="indeterminate" class="flex-none" />
+    } @else if (!grupos.length) {
+      <p class="sem-grupos">Nenhum grupo de regras encontrado.</p>
+    } @else {
+      @for (grupo of grupos; track grupo.id) {
+        <app-regra-grupo-card [grupo]="grupo" (salvo)="onSalvo($event)" />
+      }
+    }
+  </div>
+</div>

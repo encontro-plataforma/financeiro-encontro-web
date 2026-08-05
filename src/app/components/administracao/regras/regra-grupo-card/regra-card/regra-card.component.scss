@@ -1,0 +1,82 @@
+.regra-card {
+  margin-bottom: 12px;
+  padding: 12px 16px;
+}
+
+.regra-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.regra-card__ordem {
+  display: flex;
+  flex-direction: column;
+  line-height: 0;
+}
+
+.regra-card__nome {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.regra-card__tipo {
+  flex: 1 1 220px;
+  min-width: 200px;
+}
+
+.regra-card__condicoes {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+}
+
+.regra-card__condicoes-label {
+  display: block;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.condicao-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.condicao-row__ordem {
+  display: flex;
+  flex-direction: column;
+  line-height: 0;
+}
+
+.condicao-row__regex {
+  flex: 1 1 260px;
+  min-width: 220px;
+  font-family: monospace;
+}
+
+.condicao-row__teste {
+  flex: 1 1 220px;
+  min-width: 200px;
+}
+
+.condicao-row__resultado {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.condicao-row__resultado--ok {
+  color: var(--mat-sys-primary, seagreen);
+}
+
+.condicao-row__resultado--erro {
+  color: var(--mat-sys-error, firebrick);
+}
+
+.regra-card__add-condicao {
+  margin-top: 4px;
+}

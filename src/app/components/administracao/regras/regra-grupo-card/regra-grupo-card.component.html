@@ -1,0 +1,56 @@
+<mat-card appearance="outlined" class="caixa">
+  <div class="caixa__header" (click)="toggleExpandido()">
+    <button mat-icon-button class="caixa__toggle" [class.caixa__toggle--aberto]="expandido">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+
+    <div class="caixa__titulo">
+      <span class="caixa__nome">{{ grupo.nome }}</span>
+      <span class="caixa__escopo-chip">{{ escopoDescricao }}</span>
+    </div>
+
+    <span class="caixa__spacer"></span>
+
+    <mat-slide-toggle
+      [ngModel]="grupo.ativo"
+      (ngModelChange)="onAtivoChange($event)"
+      (click)="$event.stopPropagation()"
+      matTooltip="Grupo ativo"
+    >
+      Ativo
+    </mat-slide-toggle>
+  </div>
+
+  @if (expandido) {
+    <div class="caixa__body">
+      @for (regra of regras; track $index) {
+        <app-regra-card
+          [regra]="regra"
+          [primeira]="$index === 0"
+          [ultima]="$index === regras.length - 1"
+          (subir)="subirRegra($index)"
+          (descer)="descerRegra($index)"
+          (remover)="removerRegra($index)"
+        />
+      }
+
+      @if (!regras.length) {
+        <p class="caixa__vazio">Nenhuma regra neste grupo ainda.</p>
+      }
+
+      <div class="caixa__acoes">
+        <button mat-button color="primary" (click)="adicionarRegra()">
+          <mat-icon>add</mat-icon> Adicionar regra
+        </button>
+
+        <button mat-flat-button color="primary" [disabled]="salvando" (click)="salvar()">
+          @if (salvando) {
+            <mat-spinner diameter="18" />
+          } @else {
+            Salvar
+          }
+        </button>
+      </div>
+    </div>
+  }
+</mat-card>

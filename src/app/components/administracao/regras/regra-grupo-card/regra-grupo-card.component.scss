@@ -1,0 +1,59 @@
+.caixa {
+  margin-bottom: 16px;
+}
+
+.caixa__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.caixa__toggle {
+  transition: transform 0.2s ease;
+}
+
+.caixa__toggle--aberto {
+  transform: rotate(90deg);
+}
+
+.caixa__titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.caixa__nome {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.caixa__escopo-chip {
+  font-size: 0.75rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  opacity: 0.8;
+}
+
+.caixa__spacer {
+  flex: 1 1 auto;
+}
+
+.caixa__body {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.caixa__vazio {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.caixa__acoes {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
