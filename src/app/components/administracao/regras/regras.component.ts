@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MaterialGlobalModule } from '../../../shared/modules/material.imports.module';
@@ -15,6 +15,7 @@ import { RegraGrupoCardComponent } from './regra-grupo-card/regra-grupo-card.com
 })
 export class RegrasComponent implements OnInit {
   private regraService = inject(RegraService);
+  private cdr = inject(ChangeDetectorRef);
 
   grupos: RegraGrupo[] = [];
   loading = false;
@@ -25,9 +26,11 @@ export class RegrasComponent implements OnInit {
       next: (data) => {
         this.grupos = [...data].sort((a, b) => a.ordem - b.ordem);
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }

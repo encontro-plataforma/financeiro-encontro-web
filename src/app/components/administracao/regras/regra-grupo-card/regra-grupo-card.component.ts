@@ -1,20 +1,24 @@
-import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 
 import { MaterialGlobalModule, MaterialFormsModule } from '../../../../shared/modules/material.imports.module';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { ErrorHandlerService } from '../../../../shared/services/error-handler.service';
 import { RegraService } from '../../../../services/regra.service';
-import { Regra, RegraGrupo } from '../../../../models/regra-grupo.model';
+import { Regra, RegraCondicao, RegraGrupo } from '../../../../models/regra-grupo.model';
 import { EscopoRegraGrupo } from '../../../../models/constants/escopo-regra-grupo';
-import { TipoDetalhamento } from '../../../../models/constants/tipo-detalhamento';
 import { RegraCardComponent } from './regra-card/regra-card.component';
+import { RegraFormDialogComponent, RegraFormDialogData, RegraFormDialogResult } from '../regra-form-dialog/regra-form-dialog.component';
+import { CondicoesDialogComponent, CondicoesDialogData } from '../condicoes-dialog/condicoes-dialog.component';
 
 /** A "caixa" de um grupo de regras — expansível, custom (sem mat-accordion,
- * mesmo espírito do conciliacao-card.component.ts). Edita localmente a lista
- * de Regra/RegraCondicao e só persiste tudo de uma vez no "Salvar" (o backend
- * sempre substitui a árvore inteira do grupo). */
+ * mesmo espírito do conciliacao-card.component.ts). Toda inclusão/edição de
+ * Regra e Condição acontece em dialog; cada ação persiste imediatamente
+ * (não há mais um "Salvar" em lote — o backend sempre substitui a árvore
+ * inteira do grupo, então cada ação monta o array `regras` completo de novo). */
 @Component({
   selector: 'app-regra-grupo-card',
   standalone: true,
@@ -22,27 +26,23 @@ import { RegraCardComponent } from './regra-card/regra-card.component';
   templateUrl: './regra-grupo-card.component.html',
   styleUrl: './regra-grupo-card.component.scss',
 })
-export class RegraGrupoCardComponent implements OnChanges {
+export class RegraGrupoCardComponent {
   @Input({ required: true }) grupo!: RegraGrupo;
   @Output() salvo = new EventEmitter<RegraGrupo>();
 
   private regraService = inject(RegraService);
+  private dialog = inject(MatDialog);
   private toast = inject(ToastService);
   private errorHandler = inject(ErrorHandlerService);
 
   expandido = false;
-  salvando = false;
-  regras: Regra[] = [];
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['grupo']) {
-      // Cópia local — edições não afetam o objeto do pai até salvar.
-      this.regras = structuredClone(this.grupo.regras);
-    }
-  }
 
   get escopoDescricao(): string {
     return EscopoRegraGrupo.getDescription(this.grupo.escopo);
+  }
+
+  get podeAtivarGrupo(): boolean {
+    return this.grupo.regras.some((r) => r.ativo);
   }
 
   toggleExpandido(): void {
@@ -52,29 +52,83 @@ export class RegraGrupoCardComponent implements OnChanges {
   onAtivoChange(ativo: boolean): void {
     this.regraService.editar(this.grupo.id, { ativo }).subscribe({
       next: (atualizado) => {
-        this.grupo.ativo = atualizado.ativo;
         this.toast.success({ message: `Grupo "${this.grupo.nome}" ${ativo ? 'ativado' : 'desativado'}.` });
+        this.salvo.emit(atualizado);
       },
-      error: (err) => {
-        this.grupo.ativo = !ativo;
-        this.errorHandler.handler(err);
-      },
+      error: (err) => this.errorHandler.handler(err),
     });
   }
 
   adicionarRegra(): void {
-    this.regras.push({
-      nome: 'Nova regra',
-      ordem: this.regras.length + 1,
-      ativo: true,
-      tipo_detalhamento_resultado: TipoDetalhamento.OUTRO,
-      condicoes: [{ ordem: 1, padrao_regex: '' }],
-    });
+    this.dialog
+      .open<RegraFormDialogComponent, RegraFormDialogData, RegraFormDialogResult | false>(RegraFormDialogComponent, {
+        width: '480px',
+        data: { modo: 'criar', temCondicoes: false },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (!result) return;
+
+        const nova: Regra = { ...result, ordem: this.grupo.regras.length + 1, condicoes: [] };
+        this.persistirRegras([...this.grupo.regras, nova]);
+      });
   }
 
-  removerRegra(index: number): void {
-    this.regras.splice(index, 1);
-    this.reindexar();
+  editarRegra(index: number): void {
+    const regra = this.grupo.regras[index];
+
+    this.dialog
+      .open<RegraFormDialogComponent, RegraFormDialogData, RegraFormDialogResult | false>(RegraFormDialogComponent, {
+        width: '480px',
+        data: { modo: 'editar', regra, temCondicoes: regra.condicoes.length > 0 },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (!result) return;
+
+        const novasRegras = this.grupo.regras.map((r, i) => (i === index ? { ...r, ...result } : r));
+        this.persistirRegras(novasRegras);
+      });
+  }
+
+  gerenciarCondicoes(index: number): void {
+    const regra = this.grupo.regras[index];
+
+    this.dialog
+      .open<CondicoesDialogComponent, CondicoesDialogData, RegraCondicao[] | false>(CondicoesDialogComponent, {
+        width: '760px',
+        maxWidth: '95vw',
+        data: { regraNome: regra.nome, condicoes: regra.condicoes },
+      })
+      .afterClosed()
+      .subscribe((condicoes) => {
+        if (!condicoes) return;
+
+        const novasRegras = this.grupo.regras.map((r, i) => {
+          if (i !== index) return r;
+          // Sem nenhuma condição, a regra não pode continuar ativa (mesma
+          // regra do backend, aplicada aqui pra refletir na hora).
+          return { ...r, condicoes, ativo: condicoes.length === 0 ? false : r.ativo };
+        });
+        this.persistirRegras(novasRegras);
+      });
+  }
+
+  excluirRegra(index: number): void {
+    const regra = this.grupo.regras[index];
+
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        width: '420px',
+        data: { title: 'Confirmar exclusão', message: `Deseja excluir a regra "${regra.nome}"?` },
+      })
+      .afterClosed()
+      .subscribe((ok: boolean) => {
+        if (!ok) return;
+
+        const novasRegras = this.grupo.regras.filter((_, i) => i !== index);
+        this.persistirRegras(novasRegras);
+      });
   }
 
   subirRegra(index: number): void {
@@ -87,29 +141,17 @@ export class RegraGrupoCardComponent implements OnChanges {
 
   private moverRegra(index: number, direcao: -1 | 1): void {
     const alvo = index + direcao;
-    if (alvo < 0 || alvo >= this.regras.length) return;
+    if (alvo < 0 || alvo >= this.grupo.regras.length) return;
 
-    [this.regras[index], this.regras[alvo]] = [this.regras[alvo], this.regras[index]];
-    this.reindexar();
+    const novasRegras = [...this.grupo.regras];
+    [novasRegras[index], novasRegras[alvo]] = [novasRegras[alvo], novasRegras[index]];
+    novasRegras.forEach((r, i) => (r.ordem = i + 1));
+    this.persistirRegras(novasRegras);
   }
 
-  private reindexar(): void {
-    this.regras.forEach((r, i) => (r.ordem = i + 1));
-  }
-
-  salvar(): void {
-    if (this.regras.some((r) => !r.nome.trim())) {
-      this.toast.error({ message: 'Toda regra precisa de um nome.' });
-      return;
-    }
-    if (this.regras.some((r) => r.condicoes.some((c) => !c.padrao_regex.trim()))) {
-      this.toast.error({ message: 'Toda condição precisa de um padrão (regex) preenchido.' });
-      return;
-    }
-
-    this.salvando = true;
+  private persistirRegras(novasRegras: Regra[]): void {
     const payload = {
-      regras: this.regras.map((r) => ({
+      regras: novasRegras.map((r) => ({
         nome: r.nome,
         ordem: r.ordem,
         ativo: r.ativo,
@@ -120,14 +162,10 @@ export class RegraGrupoCardComponent implements OnChanges {
 
     this.regraService.editar(this.grupo.id, payload).subscribe({
       next: (atualizado) => {
-        this.salvando = false;
-        this.toast.success({ message: `Regras de "${this.grupo.nome}" salvas com sucesso.` });
+        this.toast.success({ message: `Regras de "${this.grupo.nome}" atualizadas.` });
         this.salvo.emit(atualizado);
       },
-      error: (err) => {
-        this.salvando = false;
-        this.errorHandler.handler(err);
-      },
+      error: (err) => this.errorHandler.handler(err),
     });
   }
 }

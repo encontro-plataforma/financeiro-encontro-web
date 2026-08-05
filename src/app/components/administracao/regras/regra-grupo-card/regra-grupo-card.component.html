@@ -13,9 +13,10 @@
 
     <mat-slide-toggle
       [ngModel]="grupo.ativo"
+      [disabled]="!grupo.ativo && !podeAtivarGrupo"
+      [matTooltip]="!podeAtivarGrupo ? 'Só é possível ativar o grupo com pelo menos uma regra ativa' : ''"
       (ngModelChange)="onAtivoChange($event)"
       (click)="$event.stopPropagation()"
-      matTooltip="Grupo ativo"
     >
       Ativo
     </mat-slide-toggle>
@@ -23,32 +24,26 @@
 
   @if (expandido) {
     <div class="caixa__body">
-      @for (regra of regras; track $index) {
+      @for (regra of grupo.regras; track $index) {
         <app-regra-card
           [regra]="regra"
           [primeira]="$index === 0"
-          [ultima]="$index === regras.length - 1"
+          [ultima]="$index === grupo.regras.length - 1"
           (subir)="subirRegra($index)"
           (descer)="descerRegra($index)"
-          (remover)="removerRegra($index)"
+          (editar)="editarRegra($index)"
+          (gerenciarCondicoes)="gerenciarCondicoes($index)"
+          (excluir)="excluirRegra($index)"
         />
       }
 
-      @if (!regras.length) {
+      @if (!grupo.regras.length) {
         <p class="caixa__vazio">Nenhuma regra neste grupo ainda.</p>
       }
 
       <div class="caixa__acoes">
-        <button mat-button color="primary" (click)="adicionarRegra()">
+        <button mat-button color="primary" class="btn" (click)="adicionarRegra()">
           <mat-icon>add</mat-icon> Adicionar regra
-        </button>
-
-        <button mat-flat-button color="primary" [disabled]="salvando" (click)="salvar()">
-          @if (salvando) {
-            <mat-spinner diameter="18" />
-          } @else {
-            Salvar
-          }
         </button>
       </div>
     </div>
