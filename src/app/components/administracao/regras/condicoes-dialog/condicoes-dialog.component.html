@@ -1,0 +1,61 @@
+<h2 mat-dialog-title>Condições — {{ data.regraNome }}</h2>
+
+<mat-dialog-content>
+  <p class="ajuda">
+    Todas as condições abaixo precisam casar na observação para esta regra
+    valer. Sem nenhuma condição, a regra fica desativada automaticamente.
+  </p>
+
+  @for (condicao of condicoes; track $index) {
+    <div class="condicao-row">
+      <div class="condicao-row__ordem">
+        <button mat-icon-button [disabled]="$index === 0" matTooltip="Mover para cima" (click)="subirCondicao($index)">
+          <mat-icon>keyboard_arrow_up</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="$index === condicoes.length - 1" matTooltip="Mover para baixo" (click)="descerCondicao($index)">
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+      </div>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="condicao-row__regex">
+        <mat-label>Padrão (regex)</mat-label>
+        <input matInput [(ngModel)]="condicao.padrao_regex" placeholder="Ex.: oferta\D*?(\d+)" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="condicao-row__teste">
+        <mat-label>Testar com um texto de exemplo</mat-label>
+        <input matInput [(ngModel)]="condicao._teste" placeholder="Ex.: pago 30 de oferta" />
+      </mat-form-field>
+
+      @let resultado = testar(condicao);
+      <span class="condicao-row__resultado" [class.condicao-row__resultado--ok]="resultado.casa" [class.condicao-row__resultado--erro]="!resultado.casa && condicao._teste">
+        @if (condicao._teste) {
+          @if (resultado.casa) {
+            <mat-icon inline>check_circle</mat-icon> casa @if (resultado.valor) { (valor: {{ resultado.valor }}) }
+          } @else {
+            <mat-icon inline>cancel</mat-icon> não casa
+          }
+        }
+      </span>
+
+      <button mat-icon-button matTooltip="Remover condição" (click)="removerCondicao($index)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (!condicoes.length) {
+    <p class="sem-condicoes">Nenhuma condição ainda.</p>
+  }
+
+  <button mat-button color="primary" (click)="adicionarCondicao()">
+    <mat-icon>add</mat-icon> Adicionar condição
+  </button>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button class="btn" (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" class="btn" [disabled]="!podeSalvar" (click)="confirmar()">
+    Salvar
+  </button>
+</mat-dialog-actions>

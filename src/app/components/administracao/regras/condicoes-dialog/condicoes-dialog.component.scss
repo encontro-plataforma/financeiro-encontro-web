@@ -1,0 +1,48 @@
+.ajuda {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin-top: 0;
+}
+
+.condicao-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.condicao-row__ordem {
+  display: flex;
+  flex-direction: column;
+  line-height: 0;
+}
+
+.condicao-row__regex {
+  flex: 1 1 260px;
+  min-width: 220px;
+  font-family: monospace;
+}
+
+.condicao-row__teste {
+  flex: 1 1 220px;
+  min-width: 200px;
+}
+
+.condicao-row__resultado {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.condicao-row__resultado--ok {
+  color: var(--mat-sys-primary, seagreen);
+}
+
+.condicao-row__resultado--erro {
+  color: var(--mat-sys-error, firebrick);
+}
+
+.sem-condicoes {
+  opacity: 0.6;
+  font-style: italic;
+}
