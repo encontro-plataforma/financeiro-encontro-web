@@ -1,0 +1,15 @@
+// ─── Switch "quadrado" (interruptor) ──────────────────────────────────────────
+// Usado nos toggles de "ativo" das Regras/Grupos de regras: cantos quase retos
+// e vermelho sólido quando desligado. O estado ligado (verde) permanece o
+// padrão do tema (--mat-sys-primary), não é sobrescrito aqui.
+// Os tokens abaixo são expostos pelo próprio mat-slide-toggle (M3) e herdam
+// normalmente pela árvore do DOM, sem precisar de ::ng-deep.
+.switch-quadrado {
+  --mat-slide-toggle-track-shape: 4px;
+  --mat-slide-toggle-handle-shape: 3px;
+  --mat-slide-toggle-track-outline-color: transparent;
+  --mat-slide-toggle-unselected-track-color: #c62828;
+  --mat-slide-toggle-unselected-hover-track-color: #b71c1c;
+  --mat-slide-toggle-unselected-focus-track-color: #c62828;
+  --mat-slide-toggle-unselected-pressed-track-color: #c62828;
+}

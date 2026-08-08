@@ -1,10 +1,12 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 
 import { MaterialGlobalModule } from '../../../shared/modules/material.imports.module';
 import { RegraService } from '../../../services/regra.service';
 import { RegraGrupo } from '../../../models/regra-grupo.model';
 import { RegraGrupoCardComponent } from './regra-grupo-card/regra-grupo-card.component';
+import { AjudaRegrasDialogComponent } from './ajuda-regras-dialog/ajuda-regras-dialog.component';
 
 @Component({
   selector: 'app-regras',
@@ -16,6 +18,7 @@ import { RegraGrupoCardComponent } from './regra-grupo-card/regra-grupo-card.com
 export class RegrasComponent implements OnInit {
   private regraService = inject(RegraService);
   private cdr = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
 
   grupos: RegraGrupo[] = [];
   loading = false;
@@ -33,6 +36,10 @@ export class RegrasComponent implements OnInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  abrirAjuda(): void {
+    this.dialog.open(AjudaRegrasDialogComponent, { width: '560px', maxWidth: '95vw' });
   }
 
   onSalvo(grupoAtualizado: RegraGrupo): void {

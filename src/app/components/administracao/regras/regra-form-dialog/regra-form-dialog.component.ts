@@ -6,18 +6,17 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MaterialGlobalModule, MaterialFormsModule } from '../../../../shared/modules/material.imports.module';
 import { Regra } from '../../../../models/regra-grupo.model';
 import { TipoDetalhamento } from '../../../../models/constants/tipo-detalhamento';
+import { ModoExtracaoRegra } from '../../../../models/constants/modo-extracao-regra';
 
 export interface RegraFormDialogData {
   modo: 'criar' | 'editar';
   regra?: Regra;
-  /** Se a regra já tem alguma condição — controla se dá pra ativar. */
-  temCondicoes: boolean;
 }
 
 export interface RegraFormDialogResult {
   nome: string;
   tipo_detalhamento_resultado: string;
-  ativo: boolean;
+  modo_extracao: 'TOKEN_VALOR' | 'NOME_NA_LISTA';
 }
 
 @Component({
@@ -29,10 +28,11 @@ export interface RegraFormDialogResult {
 })
 export class RegraFormDialogComponent {
   readonly tipoOptions = TipoDetalhamento.options;
+  readonly modoOptions = ModoExtracaoRegra.options;
 
   nome: string;
   tipoDetalhamentoResultado: string;
-  ativo: boolean;
+  modoExtracao: 'TOKEN_VALOR' | 'NOME_NA_LISTA';
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: RegraFormDialogData,
@@ -40,11 +40,15 @@ export class RegraFormDialogComponent {
   ) {
     this.nome = data.regra?.nome ?? '';
     this.tipoDetalhamentoResultado = data.regra?.tipo_detalhamento_resultado ?? TipoDetalhamento.OUTRO;
-    this.ativo = data.regra?.ativo ?? false;
+    this.modoExtracao = data.regra?.modo_extracao ?? 'TOKEN_VALOR';
   }
 
   get titulo(): string {
     return this.data.modo === 'criar' ? 'Nova regra' : 'Editar regra';
+  }
+
+  get ehNomeNaLista(): boolean {
+    return this.modoExtracao === ModoExtracaoRegra.NOME_NA_LISTA;
   }
 
   confirmar(): void {
@@ -53,9 +57,7 @@ export class RegraFormDialogComponent {
     this.dialogRef.close({
       nome: this.nome.trim(),
       tipo_detalhamento_resultado: this.tipoDetalhamentoResultado,
-      // Uma regra recém-criada nunca tem condição ainda, então nasce sempre
-      // desativada — o toggle só existe (e só importa) no modo editar.
-      ativo: this.data.modo === 'editar' ? this.ativo : false,
+      modo_extracao: this.modoExtracao,
     });
   }
 

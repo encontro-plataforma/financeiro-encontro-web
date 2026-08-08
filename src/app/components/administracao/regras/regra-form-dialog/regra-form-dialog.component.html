@@ -15,21 +15,25 @@
     </mat-select>
   </mat-form-field>
 
-  @if (data.modo === 'editar') {
-    <div class="ativo-row">
-      <mat-slide-toggle [(ngModel)]="ativo" [disabled]="!data.temCondicoes">
-        Ativa
-      </mat-slide-toggle>
-      @if (!data.temCondicoes) {
-        <span class="ativo-row__hint">
-          Só é possível ativar uma regra depois de adicionar pelo menos uma condição.
-        </span>
+  <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+    <mat-label>Modo de extração</mat-label>
+    <mat-select [(ngModel)]="modoExtracao">
+      @for (op of modoOptions; track op.value) {
+        <mat-option [value]="op.value">{{ op.name }}</mat-option>
       }
-    </div>
-  } @else {
+    </mat-select>
+  </mat-form-field>
+
+  @if (ehNomeNaLista) {
     <p class="criar-hint">
-      A regra nasce desativada — adicione uma condição a ela depois de criada
-      para poder ativá-la.
+      Busca o nome da própria pessoa na observação (aceita nome incompleto,
+      sem acento e sem diferenciar maiúsculas/minúsculas) e captura o valor
+      logo em seguida — não usa condições/regex.
+    </p>
+  } @else if (data.modo === 'criar') {
+    <p class="criar-hint">
+      A regra nasce desativada — adicione uma condição a ela e ative-a pelo
+      card, depois de criada.
     </p>
   }
 </mat-dialog-content>

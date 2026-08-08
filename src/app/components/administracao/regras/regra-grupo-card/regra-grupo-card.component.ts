@@ -63,13 +63,13 @@ export class RegraGrupoCardComponent {
     this.dialog
       .open<RegraFormDialogComponent, RegraFormDialogData, RegraFormDialogResult | false>(RegraFormDialogComponent, {
         width: '480px',
-        data: { modo: 'criar', temCondicoes: false },
+        data: { modo: 'criar' },
       })
       .afterClosed()
       .subscribe((result) => {
         if (!result) return;
 
-        const nova: Regra = { ...result, ordem: this.grupo.regras.length + 1, condicoes: [] };
+        const nova: Regra = { ...result, ordem: this.grupo.regras.length + 1, ativo: false, condicoes: [] };
         this.persistirRegras([...this.grupo.regras, nova]);
       });
   }
@@ -80,7 +80,7 @@ export class RegraGrupoCardComponent {
     this.dialog
       .open<RegraFormDialogComponent, RegraFormDialogData, RegraFormDialogResult | false>(RegraFormDialogComponent, {
         width: '480px',
-        data: { modo: 'editar', regra, temCondicoes: regra.condicoes.length > 0 },
+        data: { modo: 'editar', regra },
       })
       .afterClosed()
       .subscribe((result) => {
@@ -89,6 +89,11 @@ export class RegraGrupoCardComponent {
         const novasRegras = this.grupo.regras.map((r, i) => (i === index ? { ...r, ...result } : r));
         this.persistirRegras(novasRegras);
       });
+  }
+
+  alternarAtivoRegra(index: number, ativo: boolean): void {
+    const novasRegras = this.grupo.regras.map((r, i) => (i === index ? { ...r, ativo } : r));
+    this.persistirRegras(novasRegras);
   }
 
   gerenciarCondicoes(index: number): void {
@@ -110,6 +115,26 @@ export class RegraGrupoCardComponent {
           // regra do backend, aplicada aqui pra refletir na hora).
           return { ...r, condicoes, ativo: condicoes.length === 0 ? false : r.ativo };
         });
+        this.persistirRegras(novasRegras);
+      });
+  }
+
+  excluirCondicao(regraIndex: number, condicaoIndex: number): void {
+    const regra = this.grupo.regras[regraIndex];
+
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        width: '420px',
+        data: { title: 'Confirmar exclusão', message: `Remover esta condição da regra "${regra.nome}"?` },
+      })
+      .afterClosed()
+      .subscribe((ok: boolean) => {
+        if (!ok) return;
+
+        const condicoes = regra.condicoes.filter((_, i) => i !== condicaoIndex);
+        const novasRegras = this.grupo.regras.map((r, i) =>
+          i === regraIndex ? { ...r, condicoes, ativo: condicoes.length === 0 ? false : r.ativo } : r,
+        );
         this.persistirRegras(novasRegras);
       });
   }
@@ -156,6 +181,7 @@ export class RegraGrupoCardComponent {
         ordem: r.ordem,
         ativo: r.ativo,
         tipo_detalhamento_resultado: r.tipo_detalhamento_resultado,
+        modo_extracao: r.modo_extracao,
         condicoes: r.condicoes.map((c) => ({ ordem: c.ordem, padrao_regex: c.padrao_regex })),
       })),
     };

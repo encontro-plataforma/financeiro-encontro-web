@@ -10,6 +10,7 @@ export interface Regra {
   ordem:                        number;
   ativo:                        boolean;
   tipo_detalhamento_resultado:  string;
+  modo_extracao:                'TOKEN_VALOR' | 'NOME_NA_LISTA';
   condicoes:                    RegraCondicao[];
 }
 

@@ -1,5 +1,5 @@
 <mat-card appearance="outlined" class="regra-card" [class.regra-card--inativa]="!regra.ativo">
-  <div class="regra-card__topo">
+  <div class="regra-card__layout">
     <div class="regra-card__ordem">
       <button mat-icon-button [disabled]="primeira" matTooltip="Mover para cima" (click)="subir.emit()">
         <mat-icon>keyboard_arrow_up</mat-icon>
@@ -9,39 +9,82 @@
       </button>
     </div>
 
-    <div class="regra-card__titulo">
-      <div class="regra-card__nome">
-        {{ regra.nome }}
-        @if (!regra.ativo) {
-          <span class="regra-card__badge-inativa">inativa</span>
-        }
+    <div class="regra-card__conteudo">
+      <div class="regra-card__topo">
+        <div class="regra-card__titulo">
+          <div class="regra-card__nome">
+            {{ regra.nome }}
+            @if (!regra.ativo) {
+              <span class="regra-card__badge-inativa">inativa</span>
+            }
+          </div>
+          <div class="regra-card__subtitulo">Gera Detalhamento de: {{ tipoDescricao }}</div>
+        </div>
+
+        <span class="regra-card__spacer"></span>
+
+        <div class="regra-card__acoes">
+          <mat-slide-toggle
+            class="switch-quadrado"
+            [ngModel]="regra.ativo"
+            [disabled]="naoPodeAtivar"
+            [matTooltip]="naoPodeAtivar ? 'Só é possível ativar a regra com pelo menos uma condição' : ''"
+            (ngModelChange)="ativoChange.emit($event)"
+          ></mat-slide-toggle>
+
+          <button mat-mini-fab color="primary" class="btn" matTooltip="Editar regra" (click)="editar.emit()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          @if (usaCondicoes) {
+            <button mat-flat-button color="primary" class="btn" matTooltip="Nova condição" (click)="gerenciarCondicoes.emit()">
+              <mat-icon>add</mat-icon> Nova Condição
+            </button>
+          }
+        </div>
       </div>
-      <div class="regra-card__subtitulo">Gera Detalhamento de: {{ tipoDescricao }}</div>
-    </div>
-  </div>
 
-  <div class="regra-card__condicoes">
-    @if (regra.condicoes.length) {
-      @for (condicao of regra.condicoes; track $index) {
-        <div class="regra-card__condicao-item">{{ condicao.padrao_regex }}</div>
+      @if (usaCondicoes) {
+        <div class="regra-card__condicoes-wrap">
+          <table class="regra-card__tabela-condicoes">
+            <thead>
+              <tr>
+                <th>Condição (padrão regex)</th>
+                <th class="regra-card__col-acoes">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (condicao of regra.condicoes; track $index) {
+                <tr>
+                  <td class="regra-card__col-regex">{{ condicao.padrao_regex }}</td>
+                  <td class="regra-card__col-acoes">
+                    <button mat-icon-button class="btn" matTooltip="Editar condições" (click)="gerenciarCondicoes.emit()">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button class="btn" matTooltip="Excluir condição" (click)="excluirCondicao.emit($index)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </tr>
+              }
+              @if (!regra.condicoes.length) {
+                <tr>
+                  <td colspan="2" class="regra-card__sem-condicao">Nenhuma condição configurada.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="regra-card__nome-lista-hint">
+          Usa o nome de cada pessoa para achar o valor na observação compartilhada.
+        </p>
       }
-    } @else {
-      <span class="regra-card__sem-condicao">Nenhuma condição configurada.</span>
-    }
 
-    <span class="regra-card__spacer"></span>
-
-    <button mat-icon-button class="btn" matTooltip="Editar regra" (click)="editar.emit()">
-      <mat-icon>edit</mat-icon>
-    </button>
-    <button mat-icon-button class="btn" matTooltip="Gerenciar condições" (click)="gerenciarCondicoes.emit()">
-      <mat-icon>add</mat-icon>
-    </button>
-  </div>
-
-  <div class="regra-card__rodape">
-    <button mat-icon-button color="warn" class="btn" matTooltip="Excluir regra" (click)="excluir.emit()">
-      <mat-icon>delete</mat-icon>
-    </button>
+      <div class="regra-card__rodape">
+        <button mat-mini-fab color="warn" class="btn regra-card__fab-excluir" matTooltip="Excluir regra" (click)="excluir.emit()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
   </div>
 </mat-card>
