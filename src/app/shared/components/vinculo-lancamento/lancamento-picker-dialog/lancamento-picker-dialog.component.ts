@@ -6,12 +6,16 @@ import { PageEvent } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-import { MaterialGlobalModule, MaterialFormsModule } from '../../../modules/material.imports.module';
+import {
+  MaterialGlobalModule,
+  MaterialFormsModule,
+} from '../../../modules/material.imports.module';
 import { LancamentoService } from '../../../../services/lancamento.service';
 import { Lancamento } from '../../../../models/lancamento.model';
 import { TipoLancamento } from '../../../../models/constants/tipo-lancamento';
 import { StatusLancamento } from '../../../../models/constants/status-lancamento';
 import { PageTemplate } from '../../../../services/util/PageTemplate';
+import { ListFilterBase } from '../../../../shared/classes/list-filter-base';
 
 @Component({
   selector: 'app-lancamento-picker-dialog',
@@ -20,16 +24,14 @@ import { PageTemplate } from '../../../../services/util/PageTemplate';
   templateUrl: './lancamento-picker-dialog.component.html',
   styleUrl: './lancamento-picker-dialog.component.scss',
 })
-export class LancamentoPickerDialogComponent implements AfterViewInit {
+export class LancamentoPickerDialogComponent extends ListFilterBase implements AfterViewInit {
   private lancamentoService = inject(LancamentoService);
-  private cdr                = inject(ChangeDetectorRef);
-  private dialogRef          = inject(MatDialogRef<LancamentoPickerDialogComponent, Lancamento>);
+  private cdr = inject(ChangeDetectorRef);
+  private dialogRef = inject(MatDialogRef<LancamentoPickerDialogComponent, Lancamento>);
 
   result: PageTemplate<Lancamento> = new PageTemplate<Lancamento>();
-  loading   = false;
-  pageIndex = 0;
-  pageSize  = 8;
-  search    = '';
+  loading = false;
+  search = '';
   statusFiltro = StatusLancamento.NAO_CONCILIADO;
 
   readonly statusOpcoes = StatusLancamento.optionsAll;
@@ -38,11 +40,12 @@ export class LancamentoPickerDialogComponent implements AfterViewInit {
   private searchSubject = new Subject<string>();
 
   constructor() {
-    this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-    ).subscribe(() => {
+    super();
+
+    this.pageSize = 8;
+    this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.pageIndex = 0;
+      this.saveState({ search: this.search, statusFiltro: this.statusFiltro });
       this.load();
     });
   }
@@ -57,13 +60,16 @@ export class LancamentoPickerDialogComponent implements AfterViewInit {
 
   onStatusChange(): void {
     this.pageIndex = 0;
+    this.saveState({ search: this.search, statusFiltro: this.statusFiltro });
     this.load();
   }
 
   onPage(event: PageEvent): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize  = event.pageSize;
-    this.load();
+    this.handlePage(
+      event,
+      () => ({ search: this.search, statusFiltro: this.statusFiltro }),
+      () => this.load(),
+    );
   }
 
   load(): void {
@@ -75,11 +81,15 @@ export class LancamentoPickerDialogComponent implements AfterViewInit {
           ...(this.search ? { descricao: this.search } : {}),
           ...(this.statusFiltro ? { status: this.statusFiltro } : {}),
         },
-        { skip: this.pageIndex * this.pageSize, limit: this.pageSize, sort: ['data_pagamento:desc'] },
+        {
+          skip: this.pageIndex * this.pageSize,
+          limit: this.pageSize,
+          sort: ['data_pagamento:desc'],
+        },
       )
       .subscribe({
         next: (data) => {
-          this.result  = data;
+          this.result = data;
           this.loading = false;
           this.cdr.detectChanges();
         },

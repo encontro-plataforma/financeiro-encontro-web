@@ -99,6 +99,26 @@
           <mat-icon matPrefix>search</mat-icon>
           <input matInput formControlName="descricao" placeholder="Buscar por descrição..." />
         </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
+          <mat-label>Valor mínimo</mat-label>
+          <span matPrefix>R$&nbsp;</span>
+          <input matInput type="number" formControlName="valor_min" placeholder="0,00" />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
+          <mat-label>Valor máximo</mat-label>
+          <span matPrefix>R$&nbsp;</span>
+          <input matInput type="number" formControlName="valor_max" placeholder="0,00" />
+        </mat-form-field>
       </div>
     </mat-card-content>
   </mat-card>

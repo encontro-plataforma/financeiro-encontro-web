@@ -23,6 +23,7 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
 import { ErrorHandlerService } from '../../../shared/services/error-handler.service';
 import { FinalidadeService } from '../../../services/finalidade.service';
 import { Finalidade } from '../../../models/finalidade.model';
+import { ListFilterBase } from '../../../shared/classes/list-filter-base';
 import { PageTemplate } from '../../../services/util/PageTemplate';
 import { TipoLancamento } from '../../../models/constants/tipo-lancamento';
 
@@ -34,34 +35,36 @@ import { TipoLancamento } from '../../../models/constants/tipo-lancamento';
   templateUrl: './finalidades.component.html',
   styleUrl: './finalidades.component.scss',
 })
-export class FinalidadesComponent implements OnInit, AfterViewInit {
+export class FinalidadesComponent extends ListFilterBase implements OnInit, AfterViewInit {
   private finalidadeService = inject(FinalidadeService);
-  private router            = inject(Router);
-  private dialog            = inject(MatDialog);
-  private toast             = inject(ToastService);
-  private errorHandler      = inject(ErrorHandlerService);
-  private cdr               = inject(ChangeDetectorRef);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+  private toast = inject(ToastService);
+  private errorHandler = inject(ErrorHandlerService);
+  private cdr = inject(ChangeDetectorRef);
 
   result: PageTemplate<Finalidade> = new PageTemplate<Finalidade>();
-  loading    = false;
-  pageIndex  = 0;
-  pageSize   = 10;
-  search     = '';
+  loading = false;
+  search = '';
   tipoFiltro = '';
 
   readonly TipoLancamento = TipoLancamento;
-  readonly tipoOpcoes     = TipoLancamento.options;
+  readonly tipoOpcoes = TipoLancamento.options;
 
   displayedColumns = ['tipo', 'nome', 'descricao', 'acoes'];
 
   private searchSubject = new Subject<string>();
 
   ngOnInit(): void {
-    this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-    ).subscribe(() => {
+    // restore saved filters
+    this.initFilter('finalidades', (saved) => {
+      this.search = saved.search ?? this.search;
+      this.tipoFiltro = saved.tipoFiltro ?? this.tipoFiltro;
+    });
+
+    this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.pageIndex = 0;
+      this.saveState({ search: this.search, tipoFiltro: this.tipoFiltro });
       this.load();
     });
   }
@@ -76,13 +79,16 @@ export class FinalidadesComponent implements OnInit, AfterViewInit {
 
   onTipoChange(): void {
     this.pageIndex = 0;
+    this.saveState({ search: this.search, tipoFiltro: this.tipoFiltro });
     this.load();
   }
 
   onPage(event: PageEvent): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize  = event.pageSize;
-    this.load();
+    this.handlePage(
+      event,
+      () => ({ search: this.search, tipoFiltro: this.tipoFiltro }),
+      () => this.load(),
+    );
   }
 
   load(): void {
@@ -90,14 +96,14 @@ export class FinalidadesComponent implements OnInit, AfterViewInit {
     this.finalidadeService
       .list(
         {
-          ...(this.search     ? { nome: this.search }     : {}),
+          ...(this.search ? { nome: this.search } : {}),
           ...(this.tipoFiltro ? { tipo: this.tipoFiltro } : {}),
         },
         { skip: this.pageIndex * this.pageSize, limit: this.pageSize },
       )
       .subscribe({
         next: (data) => {
-          this.result  = data;
+          this.result = data;
           this.loading = false;
           this.cdr.detectChanges();
         },
@@ -118,25 +124,28 @@ export class FinalidadesComponent implements OnInit, AfterViewInit {
   }
 
   deletar(finalidade: Finalidade): void {
-    this.dialog.open(ConfirmDialogComponent, {
-      width: '420px',
-      data: {
-        title:   'Confirmar exclusão',
-        message: `Deseja excluir a finalidade "${finalidade.nome}"? Esta ação não pode ser desfeita.`,
-      },
-    }).afterClosed().subscribe((ok: boolean) => {
-      if (!ok) return;
-      this.finalidadeService.remover(finalidade.id).subscribe({
-        next: () => {
-          this.toast.success({ message: 'Finalidade excluída com sucesso.' });
-          if (this.result.items.length === 1 && this.pageIndex > 0) {
-            this.pageIndex--;
-          }
-          this.load();
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        width: '420px',
+        data: {
+          title: 'Confirmar exclusão',
+          message: `Deseja excluir a finalidade "${finalidade.nome}"? Esta ação não pode ser desfeita.`,
         },
-        error: (err) => this.errorHandler.handler(err),
+      })
+      .afterClosed()
+      .subscribe((ok: boolean) => {
+        if (!ok) return;
+        this.finalidadeService.remover(finalidade.id).subscribe({
+          next: () => {
+            this.toast.success({ message: 'Finalidade excluída com sucesso.' });
+            if (this.result.items.length === 1 && this.pageIndex > 0) {
+              this.pageIndex--;
+            }
+            this.load();
+          },
+          error: (err) => this.errorHandler.handler(err),
+        });
       });
-    });
   }
 
   getTipoClass(tipo: string): string {

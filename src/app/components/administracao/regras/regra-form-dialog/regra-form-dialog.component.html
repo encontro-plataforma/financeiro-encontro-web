@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>{{ titulo }}</h2>
+
+<mat-dialog-content>
+  <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+    <mat-label>Nome</mat-label>
+    <input matInput [(ngModel)]="nome" placeholder="Ex.: Oferta" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+    <mat-label>Gera Detalhamento de</mat-label>
+    <mat-select [(ngModel)]="tipoDetalhamentoResultado">
+      @for (op of tipoOptions; track op.value) {
+        <mat-option [value]="op.value">{{ op.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+    <mat-label>Modo de extração</mat-label>
+    <mat-select [(ngModel)]="modoExtracao">
+      @for (op of modoOptions; track op.value) {
+        <mat-option [value]="op.value">{{ op.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  @if (ehNomeNaLista) {
+    <p class="criar-hint">
+      Busca o nome da própria pessoa na observação (aceita nome incompleto,
+      sem acento e sem diferenciar maiúsculas/minúsculas) e captura o valor
+      logo em seguida — não usa condições/regex.
+    </p>
+  } @else if (data.modo === 'criar') {
+    <p class="criar-hint">
+      A regra nasce desativada — adicione uma condição a ela e ative-a pelo
+      card, depois de criada.
+    </p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button class="btn" (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" class="btn" [disabled]="!nome.trim()" (click)="confirmar()">
+    Salvar
+  </button>
+</mat-dialog-actions>

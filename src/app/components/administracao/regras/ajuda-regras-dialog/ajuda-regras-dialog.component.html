@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>Como funciona a tela de Regras</h2>
+
+<mat-dialog-content class="ajuda">
+  <p>
+    Depois que um lançamento bancário é ligado a uma pendência de pagamento
+    (isso é fixo: data + nome do pagador + valor), essas regras decidem
+    <strong>em quantos Detalhamentos esse pagamento se divide</strong>, lendo
+    o texto da observação da inscrição. Se nenhuma regra bater, o sistema usa
+    o padrão: 1 Detalhamento com o valor total, no tipo da própria inscrição.
+  </p>
+
+  <h3>Grupo (a caixa)</h3>
+  <p>
+    Cada caixa é um escopo fixo (Inscrição de Encontreiro, Inscrição de
+    Encontrista, Ofertas) — não existe tela para criar um grupo novo. O
+    toggle no cabeçalho liga/desliga o grupo inteiro; só é possível ativá-lo
+    se houver pelo menos <strong>1 regra ativa</strong> dentro dele.
+  </p>
+
+  <h3>Regra (o card)</h3>
+  <ul>
+    <li>Uma regra dispara e gera <strong>1 Detalhamento</strong> quando todas as suas condições baterem no texto da observação.</li>
+    <li>"Gera Detalhamento de" mostra o tipo de Detalhamento que essa regra cria.</li>
+    <li>O toggle da regra só pode ser ligado se ela tiver pelo menos 1 condição — sem condição, ela fica sempre desativada.</li>
+    <li>As setas ↑/↓ só reorganizam os cards visualmente: todas as regras ativas do grupo são avaliadas de forma independente, não é "a primeira que bater vale".</li>
+    <li>O lápis verde edita o nome e o tipo de Detalhamento da regra.</li>
+    <li>"+ Nova Condição" abre o gerenciador de condições dessa regra.</li>
+    <li>A lixeira vermelha exclui a regra inteira (com confirmação).</li>
+  </ul>
+
+  <h3>Condições (a tabela dentro do card)</h3>
+  <ul>
+    <li>Cada linha é um padrão de regex que precisa casar no texto da observação da pessoa.</li>
+    <li>Todas as condições de uma regra precisam bater ao mesmo tempo (E lógico) para a regra disparar.</li>
+    <li>O lápis de cada linha reabre o gerenciador de condições da regra; a lixeira remove só aquela condição.</li>
+    <li>Se todas as condições forem removidas, a regra desativa sozinha.</li>
+    <li>Dentro do gerenciador de condições dá para testar o regex com um texto de exemplo antes de salvar.</li>
+  </ul>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" class="btn" (click)="fechar()">Entendi</button>
+</mat-dialog-actions>

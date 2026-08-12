@@ -61,6 +61,8 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
   loadingMore = false;
   allLoaded   = false;
   search      = '';
+  valorMin: number | null = null;
+  valorMax: number | null = null;
   tipoFiltro  = TipoLancamento.RECEITA;
   auditando   = false;
 
@@ -68,11 +70,17 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
 
   private searchSubject = new Subject<string>();
   private searchSub!: Subscription;
+  private valorSubject = new Subject<void>();
+  private valorSub!: Subscription;
 
   ngOnInit(): void {
     this.searchSub = this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
+    ).subscribe(() => this.reset());
+
+    this.valorSub = this.valorSubject.pipe(
+      debounceTime(300),
     ).subscribe(() => this.reset());
 
     this.finalidadeService.listAll().subscribe({
@@ -86,10 +94,25 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.searchSub?.unsubscribe();
+    this.valorSub?.unsubscribe();
   }
 
   onSearchChange(): void {
     this.searchSubject.next(this.search);
+  }
+
+  onValorChange(): void {
+    this.valorSubject.next();
+  }
+
+  /** Campo vazio deve significar "sem filtro" — nunca 0. `[(ngModel)]` num
+   * input number costuma virar `null` sozinho quando vazio, mas isso não é
+   * garantido em todos os casos (ex: campo tocado e depois apagado deixa
+   * `NaN` em vez de `null`), então normaliza explicitamente aqui. */
+  private parseValorFiltro(valor: unknown): number | null {
+    if (valor === '' || valor === null || valor === undefined) return null;
+    const num = Number(valor);
+    return Number.isFinite(num) ? num : null;
   }
 
   onTipoFiltroChange(): void {
@@ -136,6 +159,8 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
     }
 
     const excludeIds = this.items.map(i => i.id);
+    const valorMin = this.parseValorFiltro(this.valorMin);
+    const valorMax = this.parseValorFiltro(this.valorMax);
 
     this.lancamentoService
       .list(
@@ -144,6 +169,8 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
           tipo: this.tipoFiltro,
           exclude_ids: excludeIds,
           ...(this.search ? { descricao: this.search } : {}),
+          ...(valorMin !== null && { valor_min: valorMin }),
+          ...(valorMax !== null && { valor_max: valorMax }),
         },
         { skip: 0, limit: pageAppend },
       )

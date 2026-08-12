@@ -1,0 +1,54 @@
+<mat-card appearance="outlined" class="caixa">
+  <div class="caixa__header" (click)="toggleExpandido()">
+    <button mat-icon-button class="caixa__toggle" [class.caixa__toggle--aberto]="expandido">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+
+    <div class="caixa__titulo">
+      <span class="caixa__nome">{{ grupo.nome }}</span>
+      <span class="caixa__escopo-chip">{{ escopoDescricao }}</span>
+    </div>
+
+    <span class="caixa__spacer"></span>
+
+    <mat-slide-toggle
+      class="pr-3 switch-quadrado"
+      [ngModel]="grupo.ativo"
+      [disabled]="!grupo.ativo && !podeAtivarGrupo"
+      [matTooltip]="
+        !podeAtivarGrupo ? 'Só é possível ativar o grupo com pelo menos uma regra ativa' : ''
+      "
+      (ngModelChange)="onAtivoChange($event)"
+      (click)="$event.stopPropagation()"
+    ></mat-slide-toggle>
+  </div>
+
+  @if (expandido) {
+    <div class="caixa__body">
+      <div class="caixa__acoes">
+        <button mat-flat-button color="primary" class="btn" (click)="adicionarRegra()">
+          <mat-icon>add</mat-icon> Nova Regra
+        </button>
+      </div>
+
+      @for (regra of grupo.regras; track $index) {
+        <app-regra-card
+          [regra]="regra"
+          [primeira]="$index === 0"
+          [ultima]="$index === grupo.regras.length - 1"
+          (subir)="subirRegra($index)"
+          (descer)="descerRegra($index)"
+          (editar)="editarRegra($index)"
+          (ativoChange)="alternarAtivoRegra($index, $event)"
+          (gerenciarCondicoes)="gerenciarCondicoes($index)"
+          (excluirCondicao)="excluirCondicao($index, $event)"
+          (excluir)="excluirRegra($index)"
+        />
+      }
+
+      @if (!grupo.regras.length) {
+        <p class="caixa__vazio">Nenhuma regra neste grupo ainda.</p>
+      }
+    </div>
+  }
+</mat-card>

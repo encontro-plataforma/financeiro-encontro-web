@@ -49,6 +49,7 @@ export class MainComponent implements OnInit{
       items: [
         { label: 'Finalidades', icon: 'label',          route: '/administracao/finalidades', roles: [PerfilUsuario.ADMINISTRADOR] },
         { label: 'Usuários',    icon: 'group',           route: '/administracao/usuarios',   roles: [PerfilUsuario.ADMINISTRADOR] },
+        { label: 'Regras',      icon: 'rule',            route: '/administracao/regras',     roles: [PerfilUsuario.ADMINISTRADOR] },
         { label: 'Relatórios',  icon: 'picture_as_pdf',  route: '/administracao/relatorios' },
       ],
     },

@@ -1,0 +1,22 @@
+<div class="h-full flex flex-col min-h-0">
+  <div class="flex items-center justify-between mb-3 flex-none">
+    <div class="flex items-center gap-2">
+      <h1 class="text-2xl font-medium text-on-surface">Regras</h1>
+      <button mat-icon-button matTooltip="Como funciona esta tela?" (click)="abrirAjuda()">
+        <mat-icon>help_outline</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="p-1 regras-scroll flex-1 min-h-0 overflow-y-auto">
+    @if (loading) {
+      <mat-progress-bar mode="indeterminate" class="flex-none" />
+    } @else if (!grupos.length) {
+      <p class="sem-grupos">Nenhum grupo de regras encontrado.</p>
+    } @else {
+      @for (grupo of grupos; track grupo.id) {
+        <app-regra-grupo-card [grupo]="grupo" (salvo)="onSalvo($event)" />
+      }
+    }
+  </div>
+</div>

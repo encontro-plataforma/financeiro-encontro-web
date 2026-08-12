@@ -29,7 +29,7 @@
   </div>
 
   <div class="filter-line">
-    <mat-form-field appearance="outline" class="search-field">
+    <mat-form-field appearance="outline" floatLabel="always" class="search-field">
       <mat-label>Buscar por descrição</mat-label>
       <mat-icon matPrefix>search</mat-icon>
       <input
@@ -51,7 +51,7 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="tipo-field">
+    <mat-form-field appearance="outline" floatLabel="always" class="tipo-field">
       <mat-label>Tipo</mat-label>
       <mat-select
         [(ngModel)]="tipoFiltro"
@@ -62,6 +62,30 @@
           <mat-option [value]="op.value">{{ op.name }}</mat-option>
         }
       </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" floatLabel="always" class="valor-field">
+      <mat-label>Valor mínimo</mat-label>
+      <span matPrefix>R$&nbsp;</span>
+      <input
+        matInput
+        type="number"
+        [(ngModel)]="valorMin"
+        (ngModelChange)="onValorChange()"
+        [disabled]="auditando"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" floatLabel="always" class="valor-field">
+      <mat-label>Valor máximo</mat-label>
+      <span matPrefix>R$&nbsp;</span>
+      <input
+        matInput
+        type="number"
+        [(ngModel)]="valorMax"
+        (ngModelChange)="onValorChange()"
+        [disabled]="auditando"
+      />
     </mat-form-field>
   </div>
 
