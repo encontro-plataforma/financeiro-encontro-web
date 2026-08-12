@@ -37,8 +37,6 @@ export class EquipesComponent extends ListFilterBase implements OnInit, AfterVie
 
   result: PageTemplate<Equipe> = new PageTemplate<Equipe>();
   loading = false;
-  pageIndex = 0;
-  pageSize = 10;
   search = '';
   acessoFiltro = '';
 

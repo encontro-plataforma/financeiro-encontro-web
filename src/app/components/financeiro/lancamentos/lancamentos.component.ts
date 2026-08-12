@@ -61,8 +61,6 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
   formFilters!: FormGroup;
   result: PageTemplate<Lancamento> = new PageTemplate<Lancamento>();
   loading = false;
-  pageIndex = 0;
-  pageSize = 10;
 
   private loadSub?: Subscription;
 

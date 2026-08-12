@@ -51,8 +51,6 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
 
   result: PageTemplate<Encontrista> = new PageTemplate<Encontrista>();
   loading = false;
-  pageIndex = 0;
-  pageSize = 10;
 
   search = '';
   circuloSelecionados: number[] = [];

@@ -31,8 +31,6 @@ export class LancamentoPickerDialogComponent extends ListFilterBase implements A
 
   result: PageTemplate<Lancamento> = new PageTemplate<Lancamento>();
   loading = false;
-  pageIndex = 0;
-  pageSize = 8;
   search = '';
   statusFiltro = StatusLancamento.NAO_CONCILIADO;
 
@@ -42,6 +40,9 @@ export class LancamentoPickerDialogComponent extends ListFilterBase implements A
   private searchSubject = new Subject<string>();
 
   constructor() {
+    super();
+
+    this.pageSize = 8;
     this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.pageIndex = 0;
       this.saveState({ search: this.search, statusFiltro: this.statusFiltro });

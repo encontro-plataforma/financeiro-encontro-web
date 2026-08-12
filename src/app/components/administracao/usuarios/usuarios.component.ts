@@ -47,8 +47,6 @@ export class UsuariosComponent extends ListFilterBase implements OnInit, AfterVi
 
   result: PageTemplate<Usuario> = new PageTemplate<Usuario>();
   loading = false;
-  pageIndex = 0;
-  pageSize = 10;
 
   currentUserId = this.authService.getUsuario()?.id ?? -1;
 

@@ -51,8 +51,6 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
 
   result: PageTemplate<Encontreiro> = new PageTemplate<Encontreiro>();
   loading = false;
-  pageIndex = 0;
-  pageSize = 10;
 
   search = '';
   equipeSelecionadas: number[] = [];

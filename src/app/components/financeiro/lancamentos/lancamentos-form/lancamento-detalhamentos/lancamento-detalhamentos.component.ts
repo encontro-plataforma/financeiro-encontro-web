@@ -64,9 +64,12 @@ export class LancamentoDetalhamentosComponent extends ListFilterBase implements 
 
   detalhamentos: Detalhamento[] = [];
   loading = false;
-  pageIndex = 0;
-  readonly pageSize = 5;
   readonly displayedColumns = ['tipo', 'detalhe', 'valor', 'acoes'];
+
+  constructor() {
+    super();
+    this.pageSize = 5;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['lancamentoId'] && this.lancamentoId) {

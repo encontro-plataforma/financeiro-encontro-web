@@ -42,8 +42,6 @@ export class ArquivosComponent extends ListFilterBase implements OnInit, AfterVi
 
   result: PageTemplate<UploadFile> = new PageTemplate<UploadFile>();
   loading = false;
-  pageIndex = 0;
-  pageSize = 10;
   search = '';
   downloading = new Set<number>();
 

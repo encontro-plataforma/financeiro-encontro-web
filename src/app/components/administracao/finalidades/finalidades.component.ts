@@ -45,8 +45,6 @@ export class FinalidadesComponent extends ListFilterBase implements OnInit, Afte
 
   result: PageTemplate<Finalidade> = new PageTemplate<Finalidade>();
   loading = false;
-  pageIndex = 0;
-  pageSize = 10;
   search = '';
   tipoFiltro = '';
 

@@ -36,8 +36,6 @@ export class CirculosComponent extends ListFilterBase implements OnInit, AfterVi
 
   result: PageTemplate<Circulo> = new PageTemplate<Circulo>();
   loading = false;
-  pageIndex = 0;
-  pageSize = 10;
   search = '';
 
   displayedColumns = ['id', 'nome', 'rgb', 'acoes'];
