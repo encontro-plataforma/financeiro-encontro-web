@@ -53,7 +53,7 @@ components/
   │   └── shared/            # auditoria-resumo-dialog, conciliar-resto-dialog, detalhamento-picker-dialog
   ├── arquivos/              # uploaded-file history listing (all CSV imports) + upload-resumo-dialog
   ├── secretaria/            # encontristas, encontreiros, circulos, equipes, relatorios
-  └── administracao/         # finalidades, usuarios, relatorios (ADMIN-only)
+  └── administracao/         # finalidades, usuarios, relatorios, regras (ADMIN-only)
 ```
 
 ### Authentication & Access Control
@@ -72,7 +72,7 @@ Role constants used in `app.routes.ts` (`PerfilUsuario`, `src/app/models/constan
 | `/dashboard` | `[ADMINISTRADOR, CONCILIADOR, REPORTER]` | Not accessible to SECRETARIO |
 | `/lancamentos`, `/conciliacao`, `/arquivos` | `[ADMINISTRADOR, CONCILIADOR]` | Financeiro area — SECRETARIO has no access to upload history, by design |
 | `/secretaria/*` | `[ADMINISTRADOR, SECRETARIO]` | Encontristas/Encontreiros/Círculos/Equipes/Relatorios |
-| `/administracao/usuarios`, `/administracao/finalidades` | `[ADMINISTRADOR]` | |
+| `/administracao/usuarios`, `/administracao/finalidades`, `/administracao/regras` | `[ADMINISTRADOR]` | |
 | `/administracao/relatorios` | none | Any authenticated user |
 
 ### CSV Upload Flow — single shared component
@@ -90,6 +90,12 @@ Flow: select/drag file → `POST` the endpoint → poll `GET /uploads/{id}/statu
 ### Auditoria (automated linking)
 
 Triggered by the "Processar Conciliação" button on `/conciliacao` (`ConciliarLancamentosComponent.processarConciliacao()`) → `DetalhamentoService.auditoria()` → `POST /detalhamentos/auditoria`. Result (`AuditoriaResultado`) is shown in `AuditoriaResumoDialogComponent` (`components/financeiro/shared/`), then the conciliação list reloads. This is a *different* feature from the upload-resumo family above — it's a backend batch matching pass over already-imported data, not a CSV import.
+
+### Regras (motor de regras admin screen)
+
+`/administracao/regras` (`components/administracao/regras/`) edits the backend's configurable Auditoria "motor de regras" (`RegraGrupo` → `Regra` → `RegraCondicao` — see the backend's CLAUDE.md for the full model). There's no "create group" flow — only the 2 seeded `RegraGrupo`s (Encontreiro/Encontrista escopo) exist, editable as expandable "caixa" cards (`regra-grupo-card`, custom expand/collapse — no `mat-accordion`, same philosophy as `conciliacao-card`). Each `Regra` inside is its own card (`regra-card`) showing its condições as a read-only table (edit icon reopens the condições dialog; delete icon removes just that condição) plus its own ativo toggle (styled square/red-green via the global `.switch-quadrado` class in `src/styles/components/_switch.scss` — reused wherever an "ativo" slide-toggle needs that look).
+
+**Everything is dialog-driven, nothing inline**: creating/editing a `Regra` opens `regra-form-dialog` (nome, tipo_detalhamento_resultado, modo_extracao — `TOKEN_VALOR` shows the condições table on the card, `NOME_NA_LISTA` hides it since it doesn't use regex); managing a Regra's condições opens `condicoes-dialog` (add/remove/reorder, with a live client-side regex tester mirroring the backend's accent-stripping normalization). Every discrete action (add/edit/delete regra, manage condições, reorder, toggle ativo) persists immediately by resending the group's *entire* `regras` array via `PUT /regras/grupos/{id}` (`RegraGrupoCardComponent.persistirRegras()`) — the backend always replaces the whole tree, there's no partial-update endpoint.
 
 ### Shared components (`shared/components/`)
 
