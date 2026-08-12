@@ -24,6 +24,7 @@ import { UploadFile, parseErrosProcessamento } from '../../models/upload-file.mo
 import { PageTemplate } from '../../services/util/PageTemplate';
 import { UploadResumoDialogComponent } from './upload-resumo-dialog/upload-resumo-dialog.component';
 import { UploadResumoComponent } from '../../shared/components/upload-resumo/upload-resumo.component';
+import { ListFilterBase } from '../../shared/classes/list-filter-base';
 
 @Component({
   selector: 'app-arquivos',
@@ -33,7 +34,7 @@ import { UploadResumoComponent } from '../../shared/components/upload-resumo/upl
   styleUrl: './arquivos.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
-export class ArquivosComponent implements OnInit, AfterViewInit {
+export class ArquivosComponent extends ListFilterBase implements OnInit, AfterViewInit {
   private uploadFileService = inject(UploadFileService);
   private dialog = inject(MatDialog);
   private toast = inject(ToastService);
@@ -51,8 +52,13 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
   private searchSubject = new Subject<string>();
 
   ngOnInit(): void {
+    this.initFilter('arquivos', (saved) => {
+      this.search = saved.search ?? this.search;
+    });
+
     this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.pageIndex = 0;
+      this.saveState({ search: this.search });
       this.load();
     });
   }
@@ -66,9 +72,11 @@ export class ArquivosComponent implements OnInit, AfterViewInit {
   }
 
   onPage(event: PageEvent): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.load();
+    this.handlePage(
+      event,
+      () => ({ search: this.search }),
+      () => this.load(),
+    );
   }
 
   load(): void {

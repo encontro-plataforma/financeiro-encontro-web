@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,6 +22,7 @@ import { Detalhamento } from '../../../../../models/detalhamento.model';
 import { Lancamento } from '../../../../../models/lancamento.model';
 import { TipoLancamento } from '../../../../../models/constants/tipo-lancamento';
 import { StatusLancamento } from '../../../../../models/constants/status-lancamento';
+import { ListFilterBase } from '../../../../../shared/classes/list-filter-base';
 import {
   DetalhamentoPickerDialogComponent,
   DetalhamentoPickerDialogData,
@@ -37,7 +47,7 @@ const LABEL_POR_TIPO: Record<string, string> = {
   templateUrl: './lancamento-detalhamentos.component.html',
   styleUrl: './lancamento-detalhamentos.component.scss',
 })
-export class LancamentoDetalhamentosComponent implements OnChanges {
+export class LancamentoDetalhamentosComponent extends ListFilterBase implements OnChanges {
   @Input() lancamentoId!: number;
   @Input() lancamento?: Lancamento | null;
 
@@ -46,11 +56,11 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
   @Output() alterado = new EventEmitter<void>();
 
   private detalhamentoService = inject(DetalhamentoService);
-  private dialog                = inject(MatDialog);
-  private router                = inject(Router);
-  private toast                  = inject(ToastService);
-  private errorHandler           = inject(ErrorHandlerService);
-  private cdr                     = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private toast = inject(ToastService);
+  private errorHandler = inject(ErrorHandlerService);
+  private cdr = inject(ChangeDetectorRef);
 
   detalhamentos: Detalhamento[] = [];
   loading = false;
@@ -60,6 +70,10 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['lancamentoId'] && this.lancamentoId) {
+      // restore per-lancamento pagination
+      this.initFilter(`lancamento-detalhamentos.${this.lancamentoId}`, (saved) => {
+        this.pageIndex = saved.pageIndex ?? this.pageIndex;
+      });
       this.load();
     }
   }
@@ -78,7 +92,7 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
   }
 
   onPage(event: PageEvent): void {
-    this.pageIndex = event.pageIndex;
+    this.handlePage(event, () => ({}));
   }
 
   load(): void {
@@ -98,19 +112,22 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
   }
 
   incluir(): void {
-    this.dialog.open<DetalhamentoPickerDialogComponent, DetalhamentoPickerDialogData, boolean>(
-      DetalhamentoPickerDialogComponent,
-      {
-        width: '800px',
-        maxWidth: '95vw',
-        data: { lancamentoId: this.lancamentoId, lancamento: this.lancamento },
-      },
-    ).afterClosed().subscribe((criado) => {
-      if (criado) {
-        this.load();
-        this.alterado.emit();
-      }
-    });
+    this.dialog
+      .open<DetalhamentoPickerDialogComponent, DetalhamentoPickerDialogData, boolean>(
+        DetalhamentoPickerDialogComponent,
+        {
+          width: '800px',
+          maxWidth: '95vw',
+          data: { lancamentoId: this.lancamentoId, lancamento: this.lancamento },
+        },
+      )
+      .afterClosed()
+      .subscribe((criado) => {
+        if (criado) {
+          this.load();
+          this.alterado.emit();
+        }
+      });
   }
 
   isInscricao(tipo: string): boolean {
@@ -127,24 +144,30 @@ export class LancamentoDetalhamentosComponent implements OnChanges {
   }
 
   excluir(det: Detalhamento): void {
-    this.dialog.open(ConfirmDialogComponent, {
-      width: '440px',
-      data: {
-        title:   'Remover detalhamento',
-        message: `Deseja remover o detalhamento "${this.tipoLabel(det.tipo)} — ${det.detalhe_nome}"? ` +
-                  (this.isInscricao(det.tipo) ? 'A inscrição volta a ficar pendente de auditoria.' : 'Esta ação não pode ser desfeita.'),
-      },
-    }).afterClosed().subscribe((ok: boolean) => {
-      if (!ok) return;
-      this.detalhamentoService.remover(det.id).subscribe({
-        next: () => {
-          this.toast.success({ message: 'Detalhamento removido com sucesso.' });
-          this.load();
-          this.alterado.emit();
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        width: '440px',
+        data: {
+          title: 'Remover detalhamento',
+          message:
+            `Deseja remover o detalhamento "${this.tipoLabel(det.tipo)} — ${det.detalhe_nome}"? ` +
+            (this.isInscricao(det.tipo)
+              ? 'A inscrição volta a ficar pendente de auditoria.'
+              : 'Esta ação não pode ser desfeita.'),
         },
-        error: (err) => this.errorHandler.handler(err),
+      })
+      .afterClosed()
+      .subscribe((ok: boolean) => {
+        if (!ok) return;
+        this.detalhamentoService.remover(det.id).subscribe({
+          next: () => {
+            this.toast.success({ message: 'Detalhamento removido com sucesso.' });
+            this.load();
+            this.alterado.emit();
+          },
+          error: (err) => this.errorHandler.handler(err),
+        });
       });
-    });
   }
 
   tipoLabel(tipo: string): string {
