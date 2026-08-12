@@ -52,6 +52,14 @@
         </mat-cell>
       </ng-container>
 
+      <!-- Tipo de origem -->
+      <ng-container matColumnDef="tipo_origem">
+        <mat-header-cell *matHeaderCellDef>Tipo</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{ tipoOrigemLabel(row) }}
+        </mat-cell>
+      </ng-container>
+
       <!-- Status -->
       <ng-container matColumnDef="status">
         <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>

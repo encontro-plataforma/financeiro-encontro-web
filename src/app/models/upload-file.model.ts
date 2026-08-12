@@ -1,11 +1,14 @@
 import { StatusProcessamento } from './constants/status-processamento';
 
+export type TipoOrigemUpload = 'BANCARIO' | 'ESPECIE' | 'CARTAO' | null;
+
 export interface UploadFile {
   id: number;
   nome_arquivo: string;
   tamanho_bytes: number | null;
   processado_em: string;
   status: StatusProcessamento;
+  tipo_origem: TipoOrigemUpload;
   error_code: string | null;
   error_message: string | null;
   resultado_processamento: string | null;

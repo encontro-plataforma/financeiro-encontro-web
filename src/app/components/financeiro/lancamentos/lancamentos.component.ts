@@ -163,10 +163,28 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
     this.router.navigate(['/lancamentos', id, 'editar']);
   }
 
-  enviarCsv(): void {
+  enviarCsvBancario(): void {
     CsvUploadDialogComponent.open(this.dialog, {
       titulo: 'Importar Extrato Bancário',
       endpoint: '/conciliacao/upload',
+    })
+      .afterClosed()
+      .subscribe(() => this.load());
+  }
+
+  enviarCsvEspecie(): void {
+    CsvUploadDialogComponent.open(this.dialog, {
+      titulo: 'Importar Extrato de Espécie',
+      endpoint: '/conciliacao/upload-especie',
+    })
+      .afterClosed()
+      .subscribe(() => this.load());
+  }
+
+  enviarCsvCartao(): void {
+    CsvUploadDialogComponent.open(this.dialog, {
+      titulo: 'Importar Extrato de Cartão',
+      endpoint: '/conciliacao/upload-cartao',
     })
       .afterClosed()
       .subscribe(() => this.load());
