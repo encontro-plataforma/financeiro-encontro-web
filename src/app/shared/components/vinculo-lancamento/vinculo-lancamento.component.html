@@ -10,6 +10,8 @@
             {{ lancamentoVinculado.data_pagamento | date: 'dd/MM/yyyy' }}
             &nbsp;·&nbsp;
             {{ lancamentoVinculado.valor | currency: 'BRL' }}
+            &nbsp;·&nbsp;
+            {{ FormaPagamento.getDescription(lancamentoVinculado.forma_pagamento) }}
           </p>
           @if (lancamentoVinculado.observacao) {
             <p class="vinculo-observacao">{{ lancamentoVinculado.observacao }}</p>

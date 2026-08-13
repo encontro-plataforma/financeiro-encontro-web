@@ -14,6 +14,7 @@ import { LancamentoService } from '../../../../services/lancamento.service';
 import { Lancamento } from '../../../../models/lancamento.model';
 import { TipoLancamento } from '../../../../models/constants/tipo-lancamento';
 import { StatusLancamento } from '../../../../models/constants/status-lancamento';
+import { FormaPagamento } from '../../../../models/constants/forma-pagamento';
 import { PageTemplate } from '../../../../services/util/PageTemplate';
 import { ListFilterBase } from '../../../../shared/classes/list-filter-base';
 
@@ -35,7 +36,8 @@ export class LancamentoPickerDialogComponent extends ListFilterBase implements A
   statusFiltro = StatusLancamento.NAO_CONCILIADO;
 
   readonly statusOpcoes = StatusLancamento.optionsAll;
-  displayedColumns = ['data_pagamento', 'status', 'descricao', 'valor'];
+  readonly FormaPagamento = FormaPagamento;
+  displayedColumns = ['data_pagamento', 'status', 'descricao', 'forma_pagamento', 'valor'];
 
   private searchSubject = new Subject<string>();
 

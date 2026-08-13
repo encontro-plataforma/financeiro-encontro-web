@@ -10,6 +10,7 @@ import { ToastService } from '../toast/toast.service';
 import { ErrorHandlerService } from '../../services/error-handler.service';
 import { DetalhamentoService } from '../../../services/detalhamento.service';
 import { Lancamento } from '../../../models/lancamento.model';
+import { FormaPagamento } from '../../../models/constants/forma-pagamento';
 
 @Component({
   selector: 'app-vinculo-lancamento',
@@ -25,6 +26,8 @@ export class VinculoLancamentoComponent {
   @Input() valorPagamento: number | null = null;
   @Input() detalhamentoId: number | null = null;
   @Input() lancamentoVinculado: Lancamento | null = null;
+
+  readonly FormaPagamento = FormaPagamento;
 
   /** Emitido após ligar/trocar/remover com sucesso — o pai deve recarregar o registro. */
   @Output() vinculado = new EventEmitter<void>();

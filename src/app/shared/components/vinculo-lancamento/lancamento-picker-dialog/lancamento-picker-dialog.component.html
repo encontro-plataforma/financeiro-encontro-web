@@ -46,6 +46,13 @@
         <mat-cell *matCellDef="let row">{{ row.descricao }}</mat-cell>
       </ng-container>
 
+      <ng-container matColumnDef="forma_pagamento">
+        <mat-header-cell *matHeaderCellDef class="col-forma-pagamento">Frm Pgto</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-forma-pagamento">{{
+          FormaPagamento.getDescription(row.forma_pagamento)
+        }}</mat-cell>
+      </ng-container>
+
       <ng-container matColumnDef="valor">
         <mat-header-cell *matHeaderCellDef class="col-valor">Valor</mat-header-cell>
         <mat-cell *matCellDef="let row" class="col-valor">{{
