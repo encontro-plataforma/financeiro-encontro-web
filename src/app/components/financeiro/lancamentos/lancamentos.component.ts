@@ -190,6 +190,28 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
       .subscribe(() => this.load());
   }
 
+  baixarExemploEspecie(): void {
+    const linhas = [
+      'data;tipo;nome;descricao;valor;observacao',
+      '10/08/2026;ENCONTREIRO;Samuel Augusto;;100,00;',
+      '10/08/2026;ENCONTRISTA;Responsável Família Rochelle;;100,00;pagou por Luiza Rochelle',
+      '10/08/2026;OFERTA;;Oferta do culto de domingo;50,00;',
+      '10/08/2026;PERSONALIZADO;;Caneca personalizada;30,00;Cor azul, tamanho G',
+    ];
+    // BOM no início ajuda o Excel a detectar UTF-8 e exibir acentos corretamente.
+    const conteudo = '﻿' + linhas.join('\r\n');
+
+    const blob = new Blob([conteudo], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'exemplo-extrato-especie.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   deletar(l: Lancamento): void {
     const valor = l.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
     this.dialog
