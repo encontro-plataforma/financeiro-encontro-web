@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>Selecionar Círculo</h2>
+
+<mat-dialog-content class="picker-content">
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" class="flex-none" />
+  }
+
+  @if (!loading && circulos.length === 0) {
+    <p class="empty-state">Nenhum círculo cadastrado.</p>
+  }
+
+  <div class="circulo-grid">
+    <button
+      type="button"
+      class="circulo-opcao circulo-opcao--vazia"
+      [class.circulo-opcao--ativo]="!data.circuloAtualId"
+      (click)="selecionarSemCirculo()"
+    >
+      Sem Círculo
+    </button>
+
+    @for (circulo of circulos; track circulo.id) {
+      <button
+        type="button"
+        class="circulo-opcao"
+        [class.circulo-opcao--ativo]="circulo.id === data.circuloAtualId"
+        [style.background-color]="circulo.rgb"
+        (click)="selecionar(circulo)"
+      >
+        {{ circulo.nome }}
+      </button>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" class="btn" (click)="cancelar()">Fechar</button>
+</mat-dialog-actions>

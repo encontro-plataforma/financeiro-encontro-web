@@ -16,12 +16,15 @@ import {
   MultiSelectItem,
 } from '../../../shared/components/multi-select/multi-select.component';
 import { CsvUploadDialogComponent } from '../../../shared/components/csv-upload-dialog/csv-upload-dialog.component';
+import { CirculoPickerDialogComponent } from '../../../shared/components/circulo-picker-dialog/circulo-picker-dialog.component';
 import { TelefoneBrPipe } from '../../../shared/pipes/telefone-br.pipe';
 import { ErrorHandlerService } from '../../../shared/services/error-handler.service';
+import { ToastService } from '../../../shared/components/toast/toast.service';
 import { EncontristaService } from '../../../services/encontrista.service';
 import { CirculoService } from '../../../services/circulo.service';
 import { ListFilterBase } from '../../../shared/classes/list-filter-base';
 import { Encontrista, PadrinhoResumo } from '../../../models/encontrista.model';
+import { Circulo } from '../../../models/circulo.model';
 import { PageTemplate } from '../../../services/util/PageTemplate';
 
 const AUDITADO_TODOS = '-1';
@@ -47,6 +50,7 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private errorHandler = inject(ErrorHandlerService);
+  private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
   result: PageTemplate<Encontrista> = new PageTemplate<Encontrista>();
@@ -186,6 +190,11 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       )
       .subscribe({
         next: (data) => {
+          if (data.items.length === 0 && this.pageIndex > 0) {
+            this.pageIndex = 0;
+            this.load();
+            return;
+          }
           this.result = data;
           this.loading = false;
           this.cdr.detectChanges();
@@ -195,6 +204,30 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
           this.errorHandler.handler(err);
           this.cdr.detectChanges();
         },
+      });
+  }
+
+  abrirCirculoPicker(row: Encontrista): void {
+    this.dialog
+      .open<CirculoPickerDialogComponent, unknown, Circulo>(CirculoPickerDialogComponent, {
+        width: '480px',
+        maxWidth: '95vw',
+        data: { circuloAtualId: row.circulo_id },
+      })
+      .afterClosed()
+      .subscribe((circulo) => {
+        if (!circulo) return;
+
+        const novoCirculoId = circulo.id === SEM_CIRCULO_ID ? null : circulo.id;
+        if (novoCirculoId === row.circulo_id) return;
+
+        this.encontristaService.alterarCirculo(row.id, circulo.id).subscribe({
+          next: () => {
+            this.toast.success({ message: 'Círculo atualizado com sucesso.' });
+            this.load();
+          },
+          error: (err) => this.errorHandler.handler(err),
+        });
       });
   }
 

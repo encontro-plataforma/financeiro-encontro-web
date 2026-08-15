@@ -35,4 +35,8 @@ export class EncontristaService extends AbstractService<Encontrista> {
   padrinhosDisponiveis(): Observable<PadrinhoResumo[]> {
     return this.getCustom<PadrinhoResumo[]>('/padrinhos-disponiveis');
   }
+
+  alterarCirculo(id: number, circuloId: number): Observable<Encontrista> {
+    return this.patch<Encontrista>({}, `/${id}/circulo/${circuloId}`);
+  }
 }

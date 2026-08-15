@@ -110,7 +110,17 @@
 
           <ng-container matColumnDef="circulo">
             <mat-header-cell *matHeaderCellDef>Círculo</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.circulo?.nome ?? '—' }}</mat-cell>
+            <mat-cell *matCellDef="let row">
+              <button
+                type="button"
+                class="circulo-btn"
+                [style.background-color]="row.circulo?.rgb ?? null"
+                [class.circulo-btn--vazio]="!row.circulo"
+                (click)="abrirCirculoPicker(row)"
+              >
+                {{ row.circulo?.nome ?? 'Sem círculo' }}
+              </button>
+            </mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="idade">
