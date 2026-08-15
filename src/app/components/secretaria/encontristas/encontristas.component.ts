@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import { Sort, SortDirection } from '@angular/material/sort';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -60,6 +61,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
   circuloSelecionados: number[] = [];
   padrinhoFiltro = '';
   auditadoFiltro = AUDITADO_TODOS;
+  sortField = 'id';
+  sortDirection: SortDirection = 'asc';
 
   circuloItems: MultiSelectItem[] = [];
   padrinhos: PadrinhoResumo[] = [];
@@ -93,6 +96,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
         circuloSelecionados: this.circuloSelecionados,
         padrinhoFiltro: this.padrinhoFiltro,
         auditadoFiltro: this.auditadoFiltro,
+        sortField: this.sortField,
+        sortDirection: this.sortDirection,
       });
       this.load();
     });
@@ -116,6 +121,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       this.circuloSelecionados = saved.circuloSelecionados ?? this.circuloSelecionados;
       this.padrinhoFiltro = saved.padrinhoFiltro ?? this.padrinhoFiltro;
       this.auditadoFiltro = saved.auditadoFiltro ?? this.auditadoFiltro;
+      this.sortField = saved.sortField ?? this.sortField;
+      this.sortDirection = saved.sortDirection ?? this.sortDirection;
     });
   }
 
@@ -135,6 +142,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
+      sortField: this.sortField,
+      sortDirection: this.sortDirection,
     });
     this.load();
   }
@@ -146,6 +155,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
+      sortField: this.sortField,
+      sortDirection: this.sortDirection,
     });
     this.load();
   }
@@ -157,6 +168,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
+      sortField: this.sortField,
+      sortDirection: this.sortDirection,
     });
     this.load();
   }
@@ -169,9 +182,26 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
         circuloSelecionados: this.circuloSelecionados,
         padrinhoFiltro: this.padrinhoFiltro,
         auditadoFiltro: this.auditadoFiltro,
+        sortField: this.sortField,
+        sortDirection: this.sortDirection,
       }),
       () => this.load(),
     );
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sortField = sort.active;
+    this.sortDirection = sort.direction;
+    this.pageIndex = 0;
+    this.saveState({
+      search: this.search,
+      circuloSelecionados: this.circuloSelecionados,
+      padrinhoFiltro: this.padrinhoFiltro,
+      auditadoFiltro: this.auditadoFiltro,
+      sortField: this.sortField,
+      sortDirection: this.sortDirection,
+    });
+    this.load();
   }
 
   load(): void {
@@ -186,7 +216,11 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
             ? { auditado: this.auditadoFiltro === 'true' }
             : {}),
         },
-        { skip: this.pageIndex * this.pageSize, limit: this.pageSize },
+        {
+          skip: this.pageIndex * this.pageSize,
+          limit: this.pageSize,
+          ...(this.sortDirection ? { sort: [`${this.sortField}:${this.sortDirection}`] } : {}),
+        },
       )
       .subscribe({
         next: (data) => {
@@ -205,6 +239,23 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
           this.cdr.detectChanges();
         },
       });
+  }
+
+  private static readonly CONECTORES_NOME = ['de', 'da'];
+
+  primeiroSegundoNome(nome: string): string {
+    const palavras = nome.trim().split(/\s+/);
+    const resultado = [palavras[0]];
+
+    if (palavras.length > 1) {
+      const segunda = palavras[1];
+      resultado.push(segunda);
+      if (EncontristasComponent.CONECTORES_NOME.includes(segunda.toLowerCase()) && palavras.length > 2) {
+        resultado.push(palavras[2]);
+      }
+    }
+
+    return resultado.join(' ');
   }
 
   abrirCirculoPicker(row: Encontrista): void {

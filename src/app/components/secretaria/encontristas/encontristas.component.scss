@@ -36,7 +36,8 @@
   }
 
   .mat-column-padrinho {
-    max-width: 160px;
+    flex: 0 0 200px;
+    max-width: 200px;
   }
 
   .mat-column-carta,
@@ -78,6 +79,29 @@
 
   .detalhes-sub {
     font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .padrinho-cell {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 8px 0;
+  }
+
+  .padrinho-apelido,
+  .padrinho-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .padrinho-apelido {
+    font-weight: 500;
+  }
+
+  .padrinho-sub {
+    font-size: 0.75rem;
     color: var(--mat-sys-on-surface-variant);
   }
 
