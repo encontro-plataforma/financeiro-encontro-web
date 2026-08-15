@@ -2,3 +2,15 @@
   font-size: 0.85rem;
   color: var(--mat-sys-on-surface-variant);
 }
+
+.circulo-swatch {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}

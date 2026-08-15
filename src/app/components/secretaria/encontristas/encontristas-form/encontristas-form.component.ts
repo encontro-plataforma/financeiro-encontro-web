@@ -119,6 +119,11 @@ export class EncontristasFormComponent implements OnInit {
     this.loadValues();
   }
 
+  get circuloSelecionado(): Circulo | undefined {
+    const id = this.form.get('circulo_id')?.value;
+    return this.circulos.find((circulo) => circulo.id === id);
+  }
+
   voltar(): void {
     const returnUrl: string | undefined = window.history.state?.returnUrl;
     if (returnUrl) {
