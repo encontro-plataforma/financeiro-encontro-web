@@ -56,11 +56,16 @@
 
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6">
           <mat-label>Padrinho</mat-label>
-          <mat-select formControlName="padrinho_id">
-            @for (encontreiro of encontreiros; track encontreiro.id) {
-              <mat-option [value]="encontreiro.id">{{ encontreiro.nome }}</mat-option>
-            }
-          </mat-select>
+          <input matInput readonly [value]="padrinhoDisplay" (click)="abrirPickerPadrinho()" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            matTooltip="Selecionar padrinho"
+            (click)="abrirPickerPadrinho()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
           @if (form.get('padrinho_id')?.hasError('required') && form.get('padrinho_id')?.touched) {
             <mat-error>Padrinho é obrigatório</mat-error>
           }

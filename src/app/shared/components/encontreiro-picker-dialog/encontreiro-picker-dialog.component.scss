@@ -1,0 +1,88 @@
+.picker-content {
+  min-width: 640px;
+  max-width: 100%;
+  max-height: 75vh;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.search-row {
+  padding-top: 4px;
+  display: flex;
+  gap: 16px;
+  flex: 0 0 auto;
+
+  .w-full {
+    flex: 1;
+  }
+}
+
+.equipe-field {
+  width: 240px;
+  flex: 0 0 auto;
+}
+
+.picker-table-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 4px 0;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+}
+
+.picker-table {
+  width: 100%;
+
+  mat-header-row {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    min-height: 40px;
+    background: var(--mat-sys-surface-container-low);
+  }
+
+  mat-header-cell {
+    font-size: 0.8rem;
+  }
+
+  mat-cell {
+    font-size: 0.7rem;
+  }
+
+  mat-cell,
+  mat-header-cell {
+    padding: 0 12px;
+  }
+
+  mat-row {
+    min-height: 36px;
+  }
+
+  .col-id {
+    flex: 0 0 60px;
+  }
+}
+
+.picker-row {
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+  }
+}
+
+.empty-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}
