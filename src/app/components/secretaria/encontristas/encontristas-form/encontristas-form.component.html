@@ -24,6 +24,12 @@
   <mat-card appearance="outlined">
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="salvar()" class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 flex flex-wrap gap-6 items-center py-1">
+          <mat-checkbox formControlName="carta">Carta</mat-checkbox>
+          <mat-checkbox formControlName="album">Álbum</mat-checkbox>
+          <mat-checkbox formControlName="blusa">Confecção da blusa</mat-checkbox>
+        </div>
+
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Data de Entrega</mat-label>
           <input
@@ -50,17 +56,22 @@
 
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6">
           <mat-label>Padrinho</mat-label>
-          <mat-select formControlName="padrinho_id">
-            @for (encontreiro of encontreiros; track encontreiro.id) {
-              <mat-option [value]="encontreiro.id">{{ encontreiro.nome }}</mat-option>
-            }
-          </mat-select>
+          <input matInput readonly [value]="padrinhoDisplay" (click)="abrirPickerPadrinho()" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            matTooltip="Selecionar padrinho"
+            (click)="abrirPickerPadrinho()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
           @if (form.get('padrinho_id')?.hasError('required') && form.get('padrinho_id')?.touched) {
             <mat-error>Padrinho é obrigatório</mat-error>
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
           <mat-label>Nome</mat-label>
           <input matInput formControlName="nome" />
           @if (form.get('nome')?.hasError('required') && form.get('nome')?.touched) {
@@ -68,12 +79,33 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
           <mat-label>Apelido</mat-label>
           <input matInput formControlName="apelido" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+          <mat-label>Círculo</mat-label>
+          <mat-select formControlName="circulo_id">
+            <mat-select-trigger>
+              @if (circuloSelecionado) {
+                <span class="circulo-swatch" [style.background-color]="circuloSelecionado.rgb">{{
+                  circuloSelecionado.nome
+                }}</span>
+              } @else {
+                Nenhum
+              }
+            </mat-select-trigger>
+            <mat-option [value]="null">Nenhum</mat-option>
+            @for (circulo of circulos; track circulo.id) {
+              <mat-option [value]="circulo.id">
+                <span class="circulo-swatch" [style.background-color]="circulo.rgb">{{ circulo.nome }}</span>
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
           <mat-label>Data de Nascimento</mat-label>
           <input
             matInput
@@ -85,22 +117,12 @@
           <mat-datepicker #pickerNascimento />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-2">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Idade</mat-label>
           <input matInput type="number" formControlName="idade" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
-          <mat-label>Círculo</mat-label>
-          <mat-select formControlName="circulo_id">
-            <mat-option [value]="null">Nenhum</mat-option>
-            @for (circulo of circulos; track circulo.id) {
-              <mat-option [value]="circulo.id">{{ circulo.nome }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-5">
           <mat-label>Camisa</mat-label>
           <input matInput formControlName="camisa" placeholder="Tamanho" />
         </mat-form-field>
@@ -164,12 +186,6 @@
           <mat-label>Alergia / Comorbidade</mat-label>
           <input matInput formControlName="alergia_comorbidade" />
         </mat-form-field>
-
-        <div class="col-span-12 flex flex-wrap gap-6 items-center py-1">
-          <mat-checkbox formControlName="carta">Carta</mat-checkbox>
-          <mat-checkbox formControlName="album">Álbum</mat-checkbox>
-          <mat-checkbox formControlName="blusa">Confecção da blusa</mat-checkbox>
-        </div>
 
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Data de Pagamento</mat-label>

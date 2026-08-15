@@ -1,5 +1,5 @@
 .picker-content {
-  min-width: 560px;
+  min-width: 640px;
   max-width: 100%;
   max-height: 75vh;
   padding-top: 12px;
@@ -23,8 +23,8 @@
   }
 }
 
-.status-field {
-  width: 200px;
+.equipe-field {
+  width: 240px;
   flex: 0 0 auto;
 }
 
@@ -65,24 +65,8 @@
     min-height: 36px;
   }
 
-  .col-data {
-    flex: 0 0 90px;
-  }
-
-  .col-status {
-    flex: 0 0 130px;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .col-valor {
-    flex: 0 0 100px;
-    justify-content: flex-end;
-    text-align: right;
-  }
-
-  .col-forma-pagamento {
-    flex: 0 0 80px;
+  .col-id {
+    flex: 0 0 60px;
   }
 }
 

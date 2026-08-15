@@ -6,10 +6,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { LancamentoPickerDialogComponent } from './lancamento-picker-dialog/lancamento-picker-dialog.component';
+import { ValorDetalhamentoDialogComponent } from '../valor-detalhamento-dialog/valor-detalhamento-dialog.component';
 import { ToastService } from '../toast/toast.service';
 import { ErrorHandlerService } from '../../services/error-handler.service';
 import { DetalhamentoService } from '../../../services/detalhamento.service';
 import { Lancamento } from '../../../models/lancamento.model';
+import { FormaPagamento } from '../../../models/constants/forma-pagamento';
 
 @Component({
   selector: 'app-vinculo-lancamento',
@@ -25,6 +27,8 @@ export class VinculoLancamentoComponent {
   @Input() valorPagamento: number | null = null;
   @Input() detalhamentoId: number | null = null;
   @Input() lancamentoVinculado: Lancamento | null = null;
+
+  readonly FormaPagamento = FormaPagamento;
 
   /** Emitido após ligar/trocar/remover com sucesso — o pai deve recarregar o registro. */
   @Output() vinculado = new EventEmitter<void>();
@@ -52,23 +56,30 @@ export class VinculoLancamentoComponent {
     }
 
     this.abrirPicker((lancamento) => {
-      this.processando = true;
-      this.detalhamentoService.criar({
-        lancamento_id: lancamento.id,
-        tipo: this.tipo,
-        referencia_id: this.referenciaId,
-        valor: this.valorPagamento as number,
-      }).subscribe({
-        next: () => {
-          this.processando = false;
-          this.toast.success({ message: 'Lançamento vinculado com sucesso.' });
-          this.vinculado.emit();
+      const restante = lancamento.valor - lancamento.soma_detalhamentos;
+      this.abrirDialogValor(
+        Math.min(this.valorPagamento as number, restante > 0 ? restante : this.valorPagamento as number),
+        restante,
+        (valor) => {
+          this.processando = true;
+          this.detalhamentoService.criar({
+            lancamento_id: lancamento.id,
+            tipo: this.tipo,
+            referencia_id: this.referenciaId,
+            valor,
+          }).subscribe({
+            next: () => {
+              this.processando = false;
+              this.toast.success({ message: 'Lançamento vinculado com sucesso.' });
+              this.vinculado.emit();
+            },
+            error: (err) => {
+              this.processando = false;
+              this.errorHandler.handler(err);
+            },
+          });
         },
-        error: (err) => {
-          this.processando = false;
-          this.errorHandler.handler(err);
-        },
-      });
+      );
     });
   }
 
@@ -124,6 +135,19 @@ export class VinculoLancamentoComponent {
       maxWidth: '95vw',
     }).afterClosed().subscribe((lancamento) => {
       if (lancamento) onSelecionado(lancamento);
+    });
+  }
+
+  private abrirDialogValor(
+    valorSugerido: number,
+    valorMaximo: number,
+    onConfirmado: (valor: number) => void,
+  ): void {
+    this.dialog.open<ValorDetalhamentoDialogComponent, unknown, number>(ValorDetalhamentoDialogComponent, {
+      width: '420px',
+      data: { titulo: 'Valor a vincular', valorSugerido, valorMaximo },
+    }).afterClosed().subscribe((valor) => {
+      if (valor !== undefined && valor !== null) onConfirmado(valor);
     });
   }
 }

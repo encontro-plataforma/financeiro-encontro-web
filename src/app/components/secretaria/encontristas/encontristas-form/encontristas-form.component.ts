@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import moment from 'moment';
 
 import {
@@ -11,12 +12,12 @@ import {
 } from '../../../../shared/modules/material.imports.module';
 import { AuditadoBadgeComponent } from '../../../../shared/components/auditado-badge/auditado-badge.component';
 import { VinculoLancamentoComponent } from '../../../../shared/components/vinculo-lancamento/vinculo-lancamento.component';
+import { EncontreiroPickerDialogComponent } from '../../../../shared/components/encontreiro-picker-dialog/encontreiro-picker-dialog.component';
 import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { ErrorHandlerService } from '../../../../shared/services/error-handler.service';
 import { EncontristaService } from '../../../../services/encontrista.service';
-import { EncontreiroService } from '../../../../services/encontreiro.service';
 import { CirculoService } from '../../../../services/circulo.service';
-import { Encontrista } from '../../../../models/encontrista.model';
+import { Encontrista, PadrinhoResumo } from '../../../../models/encontrista.model';
 import { Encontreiro } from '../../../../models/encontreiro.model';
 import { Circulo } from '../../../../models/circulo.model';
 
@@ -38,8 +39,8 @@ export class EncontristasFormComponent implements OnInit {
   private fb                 = inject(FormBuilder);
   private route              = inject(ActivatedRoute);
   private router             = inject(Router);
+  private dialog              = inject(MatDialog);
   private encontristaService = inject(EncontristaService);
-  private encontreiroService = inject(EncontreiroService);
   private circuloService     = inject(CirculoService);
   private toast               = inject(ToastService);
   private errorHandler        = inject(ErrorHandlerService);
@@ -50,8 +51,8 @@ export class EncontristasFormComponent implements OnInit {
   encontristaId!: number;
   encontrista: Encontrista | null = null;
 
-  encontreiros: Encontreiro[] = [];
   circulos: Circulo[] = [];
+  padrinhoSelecionado: PadrinhoResumo | Encontreiro | null = null;
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -87,7 +88,6 @@ export class EncontristasFormComponent implements OnInit {
 
     this.encontristaId = Number(this.route.snapshot.params['id']);
 
-    this.encontreiroService.listAll().subscribe((encontreiros) => (this.encontreiros = encontreiros));
     this.circuloService.listAll().subscribe((circulos) => (this.circulos = circulos));
 
     this.loadValues();
@@ -98,6 +98,7 @@ export class EncontristasFormComponent implements OnInit {
     this.encontristaService.buscarPorId(this.encontristaId).subscribe({
       next: (data) => {
         this.encontrista = data;
+        this.padrinhoSelecionado = data.padrinho;
         this.form.patchValue({
           ...data,
           dt_entrega:    data.dt_entrega ? moment(data.dt_entrega) : null,
@@ -117,6 +118,33 @@ export class EncontristasFormComponent implements OnInit {
 
   onVinculoAlterado(): void {
     this.loadValues();
+  }
+
+  get circuloSelecionado(): Circulo | undefined {
+    const id = this.form.get('circulo_id')?.value;
+    return this.circulos.find((circulo) => circulo.id === id);
+  }
+
+  get padrinhoDisplay(): string {
+    if (!this.padrinhoSelecionado) return '';
+    const { nome, apelido, equipe } = this.padrinhoSelecionado;
+    const base = apelido ? `${nome} (${apelido})` : nome;
+    return equipe ? `${base} - ${equipe.nome}` : base;
+  }
+
+  abrirPickerPadrinho(): void {
+    this.dialog
+      .open<EncontreiroPickerDialogComponent, unknown, Encontreiro>(EncontreiroPickerDialogComponent, {
+        width: '800px',
+        maxWidth: '95vw',
+      })
+      .afterClosed()
+      .subscribe((encontreiro) => {
+        if (!encontreiro) return;
+        this.padrinhoSelecionado = encontreiro;
+        this.form.get('padrinho_id')?.setValue(encontreiro.id);
+        this.form.get('padrinho_id')?.markAsTouched();
+      });
   }
 
   voltar(): void {

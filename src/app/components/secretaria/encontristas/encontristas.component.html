@@ -85,20 +85,36 @@
       }
 
       <div class="table-scroll flex-1 min-h-0 overflow-y-auto">
-        <mat-table [dataSource]="result.items" class="encontristas-table">
+        <mat-table
+          [dataSource]="result.items"
+          class="encontristas-table"
+          matSort
+          [matSortActive]="sortField"
+          [matSortDirection]="sortDirection"
+          (matSortChange)="onSortChange($event)"
+        >
           <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.id }}</mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="dt_entrega">
-            <mat-header-cell *matHeaderCellDef>Entrega</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Entrega</mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.dt_entrega | date: 'dd/MM/yyyy' }}</mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="detalhes">
-            <mat-header-cell *matHeaderCellDef>Detalhes</mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="nome">Detalhes</mat-header-cell>
+            <mat-cell
+              *matCellDef="let row"
+              [matTooltip]="
+                (row.apelido ?? row.nome) +
+                ' — ' +
+                row.nome +
+                ' — ' +
+                (row.contato ? (row.contato | telefoneBR) : 'Sem contato')
+              "
+            >
               <div class="detalhes-cell">
                 <span class="detalhes-apelido">{{ row.apelido ?? '—' }}</span>
                 <span class="detalhes-sub"
@@ -109,23 +125,57 @@
           </ng-container>
 
           <ng-container matColumnDef="circulo">
-            <mat-header-cell *matHeaderCellDef>Círculo</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.circulo?.nome ?? '—' }}</mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="col-center">Círculo</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="col-center">
+              <button
+                type="button"
+                class="circulo-btn"
+                [style.background-color]="row.circulo?.rgb ?? null"
+                [class.circulo-btn--vazio]="!row.circulo"
+                (click)="abrirCirculoPicker(row)"
+              >
+                {{ row.circulo?.nome ?? 'Sem círculo' }}
+              </button>
+            </mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="idade">
-            <mat-header-cell *matHeaderCellDef>Idade</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.idade ?? '—' }}</mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="col-center">Idade</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="col-center">{{ row.idade ?? '—' }}</mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="padrinho">
             <mat-header-cell *matHeaderCellDef>Padrinho</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.padrinho?.nome ?? '—' }}</mat-cell>
+            <mat-cell
+              *matCellDef="let row"
+              [matTooltip]="
+                row.padrinho
+                  ? (row.padrinho.apelido ?? row.padrinho.nome) +
+                    ' — ' +
+                    row.padrinho.nome +
+                    (row.padrinho.equipe ? ' — ' + row.padrinho.equipe.nome : '')
+                  : ''
+              "
+            >
+              @if (row.padrinho) {
+                <div class="padrinho-cell">
+                  <span class="padrinho-apelido">{{ row.padrinho.apelido ?? row.padrinho.nome }}</span>
+                  <span class="padrinho-sub"
+                    >{{ primeiroSegundoNome(row.padrinho.nome) }}
+                    @if (row.padrinho.equipe) {
+                      | {{ row.padrinho.equipe.nome }}
+                    }</span
+                  >
+                </div>
+              } @else {
+                <span>—</span>
+              }
+            </mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="carta">
-            <mat-header-cell *matHeaderCellDef>Carta</mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-header-cell *matHeaderCellDef class="col-center">Carta</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="col-center">
               <mat-icon [class.icon-sim]="row.carta" [class.icon-nao]="!row.carta">
                 {{ row.carta ? 'check_circle' : 'cancel' }}
               </mat-icon>
@@ -133,8 +183,8 @@
           </ng-container>
 
           <ng-container matColumnDef="album">
-            <mat-header-cell *matHeaderCellDef>Álbum</mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-header-cell *matHeaderCellDef class="col-center">Álbum</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="col-center">
               <mat-icon [class.icon-sim]="row.album" [class.icon-nao]="!row.album">
                 {{ row.album ? 'check_circle' : 'cancel' }}
               </mat-icon>

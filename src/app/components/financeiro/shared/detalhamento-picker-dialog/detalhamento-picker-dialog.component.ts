@@ -14,6 +14,7 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
 import { ToastService } from '../../../../shared/components/toast/toast.service';
 import { ErrorHandlerService } from '../../../../shared/services/error-handler.service';
 import { DetalhamentoService } from '../../../../services/detalhamento.service';
+import { ValorDetalhamentoDialogComponent } from '../../../../shared/components/valor-detalhamento-dialog/valor-detalhamento-dialog.component';
 import { EncontreiroService } from '../../../../services/encontreiro.service';
 import { EncontristaService } from '../../../../services/encontrista.service';
 import { PageTemplate } from '../../../../services/util/PageTemplate';
@@ -221,27 +222,42 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
       return;
     }
 
-    this.salvando = true;
-    this.detalhamentoService
-      .criar({
-        lancamento_id: this.data.lancamentoId,
-        tipo: this.tipo as string,
-        referencia_id: row.id,
-        valor: row.pagamento,
+    const restante = this.restanteVincular;
+    this.matDialog
+      .open<ValorDetalhamentoDialogComponent, unknown, number>(ValorDetalhamentoDialogComponent, {
+        width: '420px',
+        data: {
+          titulo: 'Valor a vincular',
+          valorSugerido: Math.min(row.pagamento, restante > 0 ? restante : row.pagamento),
+          valorMaximo: restante,
+        },
       })
-      .subscribe({
-        next: () => {
-          this.salvando = false;
-          this.houveAlteracao = true;
-          this.toast.success({ message: 'Detalhamento criado com sucesso.' });
-          this.tipo = null;
-          this.dialogRef.updateSize('700px');
-          this.carregarLista();
-        },
-        error: (err) => {
-          this.salvando = false;
-          this.errorHandler.handler(err);
-        },
+      .afterClosed()
+      .subscribe((valor) => {
+        if (valor === undefined || valor === null) return;
+
+        this.salvando = true;
+        this.detalhamentoService
+          .criar({
+            lancamento_id: this.data.lancamentoId,
+            tipo: this.tipo as string,
+            referencia_id: row.id,
+            valor,
+          })
+          .subscribe({
+            next: () => {
+              this.salvando = false;
+              this.houveAlteracao = true;
+              this.toast.success({ message: 'Detalhamento criado com sucesso.' });
+              this.tipo = null;
+              this.dialogRef.updateSize('700px');
+              this.carregarLista();
+            },
+            error: (err) => {
+              this.salvando = false;
+              this.errorHandler.handler(err);
+            },
+          });
       });
   }
 

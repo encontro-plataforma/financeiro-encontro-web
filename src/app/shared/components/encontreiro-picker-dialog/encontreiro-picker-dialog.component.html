@@ -1,0 +1,80 @@
+<h2 mat-dialog-title>Selecionar Padrinho</h2>
+
+<mat-dialog-content class="picker-content">
+  <div class="search-row pb-1">
+    <mat-form-field appearance="outline" floatLabel="always" class="w-full field-compact">
+      <mat-label>Buscar por nome ou apelido</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Nome ou apelido..."
+      />
+    </mat-form-field>
+
+    <app-multi-select
+      class="equipe-field field-compact"
+      label="Equipe"
+      [items]="equipeItems"
+      [selectedIds]="equipeSelecionadas"
+      (selectionChange)="onEquipeChange($event)"
+    />
+  </div>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" class="flex-none" />
+  }
+
+  <div class="picker-table-wrapper">
+    <mat-table [dataSource]="result.items" class="picker-table">
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef class="col-id">Id</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-id">{{ row.id }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="nome">
+        <mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.nome }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="apelido">
+        <mat-header-cell *matHeaderCellDef>Apelido</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.apelido ?? '—' }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="equipe">
+        <mat-header-cell *matHeaderCellDef>Equipe</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.equipe?.nome ?? '—' }}</mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns" />
+      <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="picker-row"
+        (click)="selecionar(row)"
+      />
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
+          @if (!loading) {
+            <span>Nenhum encontreiro encontrado</span>
+          }
+        </td>
+      </tr>
+    </mat-table>
+  </div>
+
+  <mat-paginator
+    class="flex-none"
+    [length]="result.total"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[10, 25, 50]"
+    (page)="onPage($event)"
+  />
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" class="btn" (click)="cancelar()">Fechar</button>
+</mat-dialog-actions>

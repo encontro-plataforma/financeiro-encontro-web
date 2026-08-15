@@ -99,7 +99,7 @@ Triggered by the "Processar Conciliação" button on `/conciliacao` (`ConciliarL
 
 ### Shared components (`shared/components/`)
 
-`confirm-dialog`, `multi-select`, `toast` (+ `toast.service.ts`, uses the Popover API so toasts render above CDK dialogs), `auditado-badge` (Sim/Não pill), `vinculo-lancamento` (link/relink/unlink a Lancamento to an inscription; its `lancamento-picker-dialog` subfolder is only used by it, not reused elsewhere), `csv-upload-dialog`, `upload-resumo` (see above).
+`confirm-dialog`, `multi-select`, `toast` (+ `toast.service.ts`, uses the Popover API so toasts render above CDK dialogs), `auditado-badge` (Sim/Não pill), `vinculo-lancamento` (link/relink/unlink a Lancamento to an inscription; its `lancamento-picker-dialog` subfolder is only used by it, not reused elsewhere), `csv-upload-dialog`, `upload-resumo` (see above), `encontreiro-picker-dialog` (search by nome/apelido + multi-select filter by equipe, paginated; used by the Encontrista form's Padrinho field), `circulo-picker-dialog` (4-per-row grid of Círculo options incl. "Sem Círculo"; used by the Encontrista listing's Círculo column button — picking one calls `PATCH /encontristas/{id}/circulo/{circulo_id}` and reloads the current page, falling back to page 1 if it comes back empty).
 
 Note: `detalhamento-picker-dialog`, `auditoria-resumo-dialog`, `conciliar-resto-dialog` are financeiro-scoped under `components/financeiro/shared/`, not `shared/components/` — they're not reused outside that area.
 

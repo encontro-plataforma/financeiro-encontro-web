@@ -3,10 +3,29 @@
   <div class="flex items-center justify-between mb-6 flex-none">
     <h1 class="text-2xl font-medium text-on-surface">Lançamentos</h1>
     <div class="flex gap-3">
-      <button mat-flat-button class="btn btn--icon-left btn-verde" (click)="enviarCsv()">
+      <button mat-flat-button class="btn btn--icon-left btn-verde" [matMenuTriggerFor]="menuEnviarCsv">
         <mat-icon>upload_file</mat-icon>
         Enviar CSV
       </button>
+      <mat-menu #menuEnviarCsv="matMenu">
+        <button mat-menu-item (click)="enviarCsvBancario()">
+          <mat-icon>account_balance</mat-icon>
+          Extrato Bancário
+        </button>
+        <button mat-menu-item (click)="enviarCsvEspecie()">
+          <mat-icon>payments</mat-icon>
+          Extrato de Espécie
+        </button>
+        <button mat-menu-item (click)="enviarCsvCartao()">
+          <mat-icon>credit_card</mat-icon>
+          Extrato de Cartão
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="baixarExemploEspecie()">
+          <mat-icon>download</mat-icon>
+          Baixar exemplo (Espécie)
+        </button>
+      </mat-menu>
       <button mat-flat-button color="primary" class="btn btn--icon-left" (click)="criar()">
         <mat-icon>add</mat-icon>
         Criar

@@ -1,9 +1,12 @@
 import { Circulo } from './circulo.model';
+import { Equipe } from './equipe.model';
 import { Lancamento } from './lancamento.model';
 
 export interface PadrinhoResumo {
-  id:   number;
-  nome: string;
+  id:      number;
+  nome:    string;
+  apelido: string | null;
+  equipe:  Equipe | null;
 }
 
 export interface Encontrista {

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import { Sort, SortDirection } from '@angular/material/sort';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -16,12 +17,15 @@ import {
   MultiSelectItem,
 } from '../../../shared/components/multi-select/multi-select.component';
 import { CsvUploadDialogComponent } from '../../../shared/components/csv-upload-dialog/csv-upload-dialog.component';
+import { CirculoPickerDialogComponent } from '../../../shared/components/circulo-picker-dialog/circulo-picker-dialog.component';
 import { TelefoneBrPipe } from '../../../shared/pipes/telefone-br.pipe';
 import { ErrorHandlerService } from '../../../shared/services/error-handler.service';
+import { ToastService } from '../../../shared/components/toast/toast.service';
 import { EncontristaService } from '../../../services/encontrista.service';
 import { CirculoService } from '../../../services/circulo.service';
 import { ListFilterBase } from '../../../shared/classes/list-filter-base';
 import { Encontrista, PadrinhoResumo } from '../../../models/encontrista.model';
+import { Circulo } from '../../../models/circulo.model';
 import { PageTemplate } from '../../../services/util/PageTemplate';
 
 const AUDITADO_TODOS = '-1';
@@ -47,6 +51,7 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private errorHandler = inject(ErrorHandlerService);
+  private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
   result: PageTemplate<Encontrista> = new PageTemplate<Encontrista>();
@@ -56,6 +61,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
   circuloSelecionados: number[] = [];
   padrinhoFiltro = '';
   auditadoFiltro = AUDITADO_TODOS;
+  sortField = 'id';
+  sortDirection: SortDirection = 'asc';
 
   circuloItems: MultiSelectItem[] = [];
   padrinhos: PadrinhoResumo[] = [];
@@ -89,6 +96,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
         circuloSelecionados: this.circuloSelecionados,
         padrinhoFiltro: this.padrinhoFiltro,
         auditadoFiltro: this.auditadoFiltro,
+        sortField: this.sortField,
+        sortDirection: this.sortDirection,
       });
       this.load();
     });
@@ -112,6 +121,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       this.circuloSelecionados = saved.circuloSelecionados ?? this.circuloSelecionados;
       this.padrinhoFiltro = saved.padrinhoFiltro ?? this.padrinhoFiltro;
       this.auditadoFiltro = saved.auditadoFiltro ?? this.auditadoFiltro;
+      this.sortField = saved.sortField ?? this.sortField;
+      this.sortDirection = saved.sortDirection ?? this.sortDirection;
     });
   }
 
@@ -131,6 +142,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
+      sortField: this.sortField,
+      sortDirection: this.sortDirection,
     });
     this.load();
   }
@@ -142,6 +155,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
+      sortField: this.sortField,
+      sortDirection: this.sortDirection,
     });
     this.load();
   }
@@ -153,6 +168,8 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
+      sortField: this.sortField,
+      sortDirection: this.sortDirection,
     });
     this.load();
   }
@@ -165,9 +182,26 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
         circuloSelecionados: this.circuloSelecionados,
         padrinhoFiltro: this.padrinhoFiltro,
         auditadoFiltro: this.auditadoFiltro,
+        sortField: this.sortField,
+        sortDirection: this.sortDirection,
       }),
       () => this.load(),
     );
+  }
+
+  onSortChange(sort: Sort): void {
+    this.sortField = sort.active;
+    this.sortDirection = sort.direction;
+    this.pageIndex = 0;
+    this.saveState({
+      search: this.search,
+      circuloSelecionados: this.circuloSelecionados,
+      padrinhoFiltro: this.padrinhoFiltro,
+      auditadoFiltro: this.auditadoFiltro,
+      sortField: this.sortField,
+      sortDirection: this.sortDirection,
+    });
+    this.load();
   }
 
   load(): void {
@@ -182,10 +216,19 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
             ? { auditado: this.auditadoFiltro === 'true' }
             : {}),
         },
-        { skip: this.pageIndex * this.pageSize, limit: this.pageSize },
+        {
+          skip: this.pageIndex * this.pageSize,
+          limit: this.pageSize,
+          ...(this.sortDirection ? { sort: [`${this.sortField}:${this.sortDirection}`] } : {}),
+        },
       )
       .subscribe({
         next: (data) => {
+          if (data.items.length === 0 && this.pageIndex > 0) {
+            this.pageIndex = 0;
+            this.load();
+            return;
+          }
           this.result = data;
           this.loading = false;
           this.cdr.detectChanges();
@@ -195,6 +238,47 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
           this.errorHandler.handler(err);
           this.cdr.detectChanges();
         },
+      });
+  }
+
+  private static readonly CONECTORES_NOME = ['de', 'da'];
+
+  primeiroSegundoNome(nome: string): string {
+    const palavras = nome.trim().split(/\s+/);
+    const resultado = [palavras[0]];
+
+    if (palavras.length > 1) {
+      const segunda = palavras[1];
+      resultado.push(segunda);
+      if (EncontristasComponent.CONECTORES_NOME.includes(segunda.toLowerCase()) && palavras.length > 2) {
+        resultado.push(palavras[2]);
+      }
+    }
+
+    return resultado.join(' ');
+  }
+
+  abrirCirculoPicker(row: Encontrista): void {
+    this.dialog
+      .open<CirculoPickerDialogComponent, unknown, Circulo>(CirculoPickerDialogComponent, {
+        width: '480px',
+        maxWidth: '95vw',
+        data: { circuloAtualId: row.circulo_id },
+      })
+      .afterClosed()
+      .subscribe((circulo) => {
+        if (!circulo) return;
+
+        const novoCirculoId = circulo.id === SEM_CIRCULO_ID ? null : circulo.id;
+        if (novoCirculoId === row.circulo_id) return;
+
+        this.encontristaService.alterarCirculo(row.id, circulo.id).subscribe({
+          next: () => {
+            this.toast.success({ message: 'Círculo atualizado com sucesso.' });
+            this.load();
+          },
+          error: (err) => this.errorHandler.handler(err),
+        });
       });
   }
 

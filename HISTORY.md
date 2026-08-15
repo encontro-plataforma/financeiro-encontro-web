@@ -1,5 +1,29 @@
 # Histórico de Versões
 
+## [0.4.0] — 2026-08-15
+
+### Adicionado
+- Dialog "Selecionar Padrinho" (`app-encontreiro-picker-dialog`, shared) — busca por nome/apelido, filtro
+  múltiplo por equipe, paginação de 10, ordenação por nome. Substitui o select de Padrinho no formulário de
+  encontrista por um input readonly + ícone de busca que abre o dialog; exibe "nome (apelido) - equipe"
+- Dialog "Selecionar Círculo" (`app-circulo-picker-dialog`, shared) — grid de 4 colunas com os círculos
+  cadastrados (cor de fundo = rgb do círculo) e opção "Sem Círculo". Usado pelo novo botão de círculo (mesma
+  cor rgb) na coluna Círculo da listagem de encontristas, que troca só o círculo sem abrir o formulário
+  completo e recarrega a página atual da listagem (voltando pra primeira se ela ficar vazia)
+- Listagem de encontristas: ordenação clicável no cabeçalho por Id, Data de Entrega, Nome, Círculo e Idade,
+  persistida junto dos outros filtros
+- Coluna Padrinho da listagem de encontristas mostra apelido em cima e "primeiro e segundo nome | equipe"
+  embaixo (considerando "de"/"da" como parte do segundo nome); tooltip nas colunas Detalhes e Padrinho com o
+  conteúdo completo ao passar o mouse
+- Utilitário `.field-compact` (`styles/components/_input.scss`) reduz a altura de um `mat-form-field` (ou de
+  um componente que embrulhe um, como `app-multi-select`) para o nível de densidade -3 do Angular Material
+
+### Alterado
+- Formulário de encontrista: checkboxes de Carta/Álbum/Confecção da blusa movidos pra primeira linha; Círculo
+  sobe pra mesma linha de Nome/Apelido e passa a exibir a cor (rgb) cadastrada como background
+- Colunas Círculo/Idade/Carta/Álbum da listagem de encontristas centralizadas; coluna Círculo com largura
+  fixa de 100px (botão ocupa a célula inteira) e coluna Padrinho com 200px
+
 ## [0.3.0] — 2026-07-31
 
 ### Adicionado

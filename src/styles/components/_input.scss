@@ -9,3 +9,14 @@
 .no-hint .mat-mdc-form-field-subscript-wrapper.mat-mdc-form-field-bottom-align {
   display: none;
 }
+
+// Reduz a altura de um mat-form-field (ou de um componente que embrulhe um,
+// como o app-multi-select) para o nível de densidade -3 do Angular Material
+// (56px -> 44px). As custom properties abaixo são as mesmas que a API de
+// densidade do Material define nesse nível; aplique em barras de busca/filtro
+// dentro de diálogos, onde o tamanho padrão fica desproporcional ao resto.
+.field-compact {
+  --mat-form-field-container-height: 44px;
+  --mat-form-field-filled-with-label-container-padding-top: 10px;
+  --mat-form-field-filled-with-label-container-padding-bottom: 10px;
+}

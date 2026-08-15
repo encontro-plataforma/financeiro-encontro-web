@@ -45,7 +45,7 @@ export class ArquivosComponent extends ListFilterBase implements OnInit, AfterVi
   search = '';
   downloading = new Set<number>();
 
-  displayedColumns = ['processado_em', 'nome_arquivo', 'tamanho', 'status', 'acoes'];
+  displayedColumns = ['processado_em', 'nome_arquivo', 'tamanho', 'tipo_origem', 'status', 'acoes'];
 
   private searchSubject = new Subject<string>();
 
@@ -151,6 +151,19 @@ export class ArquivosComponent extends ListFilterBase implements OnInit, AfterVi
             this.toast.error({ message: err?.error?.detail ?? 'Erro ao excluir arquivo.' }),
         });
       });
+  }
+
+  tipoOrigemLabel(arquivo: UploadFile): string {
+    switch (arquivo.tipo_origem) {
+      case 'BANCARIO':
+        return 'Extrato Bancário';
+      case 'ESPECIE':
+        return 'Extrato de Espécie';
+      case 'CARTAO':
+        return 'Extrato de Cartão';
+      default:
+        return '—';
+    }
   }
 
   formatBytes(bytes: number | null): string {
