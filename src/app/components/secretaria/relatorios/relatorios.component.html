@@ -1,10 +1,75 @@
 <div class="">
-  <h1 class="text-2xl font-medium text-on-surface mb-6">Relatórios</h1>
+  <!-- ─── Header ─────────────────────────────────────────────────────────────── -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-medium text-on-surface">Relatórios</h1>
+    <p class="text-sm text-gray-500 mt-1">
+      Gere relatórios da Secretaria para impressão e arquivamento
+    </p>
+  </div>
 
-  <mat-card appearance="outlined">
-    <mat-card-content class="flex flex-col items-center justify-center gap-3 py-16 text-center">
-      <mat-icon class="construcao-icon">construction</mat-icon>
-      <p class="text-on-surface-variant">Os relatórios da Secretaria ainda estão em construção.</p>
+  <!-- ─── Encontristas por Círculo ───────────────────────────────────────────── -->
+  <mat-card appearance="outlined" class="mb-6">
+    <mat-card-header>
+      <mat-card-title class="flex items-center gap-2">
+        <mat-icon class="text-primary">groups</mat-icon>
+        Encontristas por Círculo
+      </mat-card-title>
+      <mat-card-subtitle>
+        Uma página por Círculo, com os Encontristas vinculados e o contato do padrinho
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="!pt-4">
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        class="btn btn--icon-left"
+        [disabled]="gerandoEncontristasPorCirculo"
+        (click)="gerarEncontristasPorCirculo()"
+      >
+        @if (gerandoEncontristasPorCirculo) {
+          <mat-spinner diameter="18" class="btn__spinner" />
+        } @else {
+          <mat-icon>picture_as_pdf</mat-icon>
+        }
+        @if (!gerandoEncontristasPorCirculo) {
+          Gerar PDF
+        }
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ─── Comorbidades ───────────────────────────────────────────────────────── -->
+  <mat-card appearance="outlined" class="mb-6">
+    <mat-card-header>
+      <mat-card-title class="flex items-center gap-2">
+        <mat-icon class="text-primary">medical_services</mat-icon>
+        Comorbidades
+      </mat-card-title>
+      <mat-card-subtitle>
+        Encontreiros e Encontristas com alergia, comorbidade ou uso de medicação informados
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="!pt-4">
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        class="btn btn--icon-left"
+        [disabled]="gerandoComorbidades"
+        (click)="gerarComorbidades()"
+      >
+        @if (gerandoComorbidades) {
+          <mat-spinner diameter="18" class="btn__spinner" />
+        } @else {
+          <mat-icon>picture_as_pdf</mat-icon>
+        }
+        @if (!gerandoComorbidades) {
+          Gerar PDF
+        }
+      </button>
     </mat-card-content>
   </mat-card>
 </div>
