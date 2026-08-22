@@ -31,4 +31,8 @@ export class EncontreiroService extends AbstractService<Encontreiro> {
   editar(id: number, data: EncontreiroUpdate): Observable<Encontreiro> {
     return this.update<Encontreiro>(data, id);
   }
+
+  alterarEquipe(id: number, equipeId: number): Observable<Encontreiro> {
+    return this.patch<Encontreiro>({}, `/${id}/equipe/${equipeId}`);
+  }
 }

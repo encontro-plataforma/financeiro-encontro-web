@@ -3,6 +3,7 @@ export class AcessoEquipe {
   static VERMELHO = 'VERMELHO';
   static AMARELO  = 'AMARELO';
   static VERDE    = 'VERDE';
+  static NA       = 'N/A';
 
   static get options() {
     return [
@@ -10,6 +11,7 @@ export class AcessoEquipe {
       { name: 'Vermelho', value: AcessoEquipe.VERMELHO },
       { name: 'Amarelo',  value: AcessoEquipe.AMARELO  },
       { name: 'Verde',    value: AcessoEquipe.VERDE    },
+      { name: 'N/A',      value: AcessoEquipe.NA       },
     ];
   }
 
@@ -20,6 +22,7 @@ export class AcessoEquipe {
       case AcessoEquipe.VERMELHO:  return 'Vermelho';
       case AcessoEquipe.AMARELO:   return 'Amarelo';
       case AcessoEquipe.VERDE:     return 'Verde';
+      case AcessoEquipe.NA:        return 'N/A';
     }
   }
 }

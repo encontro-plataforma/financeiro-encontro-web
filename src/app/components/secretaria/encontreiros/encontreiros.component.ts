@@ -16,12 +16,19 @@ import {
   MultiSelectItem,
 } from '../../../shared/components/multi-select/multi-select.component';
 import { CsvUploadDialogComponent } from '../../../shared/components/csv-upload-dialog/csv-upload-dialog.component';
+import {
+  EquipePickerDialogComponent,
+  acessoCorFundo,
+} from '../../../shared/components/equipe-picker-dialog/equipe-picker-dialog.component';
 import { TelefoneBrPipe } from '../../../shared/pipes/telefone-br.pipe';
 import { ErrorHandlerService } from '../../../shared/services/error-handler.service';
+import { ToastService } from '../../../shared/components/toast/toast.service';
 import { EncontreiroService } from '../../../services/encontreiro.service';
 import { EquipeService } from '../../../services/equipe.service';
 import { ListFilterBase } from '../../../shared/classes/list-filter-base';
 import { Encontreiro } from '../../../models/encontreiro.model';
+import { Equipe } from '../../../models/equipe.model';
+import { AcessoEquipe } from '../../../models/constants/acesso-equipe';
 import { PageTemplate } from '../../../services/util/PageTemplate';
 import { SituacaoCamisa } from '../../../models/constants/situacao-camisa';
 
@@ -47,6 +54,7 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private errorHandler = inject(ErrorHandlerService);
+  private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
   result: PageTemplate<Encontreiro> = new PageTemplate<Encontreiro>();
@@ -214,5 +222,34 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
 
   getSituacaoLabel(situacao: string): string {
     return SituacaoCamisa.getDescription(situacao);
+  }
+
+  equipeCorFundo(equipe: Equipe | null | undefined): string | null {
+    return acessoCorFundo(equipe?.acesso);
+  }
+
+  isCancelado(row: Encontreiro): boolean {
+    return row.equipe?.acesso === AcessoEquipe.NA;
+  }
+
+  abrirEquipePicker(row: Encontreiro): void {
+    this.dialog
+      .open<EquipePickerDialogComponent, unknown, Equipe>(EquipePickerDialogComponent, {
+        width: '820px',
+        maxWidth: '95vw',
+        data: { equipeAtualId: row.equipe_id },
+      })
+      .afterClosed()
+      .subscribe((equipe) => {
+        if (!equipe || equipe.id === row.equipe_id) return;
+
+        this.encontreiroService.alterarEquipe(row.id, equipe.id).subscribe({
+          next: () => {
+            this.toast.success({ message: 'Equipe atualizada com sucesso.' });
+            this.load();
+          },
+          error: (err) => this.errorHandler.handler(err),
+        });
+      });
   }
 }

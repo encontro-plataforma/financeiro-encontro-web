@@ -103,8 +103,18 @@
           </ng-container>
 
           <ng-container matColumnDef="equipe">
-            <mat-header-cell *matHeaderCellDef>Equipe</mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.equipe?.nome ?? '—' }}</mat-cell>
+            <mat-header-cell *matHeaderCellDef class="col-center">Equipe</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="col-center">
+              <button
+                type="button"
+                class="equipe-btn"
+                [style.background-color]="equipeCorFundo(row.equipe)"
+                [class.equipe-btn--vazio]="!row.equipe"
+                (click)="abrirEquipePicker(row)"
+              >
+                {{ row.equipe?.nome ?? 'Sem equipe' }}
+              </button>
+            </mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="camisa">
@@ -142,7 +152,10 @@
             *matHeaderRowDef="displayedColumns; sticky: true"
             class="listagem-header-row"
           />
-          <mat-row *matRowDef="let row; columns: displayedColumns" />
+          <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            [class.row--cancelado]="isCancelado(row)"
+          />
 
           <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell empty-row" [attr.colspan]="displayedColumns.length">
