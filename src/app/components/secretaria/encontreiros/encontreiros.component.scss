@@ -28,6 +28,8 @@
 
   .mat-column-equipe {
     max-width: 160px;
+    padding: 0;
+    align-items: center;
   }
 
   .mat-column-camisa {
@@ -69,6 +71,43 @@
   .detalhes-sub {
     font-size: 0.8rem;
     color: var(--mat-sys-on-surface-variant);
+  }
+
+  .equipe-btn {
+    width: 100%;
+    height: 70%;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    padding: 4px 10px;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: filter 0.1s;
+
+    &:hover {
+      filter: brightness(0.92);
+    }
+
+    &--vazio {
+      background-color: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface-variant);
+      text-shadow: none;
+    }
+  }
+
+  // Equipe N/A = registro cancelado -- linha inteira em itálico pra sinalizar
+  // visualmente, além da cor cinza do próprio botão de equipe.
+  mat-row.row--cancelado {
+    font-style: italic;
+
+    .equipe-btn {
+      font-style: italic;
+    }
   }
 
   .empty-row {

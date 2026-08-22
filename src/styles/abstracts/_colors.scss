@@ -11,6 +11,18 @@ $_status: (
   duplicado: ( bg: #ede7f6, text: #4527a0, accent: #7e57c2 ),
 );
 
+// ─── Mapa de acesso de equipe ─────────────────────────────────────────────────
+// Consumido por: botão/dialog de troca de Equipe dos Encontreiros
+// "na" = equipe N/A (cancelado), sempre exibida após o grupo vermelho
+
+$_acesso-equipe: (
+  edg:      ( bg: #1a1a1a, text: #ffffff ),
+  verde:    ( bg: #1b5e20, text: #ffffff ),
+  amarelo:  ( bg: #b8860b, text: #ffffff ),
+  vermelho: ( bg: #c62828, text: #ffffff ),
+  na:       ( bg: #757575, text: #ffffff ),
+);
+
 // ─── Cores de domínio ─────────────────────────────────────────────────────────
 $color-receita:    #2e7d32;
 $color-conciliado: #2e7d32;
@@ -23,6 +35,16 @@ $color-conciliado: #2e7d32;
   @if not $entry { @error "status-color: tipo '#{$type}' não existe. Use: success | error | warning | duplicado"; }
   $val: map.get($entry, $variant);
   @if not $val { @error "status-color: variante '#{$variant}' não existe. Use: bg | text | accent"; }
+  @return $val;
+}
+
+// Retorna um valor individual do mapa de acesso de equipe.
+// Uso: acesso-equipe-color('verde', 'bg') → #1b5e20
+@function acesso-equipe-color($tipo, $variante) {
+  $entry: map.get($_acesso-equipe, $tipo);
+  @if not $entry { @error "acesso-equipe-color: tipo '#{$tipo}' não existe. Use: edg | verde | amarelo | vermelho | na"; }
+  $val: map.get($entry, $variante);
+  @if not $val { @error "acesso-equipe-color: variante '#{$variante}' não existe. Use: bg | text"; }
   @return $val;
 }
 
@@ -56,4 +78,10 @@ $color-conciliado: #2e7d32;
 
   --color-receita:    #{$color-receita};
   --color-conciliado: #{$color-conciliado};
+
+  @each $tipo, $variantes in $_acesso-equipe {
+    @each $variante, $valor in $variantes {
+      --acesso-#{$tipo}-#{$variante}: #{$valor};
+    }
+  }
 }

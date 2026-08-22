@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>Selecionar Equipe</h2>
+
+<mat-dialog-content class="picker-content">
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" class="flex-none" />
+  }
+
+  @if (!loading && grupos.length === 0) {
+    <p class="empty-state">Nenhuma equipe cadastrada.</p>
+  }
+
+  @for (grupo of grupos; track grupo.acesso) {
+    <div class="acesso-grupo">
+      <div class="acesso-header" [class]="'acesso-header--' + grupo.slug">
+        {{ grupo.label }}
+      </div>
+
+      <div class="equipe-grid">
+        @for (equipe of grupo.equipes; track equipe.id) {
+          <button
+            type="button"
+            class="equipe-opcao"
+            [class]="'equipe-opcao--' + grupo.slug"
+            [class.equipe-opcao--ativo]="equipe.id === data.equipeAtualId"
+            (click)="selecionar(equipe)"
+          >
+            {{ equipe.nome }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" class="btn" (click)="cancelar()">Fechar</button>
+</mat-dialog-actions>
