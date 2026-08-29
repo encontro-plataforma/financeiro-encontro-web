@@ -23,6 +23,7 @@ export interface Encontrista {
   idade:                 number | null;
   circulo_id:            number | null;
   circulo:               Circulo | null;
+  onde_veio_ficha:       string | null;
   instagram:             string | null;
   contato:               string | null;
   religiao:              string | null;
@@ -59,6 +60,7 @@ export interface EncontristaUpdate {
   dt_nascimento?:        string | null;
   idade?:                number | null;
   circulo_id?:           number | null;
+  onde_veio_ficha?:      string | null;
   instagram?:            string | null;
   contato?:              string | null;
   religiao?:             string | null;
