@@ -127,6 +127,31 @@
           }
         </mat-form-field>
 
+        <!-- Dados do Cartão (bloqueados até selecionar forma de pagamento em cartão) -->
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4 lg:col-span-4">
+          <mat-label>Taxa da Maquininha (R$)</mat-label>
+          <input matInput type="number" step="0.01" min="0" formControlName="cart_taxa" placeholder="0,00">
+          @if (form.get('cart_taxa')?.hasError('required') && form.get('cart_taxa')?.touched) {
+            <mat-error>Obrigatório para pagamento em cartão</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4 lg:col-span-4">
+          <mat-label>Valor Líquido (R$)</mat-label>
+          <input matInput type="number" step="0.01" min="0" formControlName="cart_valor_liquido" placeholder="0,00">
+          @if (form.get('cart_valor_liquido')?.hasError('required') && form.get('cart_valor_liquido')?.touched) {
+            <mat-error>Obrigatório para pagamento em cartão</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4 lg:col-span-4">
+          <mat-label>Parcelas</mat-label>
+          <input matInput type="number" step="1" min="1" formControlName="cart_parcelas" placeholder="1">
+          @if (form.get('cart_parcelas')?.hasError('required') && form.get('cart_parcelas')?.touched) {
+            <mat-error>Obrigatório para pagamento em cartão</mat-error>
+          }
+        </mat-form-field>
+
         <!-- Observação -->
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12">
           <mat-label>Observação</mat-label>

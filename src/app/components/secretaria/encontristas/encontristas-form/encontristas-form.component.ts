@@ -64,6 +64,7 @@ export class EncontristasFormComponent implements OnInit {
       dt_nascimento:        [null],
       idade:                [null],
       circulo_id:           [null],
+      onde_veio_ficha:      [''],
       instagram:            [''],
       contato:              [''],
       religiao:             [''],

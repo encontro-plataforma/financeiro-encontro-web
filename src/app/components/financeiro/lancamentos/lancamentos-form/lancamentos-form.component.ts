@@ -68,6 +68,9 @@ export class LancamentosFormComponent implements OnInit {
       data_pagamento: [moment(), Validators.required],
       finalidade_id: [null, Validators.required],
       observacao: [''],
+      cart_taxa: [{ value: null, disabled: true }],
+      cart_valor_liquido: [{ value: null, disabled: true }],
+      cart_parcelas: [{ value: null, disabled: true }],
     });
 
     const id = this.route.snapshot.params['id'];
@@ -91,6 +94,35 @@ export class LancamentosFormComponent implements OnInit {
     this.form.get('tipo')?.valueChanges.subscribe(() => {
       this.syncFinalidadeByTipo();
     });
+
+    this.form.get('forma_pagamento')?.valueChanges.subscribe((forma) => {
+      this.syncCamposCartao(forma);
+    });
+  }
+
+  private isFormaCartao(forma: string): boolean {
+    return forma === FormaPagamento.CARTAO_CREDITO || forma === FormaPagamento.CARTAO_DEBITO;
+  }
+
+  private syncCamposCartao(forma: string): void {
+    const campos = ['cart_taxa', 'cart_valor_liquido', 'cart_parcelas'];
+
+    if (this.isFormaCartao(forma)) {
+      campos.forEach((campo) => {
+        const control = this.form.get(campo);
+        control?.setValidators(Validators.required);
+        control?.updateValueAndValidity();
+        control?.enable();
+      });
+    } else {
+      campos.forEach((campo) => {
+        const control = this.form.get(campo);
+        control?.setValue(null);
+        control?.clearValidators();
+        control?.updateValueAndValidity();
+        control?.disable();
+      });
+    }
   }
 
   private syncFinalidadeByTipo(): void {
@@ -115,6 +147,9 @@ export class LancamentosFormComponent implements OnInit {
           data_pagamento: moment(data.data_pagamento),
           finalidade_id: data.finalidade_id,
           observacao: data.observacao,
+          cart_taxa: data.cart_taxa,
+          cart_valor_liquido: data.cart_valor_liquido,
+          cart_parcelas: data.cart_parcelas,
         });
         this.syncFormEnabledState();
         this.loading = false;
@@ -132,6 +167,9 @@ export class LancamentosFormComponent implements OnInit {
       this.form.disable();
     } else {
       this.form.enable();
+      // form.enable() reabre TODOS os controles, inclusive os de cartão --
+      // reaplica a trava deles conforme a forma de pagamento atual.
+      this.syncCamposCartao(this.form.get('forma_pagamento')?.value);
     }
   }
 
