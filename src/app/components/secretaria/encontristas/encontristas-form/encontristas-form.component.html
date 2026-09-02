@@ -71,6 +71,18 @@
           }
         </mat-form-field>
 
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-2">
+          <mat-label>Data de Nascimento</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerNascimento"
+            formControlName="dt_nascimento"
+            placeholder="DD/MM/AAAA"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="pickerNascimento" />
+          <mat-datepicker #pickerNascimento />
+        </mat-form-field>
+
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
           <mat-label>Nome</mat-label>
           <input matInput formControlName="nome" />
@@ -79,7 +91,7 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-2">
           <mat-label>Apelido</mat-label>
           <input matInput formControlName="apelido" />
         </mat-form-field>
@@ -99,32 +111,17 @@
             <mat-option [value]="null">Nenhum</mat-option>
             @for (circulo of circulos; track circulo.id) {
               <mat-option [value]="circulo.id">
-                <span class="circulo-swatch" [style.background-color]="circulo.rgb">{{ circulo.nome }}</span>
+                <span class="circulo-swatch" [style.background-color]="circulo.rgb">{{
+                  circulo.nome
+                }}</span>
               </mat-option>
             }
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
-          <mat-label>Data de Nascimento</mat-label>
-          <input
-            matInput
-            [matDatepicker]="pickerNascimento"
-            formControlName="dt_nascimento"
-            placeholder="DD/MM/AAAA"
-          />
-          <mat-datepicker-toggle matIconSuffix [for]="pickerNascimento" />
-          <mat-datepicker #pickerNascimento />
-        </mat-form-field>
-
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
-          <mat-label>Idade</mat-label>
-          <input matInput type="number" formControlName="idade" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-5">
-          <mat-label>Camisa</mat-label>
-          <input matInput formControlName="camisa" placeholder="Tamanho" />
+          <mat-label>Instagram</mat-label>
+          <input matInput formControlName="instagram" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
@@ -132,42 +129,51 @@
           <input matInput formControlName="onde_veio_ficha" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
-          <mat-label>Instagram</mat-label>
-          <input matInput formControlName="instagram" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Contato</mat-label>
           <input matInput formControlName="contato" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-1">
+          <mat-label>Idade</mat-label>
+          <input matInput type="number" formControlName="idade" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-1">
+          <mat-label>Camisa</mat-label>
+          <input matInput formControlName="camisa" placeholder="Tamanho" />
+        </mat-form-field>
+
+        <div class="col-span-12"></div>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Religião</mat-label>
           <input matInput formControlName="religiao" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Igreja</mat-label>
           <input matInput formControlName="igreja" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-5">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
           <mat-label>Endereço</mat-label>
           <input matInput formControlName="endereco" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-2">
           <mat-label>Cidade</mat-label>
           <input matInput formControlName="cidade" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Veículo</mat-label>
           <input matInput formControlName="veiculo" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+        <div class="col-span-12"></div>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-2">
           <mat-label>Contato Emergencial</mat-label>
           <input matInput formControlName="contato_emerg" />
         </mat-form-field>
@@ -177,7 +183,7 @@
           <input matInput formControlName="nome_emerg" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-2">
           <mat-label>Parentesco Emergencial</mat-label>
           <input matInput formControlName="parentesco_emerg" />
         </mat-form-field>
@@ -187,10 +193,12 @@
           <input matInput formControlName="medicacao" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-4">
+        <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-6">
           <mat-label>Alergia / Comorbidade</mat-label>
           <input matInput formControlName="alergia_comorbidade" />
         </mat-form-field>
+
+        <div class="col-span-12"></div>
 
         <mat-form-field appearance="outline" floatLabel="always" class="col-span-12 md:col-span-3">
           <mat-label>Data de Pagamento</mat-label>

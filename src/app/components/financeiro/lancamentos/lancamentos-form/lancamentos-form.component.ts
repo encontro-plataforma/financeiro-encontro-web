@@ -23,7 +23,13 @@ import { LancamentoDetalhamentosComponent } from './lancamento-detalhamentos/lan
 @Component({
   selector: 'app-lancamentos-form',
   standalone: true,
-  imports: [CommonModule, MaterialGlobalModule, MaterialFormsModule, MaterialDatepickerModule, LancamentoDetalhamentosComponent],
+  imports: [
+    CommonModule,
+    MaterialGlobalModule,
+    MaterialFormsModule,
+    MaterialDatepickerModule,
+    LancamentoDetalhamentosComponent,
+  ],
   templateUrl: './lancamentos-form.component.html',
   styleUrl: './lancamentos-form.component.scss',
 })
@@ -43,13 +49,13 @@ export class LancamentosFormComponent implements OnInit {
   lancamentoId: number | null = null;
   lancamento: Lancamento | null = null;
 
-  finalidades: Finalidade[]          = [];
-  tipoOpcoes          = TipoLancamento.options;
+  finalidades: Finalidade[] = [];
+  tipoOpcoes = TipoLancamento.options;
   formaPagamentoOpcoes = FormaPagamento.options;
 
   get finalidadesFiltradas(): Finalidade[] {
     const tipo = this.form?.get('tipo')?.value;
-    return tipo ? this.finalidades.filter(f => f.tipo === tipo) : this.finalidades;
+    return tipo ? this.finalidades.filter((f) => f.tipo === tipo) : this.finalidades;
   }
 
   readonly StatusLancamento = StatusLancamento;
@@ -70,7 +76,7 @@ export class LancamentosFormComponent implements OnInit {
       observacao: [''],
       cart_taxa: [{ value: null, disabled: true }],
       cart_valor_liquido: [{ value: null, disabled: true }],
-      cart_parcelas: [{ value: null, disabled: true }],
+      cart_parcelas: [{ value: 0, disabled: true }],
     });
 
     const id = this.route.snapshot.params['id'];
@@ -110,14 +116,18 @@ export class LancamentosFormComponent implements OnInit {
     if (this.isFormaCartao(forma)) {
       campos.forEach((campo) => {
         const control = this.form.get(campo);
-        control?.setValidators(Validators.required);
+        control?.setValidators(
+          campo === 'cart_parcelas'
+            ? [Validators.required, Validators.min(1)]
+            : Validators.required,
+        );
         control?.updateValueAndValidity();
         control?.enable();
       });
     } else {
       campos.forEach((campo) => {
         const control = this.form.get(campo);
-        control?.setValue(null);
+        control?.setValue(0);
         control?.clearValidators();
         control?.updateValueAndValidity();
         control?.disable();
@@ -126,9 +136,9 @@ export class LancamentosFormComponent implements OnInit {
   }
 
   private syncFinalidadeByTipo(): void {
-    const filtered   = this.finalidadesFiltradas;
-    const currentId  = this.form.get('finalidade_id')?.value;
-    const isStillValid = filtered.some(f => f.id === currentId);
+    const filtered = this.finalidadesFiltradas;
+    const currentId = this.form.get('finalidade_id')?.value;
+    const isStillValid = filtered.some((f) => f.id === currentId);
     if (!isStillValid) {
       this.form.get('finalidade_id')?.setValue(filtered[0]?.id ?? null);
     }
@@ -192,18 +202,20 @@ export class LancamentosFormComponent implements OnInit {
       return;
     }
 
-    this.lancamentoService.editar(this.lancamentoId, {
-      finalidade_id,
-      status: StatusLancamento.CONCILIADO,
-      ...(observacao ? { observacao } : {}),
-    }).subscribe({
-      next: (data) => {
-        this.lancamento = data;
-        this.syncFormEnabledState();
-        this.toast.success({ message: 'Lançamento conciliado com sucesso.' });
-      },
-      error: (err) => this.errorHandler.handler(err),
-    });
+    this.lancamentoService
+      .editar(this.lancamentoId, {
+        finalidade_id,
+        status: StatusLancamento.CONCILIADO,
+        ...(observacao ? { observacao } : {}),
+      })
+      .subscribe({
+        next: (data) => {
+          this.lancamento = data;
+          this.syncFormEnabledState();
+          this.toast.success({ message: 'Lançamento conciliado com sucesso.' });
+        },
+        error: (err) => this.errorHandler.handler(err),
+      });
   }
 
   desconciliar(): void {
