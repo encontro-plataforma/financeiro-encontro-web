@@ -15,6 +15,23 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+
+  & + & {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.vinculo-resumo {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .vinculo-dados {
@@ -49,4 +66,8 @@
   display: flex;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.vinculo-resumo + .btn {
+  margin-top: 12px;
 }

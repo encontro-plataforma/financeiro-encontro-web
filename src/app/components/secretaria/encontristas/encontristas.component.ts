@@ -18,10 +18,12 @@ import {
 } from '../../../shared/components/multi-select/multi-select.component';
 import { CsvUploadDialogComponent } from '../../../shared/components/csv-upload-dialog/csv-upload-dialog.component';
 import { CirculoPickerDialogComponent } from '../../../shared/components/circulo-picker-dialog/circulo-picker-dialog.component';
+import { EscolherLancamentoDialogComponent } from '../../../shared/components/escolher-lancamento-dialog/escolher-lancamento-dialog.component';
 import { TelefoneBrPipe } from '../../../shared/pipes/telefone-br.pipe';
 import { ErrorHandlerService } from '../../../shared/services/error-handler.service';
 import { ToastService } from '../../../shared/components/toast/toast.service';
 import { EncontristaService } from '../../../services/encontrista.service';
+import { DetalhamentoService } from '../../../services/detalhamento.service';
 import { CirculoService } from '../../../services/circulo.service';
 import { ListFilterBase } from '../../../shared/classes/list-filter-base';
 import { Encontrista, PadrinhoResumo } from '../../../models/encontrista.model';
@@ -47,6 +49,7 @@ const SEM_CIRCULO_ID = 0;
 })
 export class EncontristasComponent extends ListFilterBase implements OnInit, AfterViewInit {
   private encontristaService = inject(EncontristaService);
+  private detalhamentoService = inject(DetalhamentoService);
   private circuloService = inject(CirculoService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
@@ -286,7 +289,29 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
     this.router.navigate(['/secretaria/encontristas', id, 'editar']);
   }
 
-  verLancamento(lancamentoId: number): void {
+  verLancamento(row: Encontrista): void {
+    if (row.quantidade_vinculos <= 1) {
+      if (!row.lancamento_vinculado_id) return;
+      this.navegarParaLancamento(row.lancamento_vinculado_id);
+      return;
+    }
+
+    this.detalhamentoService
+      .listAll({ referencia_id: row.id, tipo: 'INSCRICAO_ENCONTRISTA' })
+      .subscribe({
+        next: (vinculos) => {
+          this.dialog
+            .open(EscolherLancamentoDialogComponent, { width: '420px', data: { vinculos } })
+            .afterClosed()
+            .subscribe((lancamentoId?: number) => {
+              if (lancamentoId) this.navegarParaLancamento(lancamentoId);
+            });
+        },
+        error: (err) => this.errorHandler.handler(err),
+      });
+  }
+
+  private navegarParaLancamento(lancamentoId: number): void {
     this.router.navigate(['/lancamentos', lancamentoId, 'editar'], {
       state: { returnUrl: this.router.url },
     });

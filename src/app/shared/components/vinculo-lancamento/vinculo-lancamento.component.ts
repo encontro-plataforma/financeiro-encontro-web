@@ -11,7 +11,9 @@ import { ToastService } from '../toast/toast.service';
 import { ErrorHandlerService } from '../../services/error-handler.service';
 import { DetalhamentoService } from '../../../services/detalhamento.service';
 import { Lancamento } from '../../../models/lancamento.model';
+import { DetalhamentoVinculoResumo } from '../../../models/detalhamento.model';
 import { FormaPagamento } from '../../../models/constants/forma-pagamento';
+import { calcularSaldoPendente, calcularValorMaximoVinculo, podeAdicionarVinculo } from './vinculo.utils';
 
 @Component({
   selector: 'app-vinculo-lancamento',
@@ -25,8 +27,7 @@ export class VinculoLancamentoComponent {
   @Input() tipo!: string;
   @Input() referenciaId!: number;
   @Input() valorPagamento: number | null = null;
-  @Input() detalhamentoId: number | null = null;
-  @Input() lancamentoVinculado: Lancamento | null = null;
+  @Input() vinculos: DetalhamentoVinculoResumo[] = [];
 
   readonly FormaPagamento = FormaPagamento;
 
@@ -41,10 +42,23 @@ export class VinculoLancamentoComponent {
 
   processando = false;
 
-  verLancamento(): void {
-    if (!this.lancamentoVinculado) return;
+  get totalVinculado(): number {
+    // Detalhamento.valor vem do backend como Decimal -- chega serializado
+    // como string JSON ("60.00"), não como number; Number() evita que o "+"
+    // vire concatenação de string em vez de soma.
+    return this.vinculos.reduce((soma, v) => soma + Number(v.valor), 0);
+  }
 
-    this.router.navigate(['/lancamentos', this.lancamentoVinculado.id, 'editar'], {
+  get saldoPendente(): number | null {
+    return calcularSaldoPendente(this.valorPagamento, this.totalVinculado);
+  }
+
+  get podeAdicionar(): boolean {
+    return podeAdicionarVinculo(this.saldoPendente);
+  }
+
+  verLancamento(vinculo: DetalhamentoVinculoResumo): void {
+    this.router.navigate(['/lancamentos', vinculo.lancamento.id, 'editar'], {
       state: { returnUrl: this.router.url },
     });
   }
@@ -55,11 +69,14 @@ export class VinculoLancamentoComponent {
       return;
     }
 
+    const saldoPessoa = this.saldoPendente ?? this.valorPagamento;
+
     this.abrirPicker((lancamento) => {
-      const restante = lancamento.valor - lancamento.soma_detalhamentos;
+      const restanteLancamento = lancamento.valor - lancamento.soma_detalhamentos;
+      const tetoEfetivo = calcularValorMaximoVinculo(restanteLancamento, saldoPessoa);
       this.abrirDialogValor(
-        Math.min(this.valorPagamento as number, restante > 0 ? restante : this.valorPagamento as number),
-        restante,
+        Math.min(saldoPessoa, tetoEfetivo > 0 ? tetoEfetivo : saldoPessoa),
+        tetoEfetivo,
         (valor) => {
           this.processando = true;
           this.detalhamentoService.criar({
@@ -83,12 +100,10 @@ export class VinculoLancamentoComponent {
     });
   }
 
-  trocar(): void {
-    if (!this.detalhamentoId) return;
-
+  trocar(vinculo: DetalhamentoVinculoResumo): void {
     this.abrirPicker((lancamento) => {
       this.processando = true;
-      this.detalhamentoService.editar(this.detalhamentoId as number, { lancamento_id: lancamento.id }).subscribe({
+      this.detalhamentoService.editar(vinculo.id, { lancamento_id: lancamento.id }).subscribe({
         next: () => {
           this.processando = false;
           this.toast.success({ message: 'Lançamento alterado com sucesso.' });
@@ -102,20 +117,18 @@ export class VinculoLancamentoComponent {
     });
   }
 
-  remover(): void {
-    if (!this.detalhamentoId) return;
-
+  remover(vinculo: DetalhamentoVinculoResumo): void {
     this.dialog.open(ConfirmDialogComponent, {
       width: '420px',
       data: {
         title:   'Remover vínculo',
-        message: 'Deseja remover o vínculo com este lançamento? A inscrição volta a ficar pendente de auditoria.',
+        message: 'Deseja remover o vínculo com este lançamento? O valor volta a ficar pendente.',
       },
     }).afterClosed().subscribe((ok: boolean) => {
-      if (!ok || !this.detalhamentoId) return;
+      if (!ok) return;
 
       this.processando = true;
-      this.detalhamentoService.remover(this.detalhamentoId).subscribe({
+      this.detalhamentoService.remover(vinculo.id).subscribe({
         next: () => {
           this.processando = false;
           this.toast.success({ message: 'Vínculo removido.' });

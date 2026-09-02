@@ -1,37 +1,59 @@
 <mat-card appearance="outlined" class="vinculo-card">
   <mat-card-content>
-    <h3 class="vinculo-titulo">Lançamento vinculado</h3>
+    <h3 class="vinculo-titulo">Lançamentos vinculados</h3>
 
-    @if (lancamentoVinculado) {
-      <div class="vinculo-info">
-        <div class="vinculo-dados">
-          <p class="vinculo-descricao">{{ lancamentoVinculado.descricao }}</p>
-          <p class="vinculo-detalhe">
-            {{ lancamentoVinculado.data_pagamento | date: 'dd/MM/yyyy' }}
-            &nbsp;·&nbsp;
-            {{ lancamentoVinculado.valor | currency: 'BRL' }}
-            &nbsp;·&nbsp;
-            {{ FormaPagamento.getDescription(lancamentoVinculado.forma_pagamento) }}
-          </p>
-          @if (lancamentoVinculado.observacao) {
-            <p class="vinculo-observacao">{{ lancamentoVinculado.observacao }}</p>
-          }
+    @if (vinculos.length > 0) {
+      @for (vinculo of vinculos; track vinculo.id) {
+        <div class="vinculo-info">
+          <div class="vinculo-dados">
+            <p class="vinculo-descricao">{{ vinculo.lancamento.descricao }}</p>
+            <p class="vinculo-detalhe">
+              {{ vinculo.lancamento.data_pagamento | date: 'dd/MM/yyyy' }}
+              &nbsp;·&nbsp;
+              {{ vinculo.valor | currency: 'BRL' }}
+              &nbsp;·&nbsp;
+              {{ FormaPagamento.getDescription(vinculo.lancamento.forma_pagamento) }}
+            </p>
+            @if (vinculo.lancamento.observacao) {
+              <p class="vinculo-observacao">{{ vinculo.lancamento.observacao }}</p>
+            }
+          </div>
+          <div class="vinculo-acoes">
+            <button mat-stroked-button [disabled]="processando" (click)="verLancamento(vinculo)">
+              <mat-icon>open_in_new</mat-icon>
+              Ver Lançamento
+            </button>
+            <button mat-stroked-button [disabled]="processando" (click)="trocar(vinculo)">
+              <mat-icon>swap_horiz</mat-icon>
+              Trocar
+            </button>
+            <button mat-stroked-button color="warn" [disabled]="processando" (click)="remover(vinculo)">
+              <mat-icon>link_off</mat-icon>
+              Remover
+            </button>
+          </div>
         </div>
-        <div class="vinculo-acoes">
-          <button mat-stroked-button [disabled]="processando" (click)="verLancamento()">
-            <mat-icon>open_in_new</mat-icon>
-            Ver Lançamento
-          </button>
-          <button mat-stroked-button [disabled]="processando" (click)="trocar()">
-            <mat-icon>swap_horiz</mat-icon>
-            Trocar
-          </button>
-          <button mat-stroked-button color="warn" [disabled]="processando" (click)="remover()">
-            <mat-icon>link_off</mat-icon>
-            Remover
-          </button>
-        </div>
+      }
+
+      <div class="vinculo-resumo">
+        <span>Total vinculado: <strong>{{ totalVinculado | currency: 'BRL' }}</strong></span>
+        @if (saldoPendente !== null) {
+          <span>Saldo pendente: <strong>{{ saldoPendente | currency: 'BRL' }}</strong></span>
+        }
       </div>
+
+      @if (podeAdicionar) {
+        <button
+          mat-stroked-button
+          color="primary"
+          class="btn"
+          [disabled]="processando"
+          (click)="ligar()"
+        >
+          <mat-icon>add_link</mat-icon>
+          Adicionar outro lançamento
+        </button>
+      }
     } @else {
       <div class="vinculo-info">
         <p class="vinculo-vazio">Esta inscrição ainda não está ligada a nenhum lançamento.</p>

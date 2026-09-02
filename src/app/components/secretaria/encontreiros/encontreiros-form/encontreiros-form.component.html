@@ -189,8 +189,7 @@
       tipo="INSCRICAO_ENCONTREIRO"
       [referenciaId]="encontreiro.id"
       [valorPagamento]="encontreiro.pagamento"
-      [detalhamentoId]="encontreiro.detalhamento_id"
-      [lancamentoVinculado]="encontreiro.lancamento_vinculado"
+      [vinculos]="encontreiro.detalhamentos_vinculados"
       (vinculado)="onVinculoAlterado()"
     />
   }

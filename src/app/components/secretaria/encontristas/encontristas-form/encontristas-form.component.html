@@ -264,8 +264,7 @@
       tipo="INSCRICAO_ENCONTRISTA"
       [referenciaId]="encontrista.id"
       [valorPagamento]="encontrista.pagamento"
-      [detalhamentoId]="encontrista.detalhamento_id"
-      [lancamentoVinculado]="encontrista.lancamento_vinculado"
+      [vinculos]="encontrista.detalhamentos_vinculados"
       (vinculado)="onVinculoAlterado()"
     />
   }

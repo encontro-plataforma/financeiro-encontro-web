@@ -68,7 +68,7 @@ export class ValorDetalhamentoDialogComponent {
     if (this.valor === null || this.valor === undefined) return 'Informe um valor.';
     if (this.valor <= 0) return 'O valor deve ser maior que zero.';
     if (this.valor > this.data.valorMaximo) {
-      return `O valor não pode ultrapassar R$ ${this.data.valorMaximo.toFixed(2)} (restante do lançamento).`;
+      return `O valor não pode ultrapassar R$ ${this.data.valorMaximo.toFixed(2)} (limite disponível).`;
     }
     return null;
   }

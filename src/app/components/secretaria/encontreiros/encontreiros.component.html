@@ -133,12 +133,15 @@
               <button
                 mat-icon-button
                 [disabled]="!row.lancamento_vinculado_id"
+                [color]="row.quantidade_vinculos > 1 ? 'accent' : undefined"
                 [matTooltip]="
-                  row.lancamento_vinculado_id
-                    ? 'Ver lançamento vinculado'
-                    : 'Inscrição ainda não auditada'
+                  row.quantidade_vinculos > 1
+                    ? row.quantidade_vinculos + ' lançamentos vinculados'
+                    : row.lancamento_vinculado_id
+                      ? 'Ver lançamento vinculado'
+                      : 'Nenhum lançamento vinculado ainda'
                 "
-                (click)="verLancamento(row.lancamento_vinculado_id)"
+                (click)="verLancamento(row)"
               >
                 <mat-icon>open_in_new</mat-icon>
               </button>

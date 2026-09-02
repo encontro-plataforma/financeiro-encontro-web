@@ -20,10 +20,12 @@ import {
   EquipePickerDialogComponent,
   acessoCorFundo,
 } from '../../../shared/components/equipe-picker-dialog/equipe-picker-dialog.component';
+import { EscolherLancamentoDialogComponent } from '../../../shared/components/escolher-lancamento-dialog/escolher-lancamento-dialog.component';
 import { TelefoneBrPipe } from '../../../shared/pipes/telefone-br.pipe';
 import { ErrorHandlerService } from '../../../shared/services/error-handler.service';
 import { ToastService } from '../../../shared/components/toast/toast.service';
 import { EncontreiroService } from '../../../services/encontreiro.service';
+import { DetalhamentoService } from '../../../services/detalhamento.service';
 import { EquipeService } from '../../../services/equipe.service';
 import { ListFilterBase } from '../../../shared/classes/list-filter-base';
 import { Encontreiro } from '../../../models/encontreiro.model';
@@ -50,6 +52,7 @@ const AUDITADO_TODOS = '-1';
 })
 export class EncontreirosComponent extends ListFilterBase implements OnInit, AfterViewInit {
   private encontreiroService = inject(EncontreiroService);
+  private detalhamentoService = inject(DetalhamentoService);
   private equipeService = inject(EquipeService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
@@ -205,7 +208,29 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
     this.router.navigate(['/secretaria/encontreiros', id, 'editar']);
   }
 
-  verLancamento(lancamentoId: number): void {
+  verLancamento(row: Encontreiro): void {
+    if (row.quantidade_vinculos <= 1) {
+      if (!row.lancamento_vinculado_id) return;
+      this.navegarParaLancamento(row.lancamento_vinculado_id);
+      return;
+    }
+
+    this.detalhamentoService
+      .listAll({ referencia_id: row.id, tipo: 'INSCRICAO_ENCONTREIRO' })
+      .subscribe({
+        next: (vinculos) => {
+          this.dialog
+            .open(EscolherLancamentoDialogComponent, { width: '420px', data: { vinculos } })
+            .afterClosed()
+            .subscribe((lancamentoId?: number) => {
+              if (lancamentoId) this.navegarParaLancamento(lancamentoId);
+            });
+        },
+        error: (err) => this.errorHandler.handler(err),
+      });
+  }
+
+  private navegarParaLancamento(lancamentoId: number): void {
     this.router.navigate(['/lancamentos', lancamentoId, 'editar'], {
       state: { returnUrl: this.router.url },
     });

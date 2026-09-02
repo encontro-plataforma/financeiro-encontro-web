@@ -20,6 +20,7 @@ import { EncontristaService } from '../../../../services/encontrista.service';
 import { PageTemplate } from '../../../../services/util/PageTemplate';
 import { Detalhamento } from '../../../../models/detalhamento.model';
 import { Lancamento } from '../../../../models/lancamento.model';
+import { calcularValorMaximoVinculo } from '../../../../shared/components/vinculo-lancamento/vinculo.utils';
 
 export interface DetalhamentoPickerDialogData {
   lancamentoId: number;
@@ -36,6 +37,8 @@ interface PickerRow {
   dt_pagamento: string | null;
   pagamento: number | null;
   observacao: string | null;
+  total_vinculado: number;
+  saldo_pendente: number | null;
 }
 
 const LABEL_POR_TIPO: Record<string, string> = {
@@ -112,7 +115,10 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
 
   get restanteVincular(): number {
     if (!this.data.lancamento) return 0;
-    const somaAtual = this.detalhamentos.reduce((acc, det) => acc + (det.valor ?? 0), 0);
+    // Detalhamento.valor vem do backend como Decimal -- chega serializado
+    // como string JSON ("60.00"), não como number; Number() evita que o "+"
+    // vire concatenação de string em vez de soma.
+    const somaAtual = this.detalhamentos.reduce((acc, det) => acc + Number(det.valor ?? 0), 0);
     return this.data.lancamento.valor - somaAtual;
   }
 
@@ -222,14 +228,16 @@ export class DetalhamentoPickerDialogComponent implements OnInit {
       return;
     }
 
-    const restante = this.restanteVincular;
+    const restanteLancamento = this.restanteVincular;
+    const saldoPessoa = row.saldo_pendente ?? row.pagamento;
+    const tetoEfetivo = calcularValorMaximoVinculo(restanteLancamento, saldoPessoa);
     this.matDialog
       .open<ValorDetalhamentoDialogComponent, unknown, number>(ValorDetalhamentoDialogComponent, {
         width: '420px',
         data: {
           titulo: 'Valor a vincular',
-          valorSugerido: Math.min(row.pagamento, restante > 0 ? restante : row.pagamento),
-          valorMaximo: restante,
+          valorSugerido: Math.min(row.pagamento, tetoEfetivo > 0 ? tetoEfetivo : row.pagamento),
+          valorMaximo: tetoEfetivo,
         },
       })
       .afterClosed()

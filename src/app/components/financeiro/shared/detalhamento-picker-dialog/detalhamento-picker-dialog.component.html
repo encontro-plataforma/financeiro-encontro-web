@@ -182,6 +182,20 @@
           }}</mat-cell>
         </ng-container>
 
+        <ng-container matColumnDef="saldo">
+          <mat-header-cell *matHeaderCellDef class="col-saldo">Saldo Pendente</mat-header-cell>
+          <mat-cell *matCellDef="let row" class="col-saldo">
+            @if (row.total_vinculado > 0) {
+              <span
+                matTooltip="Já tem R$ {{ row.total_vinculado | number: '1.2-2' : 'pt-BR' }} vinculado"
+                >{{ row.saldo_pendente | number: '1.2-2' : 'pt-BR' }}</span
+              >
+            } @else {
+              {{ row.saldo_pendente ?? row.pagamento | number: '1.2-2' : 'pt-BR' }}
+            }
+          </mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="observacao">
           <mat-header-cell *matHeaderCellDef class="col-observacao">Observação</mat-header-cell>
           <mat-cell *matCellDef="let row" class="col-observacao">{{
@@ -196,22 +210,31 @@
             'apelido',
             'nome_pagador',
             'pagamento',
+            'saldo',
             'observacao',
           ]"
         />
         <mat-row
           *matRowDef="
             let row;
-            columns: ['dt_pagamento', 'nome', 'apelido', 'nome_pagador', 'pagamento', 'observacao']
+            columns: [
+              'dt_pagamento',
+              'nome',
+              'apelido',
+              'nome_pagador',
+              'pagamento',
+              'saldo',
+              'observacao',
+            ]
           "
           class="picker-row"
           (click)="selecionarInscricao(row)"
         />
 
         <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell empty-row" colspan="6">
+          <td class="mat-cell empty-row" colspan="7">
             @if (!loading) {
-              <span>Nenhuma inscrição pendente de auditoria encontrada</span>
+              <span>Nenhuma inscrição pendente encontrada</span>
             }
           </td>
         </tr>

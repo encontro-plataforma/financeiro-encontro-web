@@ -198,6 +198,12 @@
   text-align: right;
 }
 
+.col-saldo {
+  flex: 0 0 100px;
+  justify-content: flex-end;
+  text-align: right;
+}
+
 .col-observacao {
   flex: 2 0 0%;
 }

@@ -1,3 +1,4 @@
+import { DetalhamentoVinculoResumo } from './detalhamento.model';
 import { Equipe } from './equipe.model';
 import { Lancamento } from './lancamento.model';
 
@@ -26,9 +27,17 @@ export interface Encontreiro {
   observacao:            string | null;
   criado_em:             string;
   auditado:              boolean;
+  // Campos legados (compatibilidade) — representam sempre o vínculo mais
+  // antigo, mesmo quando há vários. Preferir os campos abaixo.
   detalhamento_id:       number | null;
   lancamento_vinculado_id: number | null;
   lancamento_vinculado:  Lancamento | null;
+  // Só vêm populados no detalhe (buscarPorId); na listagem ficam como [].
+  detalhamentos_vinculados: DetalhamentoVinculoResumo[];
+  lancamentos_vinculados:   Lancamento[];
+  total_vinculado:          number;
+  saldo_pendente:           number | null;
+  quantidade_vinculos:      number;
 }
 
 export interface EncontreiroUpdate {
