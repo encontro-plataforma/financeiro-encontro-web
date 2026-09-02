@@ -33,6 +33,10 @@ import { PageTemplate } from '../../../services/util/PageTemplate';
 import { TipoLancamento } from '../../../models/constants/tipo-lancamento';
 import { StatusLancamento } from '../../../models/constants/status-lancamento';
 import { FormaPagamento } from '../../../models/constants/forma-pagamento';
+import {
+  MultiSelectComponent,
+  MultiSelectItem,
+} from '../../../shared/components/multi-select/multi-select.component';
 
 @Component({
   selector: 'app-lancamentos',
@@ -45,6 +49,7 @@ import { FormaPagamento } from '../../../models/constants/forma-pagamento';
     MaterialGlobalModule,
     MaterialFormsModule,
     MaterialDatepickerModule,
+    MultiSelectComponent,
   ],
   templateUrl: './lancamentos.component.html',
   styleUrl: './lancamentos.component.scss',
@@ -65,6 +70,10 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
   private loadSub?: Subscription;
 
   finalidades: Finalidade[] = [];
+  formasPagamento: MultiSelectItem[] = FormaPagamento.options.map((op) => ({
+    id: op.value,
+    label: op.name,
+  }));
   tipoOpcoes = TipoLancamento.optionsAll;
   statusOpcoes = StatusLancamento.optionsAll;
 
@@ -90,6 +99,7 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
       status: [StatusLancamento.TODOS],
       finalidade_id: [-1],
       descricao: [''],
+      forma_pagamento: [[]],
       valor_min: [''],
       valor_max: [''],
     });
@@ -251,8 +261,17 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
   }
 
   private buildFilter() {
-    const { data_inicio, data_fim, tipo, status, finalidade_id, descricao, valor_min, valor_max } =
-      this.formFilters.value;
+    const {
+      data_inicio,
+      data_fim,
+      tipo,
+      status,
+      finalidade_id,
+      descricao,
+      forma_pagamento,
+      valor_min,
+      valor_max,
+    } = this.formFilters.value;
     const valorMin = this.parseValorFiltro(valor_min);
     const valorMax = this.parseValorFiltro(valor_max);
     return {
@@ -262,6 +281,7 @@ export class LancamentosComponent extends ListFilterBase implements OnInit, Afte
       ...(status && { status }),
       ...(finalidade_id !== -1 && { finalidade_id: Number(finalidade_id) }),
       ...(descricao?.trim() && { descricao: descricao.trim() }),
+      ...(forma_pagamento?.length > 0 && { forma_pagamento }),
       ...(valorMin !== null && { valor_min: valorMin }),
       ...(valorMax !== null && { valor_max: valorMax }),
     };

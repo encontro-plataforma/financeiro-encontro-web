@@ -1,18 +1,15 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ChangeDetectorRef,
-  inject,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 
-import { MaterialGlobalModule, MaterialFormsModule } from '../../../../shared/modules/material.imports.module';
+import {
+  MaterialGlobalModule,
+  MaterialFormsModule,
+} from '../../../../shared/modules/material.imports.module';
 import { ConciliacaoCardComponent } from './conciliacao-card/conciliacao-card.component';
 import { AuditoriaResumoDialogComponent } from '../../shared/auditoria-resumo-dialog/auditoria-resumo-dialog.component';
 import { ErrorHandlerService } from '../../../../shared/services/error-handler.service';
@@ -23,10 +20,15 @@ import { Lancamento } from '../../../../models/lancamento.model';
 import { Finalidade } from '../../../../models/finalidade.model';
 import { StatusLancamento } from '../../../../models/constants/status-lancamento';
 import { TipoLancamento } from '../../../../models/constants/tipo-lancamento';
+import { FormaPagamento } from '../../../../models/constants/forma-pagamento';
+import {
+  MultiSelectComponent,
+  MultiSelectItem,
+} from '../../../../shared/components/multi-select/multi-select.component';
 
 const ANIMATION_DURATION_MS = 350;
-const LAZY_THRESHOLD        = 10;
-const PAGE_SIZE             = 20;
+const LAZY_THRESHOLD = 10;
+const PAGE_SIZE = 20;
 
 interface CardItem extends Lancamento {
   _leaving: boolean;
@@ -40,48 +42,45 @@ interface CardItem extends Lancamento {
     FormsModule,
     MaterialGlobalModule,
     MaterialFormsModule,
+    MultiSelectComponent,
     ConciliacaoCardComponent,
   ],
   templateUrl: './conciliar-lancamentos.component.html',
   styleUrl: './conciliar-lancamentos.component.scss',
 })
 export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
-  private lancamentoService   = inject(LancamentoService);
-  private finalidadeService   = inject(FinalidadeService);
+  private lancamentoService = inject(LancamentoService);
+  private finalidadeService = inject(FinalidadeService);
   private detalhamentoService = inject(DetalhamentoService);
-  private router               = inject(Router);
-  private cdr                  = inject(ChangeDetectorRef);
-  private dialog                = inject(MatDialog);
-  private errorHandler          = inject(ErrorHandlerService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
+  private errorHandler = inject(ErrorHandlerService);
 
-  items: CardItem[]     = [];
+  items: CardItem[] = [];
   finalidades: Finalidade[] = [];
   totalPendente = 0;
-  loading     = false;
+  loading = false;
   loadingMore = false;
-  allLoaded   = false;
-  search      = '';
+  allLoaded = false;
+  search = '';
   valorMin: number | null = null;
   valorMax: number | null = null;
-  tipoFiltro  = TipoLancamento.RECEITA;
-  auditando   = false;
+  tipoFiltro = TipoLancamento.RECEITA;
+  auditando = false;
+  formasPagamento: MultiSelectItem[] = FormaPagamento.options.map((op) => ({
+    id: op.value,
+    label: op.name,
+  }));
+  formasPagamentoFiltro: string[] = [];
 
   readonly tipoOptions = TipoLancamento.options;
 
-  private searchSubject = new Subject<string>();
-  private searchSub!: Subscription;
-  private valorSubject = new Subject<void>();
-  private valorSub!: Subscription;
+  private filtrosSubject = new Subject<void>();
+  private filtrosSub!: Subscription;
 
   ngOnInit(): void {
-    this.searchSub = this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-    ).subscribe(() => this.reset());
-
-    this.valorSub = this.valorSubject.pipe(
-      debounceTime(300),
-    ).subscribe(() => this.reset());
+    this.filtrosSub = this.filtrosSubject.pipe(debounceTime(500)).subscribe(() => this.reset());
 
     this.finalidadeService.listAll().subscribe({
       next: (data) => {
@@ -93,16 +92,15 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.searchSub?.unsubscribe();
-    this.valorSub?.unsubscribe();
+    this.filtrosSub?.unsubscribe();
   }
 
   onSearchChange(): void {
-    this.searchSubject.next(this.search);
+    this.filtrosSubject.next();
   }
 
   onValorChange(): void {
-    this.valorSubject.next();
+    this.filtrosSubject.next();
   }
 
   /** Campo vazio deve significar "sem filtro" — nunca 0. `[(ngModel)]` num
@@ -116,7 +114,12 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
   }
 
   onTipoFiltroChange(): void {
-    this.reset();
+    this.filtrosSubject.next();
+  }
+
+  onFormaPagamentoChange(formas: (string | number)[]): void {
+    this.formasPagamentoFiltro = formas.map(String);
+    this.filtrosSubject.next();
   }
 
   voltar(): void {
@@ -128,14 +131,17 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
 
     this.detalhamentoService.auditoria().subscribe({
       next: (resultado) => {
-        this.dialog.open(AuditoriaResumoDialogComponent, {
-          width: '480px',
-          data: resultado,
-        }).afterClosed().subscribe(() => {
-          this.auditando = false;
-          this.cdr.detectChanges();
-          this.reset();
-        });
+        this.dialog
+          .open(AuditoriaResumoDialogComponent, {
+            width: '480px',
+            data: resultado,
+          })
+          .afterClosed()
+          .subscribe(() => {
+            this.auditando = false;
+            this.cdr.detectChanges();
+            this.reset();
+          });
       },
       error: (err) => {
         this.auditando = false;
@@ -146,7 +152,7 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
   }
 
   private reset(): void {
-    this.items     = [];
+    this.items = [];
     this.allLoaded = false;
     this.loadBatch(true);
   }
@@ -158,7 +164,7 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
       this.loadingMore = true;
     }
 
-    const excludeIds = this.items.map(i => i.id);
+    const excludeIds = this.items.map((i) => i.id);
     const valorMin = this.parseValorFiltro(this.valorMin);
     const valorMax = this.parseValorFiltro(this.valorMax);
 
@@ -167,6 +173,9 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
         {
           status: StatusLancamento.NAO_CONCILIADO,
           tipo: this.tipoFiltro,
+          ...(this.formasPagamentoFiltro.length > 0 && {
+            forma_pagamento: this.formasPagamentoFiltro,
+          }),
           exclude_ids: excludeIds,
           ...(this.search ? { descricao: this.search } : {}),
           ...(valorMin !== null && { valor_min: valorMin }),
@@ -176,18 +185,18 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (page) => {
-          const newItems: CardItem[] = page.items.map(l => ({ ...l, _leaving: false }));
+          const newItems: CardItem[] = page.items.map((l) => ({ ...l, _leaving: false }));
           if (excludeIds.length === 0) {
             this.totalPendente = page.total;
           }
-          this.items       = [...this.items, ...newItems];
-          this.allLoaded   = page.total < PAGE_SIZE;
-          this.loading     = false;
+          this.items = [...this.items, ...newItems];
+          this.allLoaded = page.total < PAGE_SIZE;
+          this.loading = false;
           this.loadingMore = false;
           this.cdr.detectChanges();
         },
         error: () => {
-          this.loading     = false;
+          this.loading = false;
           this.loadingMore = false;
           this.cdr.detectChanges();
         },
@@ -200,7 +209,7 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
 
     setTimeout(() => {
-      this.items = this.items.filter(i => i.id !== item.id);
+      this.items = this.items.filter((i) => i.id !== item.id);
 
       if (this.visibleCount < LAZY_THRESHOLD && !this.allLoaded && !this.loadingMore) {
         this.loadBatch(false, 10);
@@ -210,7 +219,7 @@ export class ConciliarLancamentosComponent implements OnInit, OnDestroy {
   }
 
   get visibleCount(): number {
-    return this.items.filter(i => !i._leaving).length;
+    return this.items.filter((i) => !i._leaving).length;
   }
 
   get isEmpty(): boolean {

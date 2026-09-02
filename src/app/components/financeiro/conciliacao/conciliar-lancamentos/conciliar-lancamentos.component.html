@@ -64,6 +64,14 @@
       </mat-select>
     </mat-form-field>
 
+    <app-multi-select
+      class="forma-pagamento-field"
+      [items]="formasPagamento"
+      [selectedIds]="formasPagamentoFiltro"
+      (selectionChange)="onFormaPagamentoChange($event)"
+      label="Forma de Pagamento"
+    />
+
     <mat-form-field appearance="outline" floatLabel="always" class="valor-field">
       <mat-label>Valor mínimo</mat-label>
       <span matPrefix>R$&nbsp;</span>
