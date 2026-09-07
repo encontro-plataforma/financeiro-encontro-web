@@ -39,6 +39,21 @@
           />
         </mat-form-field>
 
+        <mat-form-field
+          appearance="outline"
+          floatLabel="always"
+          class="col-span-12 md:col-span-6 lg:col-span-3"
+        >
+          <mat-label>Nome do pagador</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            [(ngModel)]="nomePagador"
+            (ngModelChange)="onNomePagadorChange()"
+            placeholder="Buscar..."
+          />
+        </mat-form-field>
+
         <app-multi-select
           class="col-span-12 md:col-span-6 lg:col-span-3"
           label="Equipe"

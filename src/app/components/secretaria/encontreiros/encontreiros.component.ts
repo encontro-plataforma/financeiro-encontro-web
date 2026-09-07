@@ -61,6 +61,7 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
   loading = false;
 
   search = '';
+  nomePagador = '';
   equipeSelecionadas: number[] = [];
   situacaoSelecionadas: string[] = [];
   auditadoFiltro = AUDITADO_TODOS;
@@ -88,12 +89,26 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
   ];
 
   private searchSubject = new Subject<string>();
+  private nomePagadorSubject = new Subject<string>();
 
   ngOnInit(): void {
     this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.pageIndex = 0;
       this.saveState({
         search: this.search,
+        nomePagador: this.nomePagador,
+        equipeSelecionadas: this.equipeSelecionadas,
+        situacaoSelecionadas: this.situacaoSelecionadas,
+        auditadoFiltro: this.auditadoFiltro,
+      });
+      this.load();
+    });
+
+    this.nomePagadorSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
+      this.pageIndex = 0;
+      this.saveState({
+        search: this.search,
+        nomePagador: this.nomePagador,
         equipeSelecionadas: this.equipeSelecionadas,
         situacaoSelecionadas: this.situacaoSelecionadas,
         auditadoFiltro: this.auditadoFiltro,
@@ -109,6 +124,7 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
     // restore state
     this.initFilter('encontreiros', (saved) => {
       this.search = saved.search ?? this.search;
+      this.nomePagador = saved.nomePagador ?? this.nomePagador;
       this.equipeSelecionadas = saved.equipeSelecionadas ?? this.equipeSelecionadas;
       this.situacaoSelecionadas = saved.situacaoSelecionadas ?? this.situacaoSelecionadas;
       this.auditadoFiltro = saved.auditadoFiltro ?? this.auditadoFiltro;
@@ -123,11 +139,16 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
     this.searchSubject.next(this.search);
   }
 
+  onNomePagadorChange(): void {
+    this.nomePagadorSubject.next(this.nomePagador);
+  }
+
   onEquipeChange(ids: (string | number)[]): void {
     this.equipeSelecionadas = ids as number[];
     this.pageIndex = 0;
     this.saveState({
       search: this.search,
+      nomePagador: this.nomePagador,
       equipeSelecionadas: this.equipeSelecionadas,
       situacaoSelecionadas: this.situacaoSelecionadas,
       auditadoFiltro: this.auditadoFiltro,
@@ -140,6 +161,7 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
     this.pageIndex = 0;
     this.saveState({
       search: this.search,
+      nomePagador: this.nomePagador,
       equipeSelecionadas: this.equipeSelecionadas,
       situacaoSelecionadas: this.situacaoSelecionadas,
       auditadoFiltro: this.auditadoFiltro,
@@ -151,6 +173,7 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
     this.pageIndex = 0;
     this.saveState({
       search: this.search,
+      nomePagador: this.nomePagador,
       equipeSelecionadas: this.equipeSelecionadas,
       situacaoSelecionadas: this.situacaoSelecionadas,
       auditadoFiltro: this.auditadoFiltro,
@@ -163,6 +186,7 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
       event,
       () => ({
         search: this.search,
+        nomePagador: this.nomePagador,
         equipeSelecionadas: this.equipeSelecionadas,
         situacaoSelecionadas: this.situacaoSelecionadas,
         auditadoFiltro: this.auditadoFiltro,
@@ -177,6 +201,7 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
       .list(
         {
           ...(this.search ? { nome_ou_apelido: this.search } : {}),
+          ...(this.nomePagador ? { nome_pagador: this.nomePagador } : {}),
           ...(this.equipeSelecionadas.length ? { equipe_ids: this.equipeSelecionadas } : {}),
           ...(this.situacaoSelecionadas.length
             ? { situacao_camisa: this.situacaoSelecionadas }

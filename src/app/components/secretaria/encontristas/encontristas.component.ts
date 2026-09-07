@@ -58,6 +58,7 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
   loading = false;
 
   search = '';
+  nomePagador = '';
   circuloSelecionados: number[] = [];
   padrinhoFiltro = '';
   auditadoFiltro = AUDITADO_TODOS;
@@ -87,12 +88,28 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
   ];
 
   private searchSubject = new Subject<string>();
+  private nomePagadorSubject = new Subject<string>();
 
   ngOnInit(): void {
     this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.pageIndex = 0;
       this.saveState({
         search: this.search,
+        nomePagador: this.nomePagador,
+        circuloSelecionados: this.circuloSelecionados,
+        padrinhoFiltro: this.padrinhoFiltro,
+        auditadoFiltro: this.auditadoFiltro,
+        sortField: this.sortField,
+        sortDirection: this.sortDirection,
+      });
+      this.load();
+    });
+
+    this.nomePagadorSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
+      this.pageIndex = 0;
+      this.saveState({
+        search: this.search,
+        nomePagador: this.nomePagador,
         circuloSelecionados: this.circuloSelecionados,
         padrinhoFiltro: this.padrinhoFiltro,
         auditadoFiltro: this.auditadoFiltro,
@@ -118,6 +135,7 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
     // restore state
     this.initFilter('encontristas', (saved) => {
       this.search = saved.search ?? this.search;
+      this.nomePagador = saved.nomePagador ?? this.nomePagador;
       this.circuloSelecionados = saved.circuloSelecionados ?? this.circuloSelecionados;
       this.padrinhoFiltro = saved.padrinhoFiltro ?? this.padrinhoFiltro;
       this.auditadoFiltro = saved.auditadoFiltro ?? this.auditadoFiltro;
@@ -134,11 +152,16 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
     this.searchSubject.next(this.search);
   }
 
+  onNomePagadorChange(): void {
+    this.nomePagadorSubject.next(this.nomePagador);
+  }
+
   onCirculoChange(ids: (string | number)[]): void {
     this.circuloSelecionados = ids as number[];
     this.pageIndex = 0;
     this.saveState({
       search: this.search,
+      nomePagador: this.nomePagador,
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
@@ -152,6 +175,7 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
     this.pageIndex = 0;
     this.saveState({
       search: this.search,
+      nomePagador: this.nomePagador,
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
@@ -165,6 +189,7 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
     this.pageIndex = 0;
     this.saveState({
       search: this.search,
+      nomePagador: this.nomePagador,
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
@@ -179,6 +204,7 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       event,
       () => ({
         search: this.search,
+        nomePagador: this.nomePagador,
         circuloSelecionados: this.circuloSelecionados,
         padrinhoFiltro: this.padrinhoFiltro,
         auditadoFiltro: this.auditadoFiltro,
@@ -195,6 +221,7 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
     this.pageIndex = 0;
     this.saveState({
       search: this.search,
+      nomePagador: this.nomePagador,
       circuloSelecionados: this.circuloSelecionados,
       padrinhoFiltro: this.padrinhoFiltro,
       auditadoFiltro: this.auditadoFiltro,
@@ -210,6 +237,7 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
       .list(
         {
           ...(this.search ? { nome_ou_apelido: this.search } : {}),
+          ...(this.nomePagador ? { nome_pagador: this.nomePagador } : {}),
           ...(this.circuloSelecionados.length ? { circulo_ids: this.circuloSelecionados } : {}),
           ...(this.padrinhoFiltro ? { padrinho_id: Number(this.padrinhoFiltro) } : {}),
           ...(this.auditadoFiltro !== AUDITADO_TODOS
