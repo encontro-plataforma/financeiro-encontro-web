@@ -147,16 +147,36 @@
             <mat-cell *matCellDef="let row">
               <button
                 mat-icon-button
-                [disabled]="!row.lancamento_vinculado_id"
+                [disabled]="!row.quantidade_lancamentos_vinculados"
+                [class.acao-lancamentos--incompleto]="row.quantidade_lancamentos_vinculados && !row.auditado"
                 [matTooltip]="
-                  row.lancamento_vinculado_id
-                    ? 'Ver lançamento vinculado'
-                    : 'Inscrição ainda não auditada'
+                  !row.quantidade_lancamentos_vinculados
+                    ? 'Inscrição ainda não auditada'
+                    : row.auditado
+                      ? 'Ver lançamentos vinculados'
+                      : 'Auditoria incompleta — ainda falta vincular lançamento(s)'
                 "
-                (click)="verLancamento(row.lancamento_vinculado_id)"
+                [matMenuTriggerFor]="menuLancamentos"
+                (menuOpened)="carregarLancamentosVinculados(row)"
               >
                 <mat-icon>open_in_new</mat-icon>
               </button>
+              <mat-menu #menuLancamentos="matMenu">
+                @if (carregandoLancamentosVinculados[row.id]) {
+                  <div class="lancamentos-menu-loading">
+                    <mat-spinner diameter="18" />
+                  </div>
+                } @else {
+                  @for (det of lancamentosVinculadosPorLinha[row.id]; track det.id) {
+                    <button mat-menu-item (click)="abrirLancamento(det.lancamento_id)">
+                      {{ det.lancamento?.data_pagamento | date: 'dd/MM/yyyy' }} |
+                      {{ descricaoLancamentoVinculado(det) }} |
+                      {{ det.lancamento ? FormaPagamento.getDescription(det.lancamento.forma_pagamento) : '' }} |
+                      {{ det.valor | currency: 'BRL' }}
+                    </button>
+                  }
+                }
+              </mat-menu>
               <button mat-icon-button matTooltip="Editar" (click)="editar(row.id)">
                 <mat-icon>edit</mat-icon>
               </button>

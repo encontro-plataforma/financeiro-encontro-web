@@ -127,3 +127,14 @@
     }
   }
 }
+
+.lancamentos-menu-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+}
+
+.acao-lancamentos--incompleto {
+  color: var(--status-warning-accent);
+}

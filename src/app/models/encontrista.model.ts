@@ -1,6 +1,5 @@
 import { Circulo } from './circulo.model';
 import { Equipe } from './equipe.model';
-import { Lancamento } from './lancamento.model';
 
 export interface PadrinhoResumo {
   id:      number;
@@ -44,9 +43,8 @@ export interface Encontrista {
   observacao:            string | null;
   criado_em:             string;
   auditado:              boolean;
-  detalhamento_id:       number | null;
-  lancamento_vinculado_id: number | null;
-  lancamento_vinculado:  Lancamento | null;
+  is_pagamento_multiplo: boolean;
+  quantidade_lancamentos_vinculados: number;
 }
 
 export interface EncontristaUpdate {

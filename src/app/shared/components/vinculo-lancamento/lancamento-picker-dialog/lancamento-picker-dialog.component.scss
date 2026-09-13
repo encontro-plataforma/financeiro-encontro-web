@@ -1,3 +1,39 @@
+.pagamento-referencia {
+  margin: 0 24px 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+
+  &__titulo {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  &__linha2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin: 2px 0 0;
+  }
+
+  &__obs {
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__resto {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+}
+
 .picker-content {
   min-width: 560px;
   max-width: 100%;

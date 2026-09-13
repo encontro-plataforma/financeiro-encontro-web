@@ -25,10 +25,13 @@ import { ErrorHandlerService } from '../../../shared/services/error-handler.serv
 import { ToastService } from '../../../shared/components/toast/toast.service';
 import { EncontreiroService } from '../../../services/encontreiro.service';
 import { EquipeService } from '../../../services/equipe.service';
+import { DetalhamentoService } from '../../../services/detalhamento.service';
 import { ListFilterBase } from '../../../shared/classes/list-filter-base';
 import { Encontreiro } from '../../../models/encontreiro.model';
 import { Equipe } from '../../../models/equipe.model';
+import { Detalhamento } from '../../../models/detalhamento.model';
 import { AcessoEquipe } from '../../../models/constants/acesso-equipe';
+import { FormaPagamento } from '../../../models/constants/forma-pagamento';
 import { PageTemplate } from '../../../services/util/PageTemplate';
 import { SituacaoCamisa } from '../../../models/constants/situacao-camisa';
 
@@ -51,14 +54,20 @@ const AUDITADO_TODOS = '-1';
 export class EncontreirosComponent extends ListFilterBase implements OnInit, AfterViewInit {
   private encontreiroService = inject(EncontreiroService);
   private equipeService = inject(EquipeService);
+  private detalhamentoService = inject(DetalhamentoService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private errorHandler = inject(ErrorHandlerService);
   private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
+  readonly FormaPagamento = FormaPagamento;
+
   result: PageTemplate<Encontreiro> = new PageTemplate<Encontreiro>();
   loading = false;
+
+  lancamentosVinculadosPorLinha: Record<number, Detalhamento[]> = {};
+  carregandoLancamentosVinculados: Record<number, boolean> = {};
 
   search = '';
   nomePagador = '';
@@ -230,7 +239,34 @@ export class EncontreirosComponent extends ListFilterBase implements OnInit, Aft
     this.router.navigate(['/secretaria/encontreiros', id, 'editar']);
   }
 
-  verLancamento(lancamentoId: number): void {
+  carregarLancamentosVinculados(row: Encontreiro): void {
+    if (this.lancamentosVinculadosPorLinha[row.id]) return;
+
+    this.carregandoLancamentosVinculados[row.id] = true;
+    this.detalhamentoService
+      .listAll({ referencia_id: row.id, tipo: 'INSCRICAO_ENCONTREIRO' })
+      .subscribe({
+        next: (data) => {
+          this.lancamentosVinculadosPorLinha[row.id] = data;
+          this.carregandoLancamentosVinculados[row.id] = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.carregandoLancamentosVinculados[row.id] = false;
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  descricaoLancamentoVinculado(det: Detalhamento): string {
+    if (!det.lancamento) return '';
+    const { descricao, forma_pagamento, cart_parcelas } = det.lancamento;
+    return forma_pagamento === FormaPagamento.CARTAO_CREDITO && cart_parcelas && cart_parcelas > 1
+      ? `${descricao} em ${cart_parcelas} parcelas`
+      : descricao;
+  }
+
+  abrirLancamento(lancamentoId: number): void {
     this.router.navigate(['/lancamentos', lancamentoId, 'editar'], {
       state: { returnUrl: this.router.url },
     });

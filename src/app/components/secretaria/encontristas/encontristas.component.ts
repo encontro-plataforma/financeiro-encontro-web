@@ -23,9 +23,12 @@ import { ErrorHandlerService } from '../../../shared/services/error-handler.serv
 import { ToastService } from '../../../shared/components/toast/toast.service';
 import { EncontristaService } from '../../../services/encontrista.service';
 import { CirculoService } from '../../../services/circulo.service';
+import { DetalhamentoService } from '../../../services/detalhamento.service';
 import { ListFilterBase } from '../../../shared/classes/list-filter-base';
 import { Encontrista, PadrinhoResumo } from '../../../models/encontrista.model';
 import { Circulo } from '../../../models/circulo.model';
+import { Detalhamento } from '../../../models/detalhamento.model';
+import { FormaPagamento } from '../../../models/constants/forma-pagamento';
 import { PageTemplate } from '../../../services/util/PageTemplate';
 
 const AUDITADO_TODOS = '-1';
@@ -48,14 +51,20 @@ const SEM_CIRCULO_ID = 0;
 export class EncontristasComponent extends ListFilterBase implements OnInit, AfterViewInit {
   private encontristaService = inject(EncontristaService);
   private circuloService = inject(CirculoService);
+  private detalhamentoService = inject(DetalhamentoService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private errorHandler = inject(ErrorHandlerService);
   private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
+  readonly FormaPagamento = FormaPagamento;
+
   result: PageTemplate<Encontrista> = new PageTemplate<Encontrista>();
   loading = false;
+
+  lancamentosVinculadosPorLinha: Record<number, Detalhamento[]> = {};
+  carregandoLancamentosVinculados: Record<number, boolean> = {};
 
   search = '';
   nomePagador = '';
@@ -314,7 +323,34 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
     this.router.navigate(['/secretaria/encontristas', id, 'editar']);
   }
 
-  verLancamento(lancamentoId: number): void {
+  carregarLancamentosVinculados(row: Encontrista): void {
+    if (this.lancamentosVinculadosPorLinha[row.id]) return;
+
+    this.carregandoLancamentosVinculados[row.id] = true;
+    this.detalhamentoService
+      .listAll({ referencia_id: row.id, tipo: 'INSCRICAO_ENCONTRISTA' })
+      .subscribe({
+        next: (data) => {
+          this.lancamentosVinculadosPorLinha[row.id] = data;
+          this.carregandoLancamentosVinculados[row.id] = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.carregandoLancamentosVinculados[row.id] = false;
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  descricaoLancamentoVinculado(det: Detalhamento): string {
+    if (!det.lancamento) return '';
+    const { descricao, forma_pagamento, cart_parcelas } = det.lancamento;
+    return forma_pagamento === FormaPagamento.CARTAO_CREDITO && cart_parcelas && cart_parcelas > 1
+      ? `${descricao} em ${cart_parcelas} parcelas`
+      : descricao;
+  }
+
+  abrirLancamento(lancamentoId: number): void {
     this.router.navigate(['/lancamentos', lancamentoId, 'editar'], {
       state: { returnUrl: this.router.url },
     });

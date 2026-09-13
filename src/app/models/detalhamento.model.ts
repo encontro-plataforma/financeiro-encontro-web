@@ -1,3 +1,5 @@
+import { Lancamento } from './lancamento.model';
+
 export interface Detalhamento {
   id:                  number;
   lancamento_id:       number;
@@ -7,6 +9,7 @@ export interface Detalhamento {
   descricao:           string;
   detalhe_nome:        string;
   observacao_efetiva:  string;
+  lancamento?:         Lancamento | null;
   criado_em:           string;
 }
 
