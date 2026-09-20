@@ -33,4 +33,14 @@ export class FormaPagamento {
       case FormaPagamento.CARTAO_DEBITO:     return 'Cartão de Débito';
     }
   }
+
+  /** Igual a `getDescription`, mas acrescenta "(em Nx)" para cartão de
+   * crédito parcelado em mais de 1x (débito não tem parcelas). */
+  static getDescriptionComParcelas(forma: string, parcelas: number | null | undefined): string {
+    const descricao = FormaPagamento.getDescription(forma);
+    if (forma === FormaPagamento.CARTAO_CREDITO && parcelas && parcelas > 1) {
+      return `${descricao} (em ${parcelas}x)`;
+    }
+    return descricao;
+  }
 }

@@ -1,5 +1,21 @@
 <h2 mat-dialog-title>Selecionar Lançamento</h2>
 
+@if (data?.referencia; as referencia) {
+  <div class="pagamento-referencia">
+    <p class="pagamento-referencia__titulo">
+      {{ referencia.dataPagamento | date: 'dd/MM/yyyy' }} · {{ referencia.titulo }} · R$
+      {{ referencia.valor | number: '1.2-2' : 'pt-BR' }}
+    </p>
+    <p class="pagamento-referencia__linha2">
+      <span class="pagamento-referencia__obs">{{ referencia.observacao || '—' }}</span>
+      <span class="pagamento-referencia__resto"
+        >Ainda Falta Vincular o Valor de R$
+        {{ referencia.restante | number: '1.2-2' : 'pt-BR' }}</span
+      >
+    </p>
+  </div>
+}
+
 <mat-dialog-content class="picker-content">
   <div class="search-row pb-1">
     <mat-form-field appearance="outline" floatLabel="always" class="w-full no-hint">

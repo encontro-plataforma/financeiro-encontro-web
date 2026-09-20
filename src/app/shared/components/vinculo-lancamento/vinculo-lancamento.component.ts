@@ -1,17 +1,23 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 import { MaterialGlobalModule } from '../../modules/material.imports.module';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { LancamentoPickerDialogComponent } from './lancamento-picker-dialog/lancamento-picker-dialog.component';
+import {
+  LancamentoPickerDialogComponent,
+  LancamentoPickerDialogData,
+} from './lancamento-picker-dialog/lancamento-picker-dialog.component';
 import { ValorDetalhamentoDialogComponent } from '../valor-detalhamento-dialog/valor-detalhamento-dialog.component';
 import { ToastService } from '../toast/toast.service';
 import { ErrorHandlerService } from '../../services/error-handler.service';
 import { DetalhamentoService } from '../../../services/detalhamento.service';
+import { Detalhamento } from '../../../models/detalhamento.model';
 import { Lancamento } from '../../../models/lancamento.model';
 import { FormaPagamento } from '../../../models/constants/forma-pagamento';
+
+const TOLERANCIA = 0.01;
 
 @Component({
   selector: 'app-vinculo-lancamento',
@@ -20,17 +26,19 @@ import { FormaPagamento } from '../../../models/constants/forma-pagamento';
   templateUrl: './vinculo-lancamento.component.html',
   styleUrl: './vinculo-lancamento.component.scss',
 })
-export class VinculoLancamentoComponent {
+export class VinculoLancamentoComponent implements OnInit, OnChanges {
   /** 'INSCRICAO_ENCONTREIRO' | 'INSCRICAO_ENCONTRISTA' */
   @Input() tipo!: string;
   @Input() referenciaId!: number;
   @Input() valorPagamento: number | null = null;
-  @Input() detalhamentoId: number | null = null;
-  @Input() lancamentoVinculado: Lancamento | null = null;
+  /** Usados só pro resumo mostrado no picker de lançamento. */
+  @Input() nomePessoa: string | null = null;
+  @Input() dataPagamento: string | null = null;
+  @Input() observacaoPessoa: string | null = null;
 
   readonly FormaPagamento = FormaPagamento;
 
-  /** Emitido após ligar/trocar/remover com sucesso — o pai deve recarregar o registro. */
+  /** Emitido após ligar/remover com sucesso — o pai deve recarregar o registro (badge de auditado, etc). */
   @Output() vinculado = new EventEmitter<void>();
 
   private dialog              = inject(MatDialog);
@@ -38,13 +46,61 @@ export class VinculoLancamentoComponent {
   private detalhamentoService = inject(DetalhamentoService);
   private toast                = inject(ToastService);
   private errorHandler         = inject(ErrorHandlerService);
+  private cdr                  = inject(ChangeDetectorRef);
 
+  detalhamentos: Detalhamento[] = [];
+  carregando  = false;
   processando = false;
 
-  verLancamento(): void {
-    if (!this.lancamentoVinculado) return;
+  ngOnInit(): void {
+    this.carregarVinculos();
+  }
 
-    this.router.navigate(['/lancamentos', this.lancamentoVinculado.id, 'editar'], {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['referenciaId'] && !changes['referenciaId'].firstChange) {
+      this.carregarVinculos();
+    }
+  }
+
+  get somaVinculada(): number {
+    return this.detalhamentos.reduce((acc, det) => acc + (det.valor ?? 0), 0);
+  }
+
+  get restanteVincular(): number {
+    return (this.valorPagamento ?? 0) - this.somaVinculada;
+  }
+
+  get podeVincularMais(): boolean {
+    return !!this.valorPagamento && this.restanteVincular > TOLERANCIA;
+  }
+
+  formaPagamentoLabel(lancamento: Lancamento): string {
+    return FormaPagamento.getDescriptionComParcelas(lancamento.forma_pagamento, lancamento.cart_parcelas);
+  }
+
+  private carregarVinculos(): void {
+    if (!this.tipo || !this.referenciaId) return;
+
+    this.carregando = true;
+    this.detalhamentoService
+      .listAll({ referencia_id: this.referenciaId, tipo: this.tipo })
+      .subscribe({
+        next: (data) => {
+          this.detalhamentos = data;
+          this.carregando = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.carregando = false;
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  verLancamento(det: Detalhamento): void {
+    if (!det.lancamento) return;
+
+    this.router.navigate(['/lancamentos', det.lancamento.id, 'editar'], {
       state: { returnUrl: this.router.url },
     });
   }
@@ -55,56 +111,47 @@ export class VinculoLancamentoComponent {
       return;
     }
 
-    this.abrirPicker((lancamento) => {
-      const restante = lancamento.valor - lancamento.soma_detalhamentos;
-      this.abrirDialogValor(
-        Math.min(this.valorPagamento as number, restante > 0 ? restante : this.valorPagamento as number),
-        restante,
-        (valor) => {
-          this.processando = true;
-          this.detalhamentoService.criar({
-            lancamento_id: lancamento.id,
-            tipo: this.tipo,
-            referencia_id: this.referenciaId,
-            valor,
-          }).subscribe({
-            next: () => {
-              this.processando = false;
-              this.toast.success({ message: 'Lançamento vinculado com sucesso.' });
-              this.vinculado.emit();
-            },
-            error: (err) => {
-              this.processando = false;
-              this.errorHandler.handler(err);
-            },
-          });
-        },
-      );
-    });
-  }
+    const restanteInscricao = this.restanteVincular;
+    if (restanteInscricao <= TOLERANCIA) {
+      this.toast.warning({ message: 'Esta inscrição já está totalmente vinculada.' });
+      return;
+    }
 
-  trocar(): void {
-    if (!this.detalhamentoId) return;
+    this.abrirPicker(restanteInscricao, (lancamento) => {
+      const restanteLancamento = lancamento.valor - lancamento.soma_detalhamentos;
+      const valorMaximo = Math.min(restanteInscricao, restanteLancamento);
 
-    this.abrirPicker((lancamento) => {
-      this.processando = true;
-      this.detalhamentoService.editar(this.detalhamentoId as number, { lancamento_id: lancamento.id }).subscribe({
-        next: () => {
-          this.processando = false;
-          this.toast.success({ message: 'Lançamento alterado com sucesso.' });
-          this.vinculado.emit();
-        },
-        error: (err) => {
-          this.processando = false;
-          this.errorHandler.handler(err);
-        },
+      if (valorMaximo <= 0) {
+        this.toast.warning({ message: 'Este lançamento não tem valor disponível para vincular.' });
+        return;
+      }
+
+      this.abrirDialogValor(valorMaximo, valorMaximo, (valor) => {
+        this.processando = true;
+        this.detalhamentoService.criar({
+          lancamento_id: lancamento.id,
+          tipo: this.tipo,
+          referencia_id: this.referenciaId,
+          valor,
+        }).subscribe({
+          next: () => {
+            this.processando = false;
+            this.toast.success({ message: 'Lançamento vinculado com sucesso.' });
+            this.carregarVinculos();
+            this.vinculado.emit();
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            this.processando = false;
+            this.errorHandler.handler(err);
+            this.cdr.detectChanges();
+          },
+        });
       });
     });
   }
 
-  remover(): void {
-    if (!this.detalhamentoId) return;
-
+  remover(det: Detalhamento): void {
     this.dialog.open(ConfirmDialogComponent, {
       width: '420px',
       data: {
@@ -112,28 +159,41 @@ export class VinculoLancamentoComponent {
         message: 'Deseja remover o vínculo com este lançamento? A inscrição volta a ficar pendente de auditoria.',
       },
     }).afterClosed().subscribe((ok: boolean) => {
-      if (!ok || !this.detalhamentoId) return;
+      if (!ok) return;
 
       this.processando = true;
-      this.detalhamentoService.remover(this.detalhamentoId).subscribe({
+      this.detalhamentoService.remover(det.id).subscribe({
         next: () => {
           this.processando = false;
           this.toast.success({ message: 'Vínculo removido.' });
+          this.carregarVinculos();
           this.vinculado.emit();
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.processando = false;
           this.errorHandler.handler(err);
+          this.cdr.detectChanges();
         },
       });
     });
   }
 
-  private abrirPicker(onSelecionado: (lancamento: Lancamento) => void): void {
-    this.dialog.open<LancamentoPickerDialogComponent, unknown, Lancamento>(LancamentoPickerDialogComponent, {
-      width: '700px',
-      maxWidth: '95vw',
-    }).afterClosed().subscribe((lancamento) => {
+  private abrirPicker(restanteInscricao: number, onSelecionado: (lancamento: Lancamento) => void): void {
+    const data: LancamentoPickerDialogData = {
+      referencia: {
+        dataPagamento: this.dataPagamento,
+        titulo:        this.nomePessoa ?? '',
+        valor:         this.valorPagamento ?? 0,
+        observacao:    this.observacaoPessoa,
+        restante:      restanteInscricao,
+      },
+    };
+
+    this.dialog.open<LancamentoPickerDialogComponent, LancamentoPickerDialogData, Lancamento>(
+      LancamentoPickerDialogComponent,
+      { width: '700px', maxWidth: '95vw', data },
+    ).afterClosed().subscribe((lancamento) => {
       if (lancamento) onSelecionado(lancamento);
     });
   }
