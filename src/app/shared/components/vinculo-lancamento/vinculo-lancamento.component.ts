@@ -70,8 +70,15 @@ export class VinculoLancamentoComponent implements OnInit, OnChanges {
     return (this.valorPagamento ?? 0) - this.somaVinculada;
   }
 
+  /** Ficha isenta (`valorPagamento === 0`, distinto de "sem valor definido"
+   * -- `null`/`undefined`) nunca tem "restante" positivo pra vincular, mas
+   * ainda precisa poder receber o único vínculo (de valor zero) que a
+   * isenta -- daí o caso especial: permite vincular uma vez (enquanto não
+   * houver nenhum Detalhamento ainda), não mais que isso. */
   get podeVincularMais(): boolean {
-    return !!this.valorPagamento && this.restanteVincular > TOLERANCIA;
+    if (this.valorPagamento == null) return false;
+    if (this.valorPagamento === 0) return this.detalhamentos.length === 0;
+    return this.restanteVincular > TOLERANCIA;
   }
 
   formaPagamentoLabel(lancamento: Lancamento): string {
@@ -106,14 +113,20 @@ export class VinculoLancamentoComponent implements OnInit, OnChanges {
   }
 
   ligar(): void {
-    if (!this.valorPagamento) {
+    if (this.valorPagamento == null) {
       this.toast.warning({ message: 'Esta inscrição não tem valor de pagamento definido.' });
       return;
     }
 
+    const isencao = this.valorPagamento === 0;
     const restanteInscricao = this.restanteVincular;
-    if (restanteInscricao <= TOLERANCIA) {
+
+    if (!isencao && restanteInscricao <= TOLERANCIA) {
       this.toast.warning({ message: 'Esta inscrição já está totalmente vinculada.' });
+      return;
+    }
+    if (isencao && this.detalhamentos.length > 0) {
+      this.toast.warning({ message: 'Esta inscrição (isenção) já está vinculada.' });
       return;
     }
 
@@ -121,7 +134,10 @@ export class VinculoLancamentoComponent implements OnInit, OnChanges {
       const restanteLancamento = lancamento.valor - lancamento.soma_detalhamentos;
       const valorMaximo = Math.min(restanteInscricao, restanteLancamento);
 
-      if (valorMaximo <= 0) {
+      // Pra isenção, valorMaximo = 0 é o esperado (nada a vincular além do
+      // próprio Detalhamento zerado) -- só é erro quando negativo, ou zero
+      // fora do caso de isenção (lançamento já 100% consumido).
+      if (valorMaximo < 0 || (valorMaximo === 0 && !isencao)) {
         this.toast.warning({ message: 'Este lançamento não tem valor disponível para vincular.' });
         return;
       }

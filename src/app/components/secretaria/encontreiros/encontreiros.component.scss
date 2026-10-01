@@ -100,10 +100,13 @@
     }
   }
 
-  // Equipe N/A = registro cancelado -- linha inteira em itálico pra sinalizar
-  // visualmente, além da cor cinza do próprio botão de equipe.
+  // Equipe N/A = registro cancelado -- linha inteira em negrito e itálico,
+  // com fundo cinza bem claro, pra sinalizar visualmente, além da cor
+  // cinza do próprio botão de equipe.
   mat-row.row--cancelado {
     font-style: italic;
+    font-weight: 600;
+    background-color: var(--mat-sys-surface-container-high);
 
     .equipe-btn {
       font-style: italic;

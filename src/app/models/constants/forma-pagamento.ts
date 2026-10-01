@@ -3,6 +3,7 @@ export class FormaPagamento {
   static DINHEIRO       = 'DINHEIRO';
   static CARTAO_CREDITO = 'CARTAO_CREDITO';
   static CARTAO_DEBITO  = 'CARTAO_DEBITO';
+  static ISENCAO        = 'ISENCAO';
   static TODOS          = '';
 
   static get optionsAll() {
@@ -12,6 +13,7 @@ export class FormaPagamento {
       { name: 'Dinheiro',          value: FormaPagamento.DINHEIRO       },
       { name: 'Cartão de Crédito', value: FormaPagamento.CARTAO_CREDITO },
       { name: 'Cartão de Débito',  value: FormaPagamento.CARTAO_DEBITO  },
+      { name: 'Isenção',           value: FormaPagamento.ISENCAO        },
     ];
   }
 
@@ -21,6 +23,7 @@ export class FormaPagamento {
       { name: 'Dinheiro',          value: FormaPagamento.DINHEIRO       },
       { name: 'Cartão de Crédito', value: FormaPagamento.CARTAO_CREDITO },
       { name: 'Cartão de Débito',  value: FormaPagamento.CARTAO_DEBITO  },
+      { name: 'Isenção',           value: FormaPagamento.ISENCAO        },
     ];
   }
 
@@ -31,15 +34,22 @@ export class FormaPagamento {
       case FormaPagamento.DINHEIRO:          return 'Dinheiro';
       case FormaPagamento.CARTAO_CREDITO:    return 'Cartão de Crédito';
       case FormaPagamento.CARTAO_DEBITO:     return 'Cartão de Débito';
+      case FormaPagamento.ISENCAO:           return 'Isenção';
     }
   }
 
-  /** Igual a `getDescription`, mas acrescenta "(em Nx)" para cartão de
-   * crédito parcelado em mais de 1x (débito não tem parcelas). */
+  private static readonly FORMAS_CARTAO = [
+    FormaPagamento.CARTAO_CREDITO,
+    FormaPagamento.CARTAO_DEBITO,
+  ];
+
+  /** Igual a `getDescription`, mas acrescenta "(Nx)" para cartão de crédito
+   * ou débito parcelado em mais de 1x (1x -- ou débito, que normalmente é
+   * sempre à vista -- não mostra nada). */
   static getDescriptionComParcelas(forma: string, parcelas: number | null | undefined): string {
     const descricao = FormaPagamento.getDescription(forma);
-    if (forma === FormaPagamento.CARTAO_CREDITO && parcelas && parcelas > 1) {
-      return `${descricao} (em ${parcelas}x)`;
+    if (FormaPagamento.FORMAS_CARTAO.includes(forma) && parcelas && parcelas > 1) {
+      return `${descricao}(${parcelas}x)`;
     }
     return descricao;
   }

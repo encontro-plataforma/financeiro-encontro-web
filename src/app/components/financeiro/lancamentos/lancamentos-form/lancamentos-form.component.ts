@@ -58,6 +58,12 @@ export class LancamentosFormComponent implements OnInit {
     return tipo ? this.finalidades.filter((f) => f.tipo === tipo) : this.finalidades;
   }
 
+  /** Isenção permite valor zerado -- as demais formas exigem um valor
+   * positivo (ver `syncValorMinimo`). */
+  get valorMinimo(): number {
+    return this.form?.get('forma_pagamento')?.value === FormaPagamento.ISENCAO ? 0 : 0.01;
+  }
+
   readonly StatusLancamento = StatusLancamento;
   readonly TipoLancamento = TipoLancamento;
 
@@ -103,11 +109,22 @@ export class LancamentosFormComponent implements OnInit {
 
     this.form.get('forma_pagamento')?.valueChanges.subscribe((forma) => {
       this.syncCamposCartao(forma);
+      this.syncValorMinimo(forma);
     });
   }
 
   private isFormaCartao(forma: string): boolean {
     return forma === FormaPagamento.CARTAO_CREDITO || forma === FormaPagamento.CARTAO_DEBITO;
+  }
+
+  /** Isenção entra com valor zerado (não há movimento financeiro real) --
+   * as demais formas continuam exigindo um valor positivo, mesmo padrão
+   * do backend (ver LancamentoBase.valor em app/schemas/lancamento_schema.py). */
+  private syncValorMinimo(forma: string): void {
+    const control = this.form.get('valor');
+    const min = forma === FormaPagamento.ISENCAO ? 0 : 0.01;
+    control?.setValidators([Validators.required, Validators.min(min)]);
+    control?.updateValueAndValidity();
   }
 
   private syncCamposCartao(forma: string): void {

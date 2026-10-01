@@ -24,7 +24,7 @@ export interface ValorDetalhamentoDialogData {
           matInput
           type="number"
           [(ngModel)]="valor"
-          min="0.01"
+          [min]="permiteZero ? 0 : 0.01"
           [max]="data.valorMaximo"
           step="0.01"
           autofocus
@@ -64,9 +64,20 @@ export class ValorDetalhamentoDialogComponent {
 
   valor: number | null = this.data.valorSugerido;
 
+  /** `valorMaximo === 0` só acontece pra uma ficha isenta (pagamento
+   * zerado) -- nesse caso o único valor válido é exatamente 0, não "maior
+   * que zero" como em qualquer outro vínculo. */
+  get permiteZero(): boolean {
+    return this.data.valorMaximo === 0;
+  }
+
   get erro(): string | null {
     if (this.valor === null || this.valor === undefined) return 'Informe um valor.';
-    if (this.valor <= 0) return 'O valor deve ser maior que zero.';
+    if (this.permiteZero) {
+      if (this.valor !== 0) return 'Esta inscrição está isenta — o valor deve ser R$ 0,00.';
+    } else if (this.valor <= 0) {
+      return 'O valor deve ser maior que zero.';
+    }
     if (this.valor > this.data.valorMaximo) {
       return `O valor não pode ultrapassar R$ ${this.data.valorMaximo.toFixed(2)} (valor disponível para vínculo).`;
     }

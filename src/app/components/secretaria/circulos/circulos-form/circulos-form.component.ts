@@ -36,8 +36,9 @@ export class CirculosFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      nome: ['', [Validators.required, Validators.maxLength(100)]],
-      rgb:  ['#980000', Validators.required],
+      nome:      ['', [Validators.required, Validators.maxLength(100)]],
+      rgb:       ['#980000', Validators.required],
+      cancelado: [false],
     });
 
     const id = this.route.snapshot.params['id'];
@@ -53,8 +54,9 @@ export class CirculosFormComponent implements OnInit {
     this.circuloService.buscarPorId(id).subscribe({
       next: (data) => {
         this.form.patchValue({
-          nome: data.nome,
-          rgb:  data.rgb,
+          nome:      data.nome,
+          rgb:       data.rgb,
+          cancelado: data.cancelado,
         });
         this.loading = false;
       },

@@ -49,6 +49,15 @@
           <span class="cor-hex">{{ form.get('rgb')?.value }}</span>
         </div>
 
+        <!-- Cancelado -->
+        <div class="col-span-12 md:col-span-8 flex flex-col gap-1 justify-end">
+          <mat-checkbox formControlName="cancelado">Marcar como Cancelado</mat-checkbox>
+          <span class="cancelado-hint">
+            Encontristas com este círculo são considerados automaticamente auditados, com ou sem
+            lançamento vinculado, e deixam de entrar na auditoria automática.
+          </span>
+        </div>
+
         <!-- Ações -->
         <div class="col-span-12 flex justify-end gap-3 pt-2">
           <button

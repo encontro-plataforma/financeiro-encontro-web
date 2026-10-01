@@ -65,7 +65,7 @@
       <ng-container matColumnDef="forma_pagamento">
         <mat-header-cell *matHeaderCellDef class="col-forma-pagamento">Frm Pgto</mat-header-cell>
         <mat-cell *matCellDef="let row" class="col-forma-pagamento">{{
-          FormaPagamento.getDescription(row.forma_pagamento)
+          FormaPagamento.getDescriptionComParcelas(row.forma_pagamento, row.cart_parcelas)
         }}</mat-cell>
       </ng-container>
 
