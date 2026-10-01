@@ -295,6 +295,10 @@ export class EncontristasComponent extends ListFilterBase implements OnInit, Aft
     return resultado.join(' ');
   }
 
+  isCancelado(row: Encontrista): boolean {
+    return row.circulo?.cancelado === true;
+  }
+
   abrirCirculoPicker(row: Encontrista): void {
     this.dialog
       .open<CirculoPickerDialogComponent, unknown, Circulo>(CirculoPickerDialogComponent, {

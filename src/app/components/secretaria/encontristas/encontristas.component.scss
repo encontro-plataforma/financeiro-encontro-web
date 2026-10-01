@@ -140,6 +140,19 @@
     }
   }
 
+  // Círculo Cancelado = registro cancelado -- linha inteira em negrito e
+  // itálico, com fundo cinza bem claro, pra sinalizar visualmente, além da
+  // cor cinza do próprio botão de círculo.
+  mat-row.row--cancelado {
+    font-style: italic;
+    font-weight: 600;
+    background-color: var(--mat-sys-surface-container-high);
+
+    .circulo-btn {
+      font-style: italic;
+    }
+  }
+
   .empty-row {
     display: flex;
     align-items: center;

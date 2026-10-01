@@ -151,7 +151,9 @@
                 [class.acao-lancamentos--incompleto]="row.quantidade_lancamentos_vinculados && !row.auditado"
                 [matTooltip]="
                   !row.quantidade_lancamentos_vinculados
-                    ? 'Inscrição ainda não auditada'
+                    ? (isCancelado(row)
+                        ? 'Ficha cancelada — considerada auditada automaticamente'
+                        : 'Inscrição ainda não auditada')
                     : row.auditado
                       ? 'Ver lançamentos vinculados'
                       : 'Auditoria incompleta — ainda falta vincular lançamento(s)'

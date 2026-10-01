@@ -1,5 +1,31 @@
 # Histórico de Versões
 
+## [0.6.0] — 2026-10-01
+
+### Adicionado
+- Nova forma de pagamento "Isenção" (`FormaPagamento.ISENCAO`), selecionável como qualquer outra no
+  formulário de Lançamento — único caso em que o campo Valor aceita `0,00` (`LancamentosFormComponent`
+  troca o validador mínimo de `0,01` pra `0` quando a forma selecionada é Isenção)
+- Tela de atrelar lançamento a uma ficha (`vinculo-lancamento` + `valor-detalhamento-dialog`) passa a
+  permitir vincular uma ficha com valor de pagamento zerado (isenção): "Ligar a um lançamento" não é mais
+  bloqueado quando `valorPagamento === 0` (só quando o valor realmente não foi definido), e o dialog de
+  valor aceita exatamente `0` nesse caso em vez de exigir "maior que zero"
+- Checkbox "Marcar como Cancelado" no formulário de Círculo (`circulos-form`) — qualquer círculo pode
+  carregar esse flag, não só o "CANCELADO" padrão já cadastrado no backend
+- Encontristas com um círculo marcado como Cancelado agora têm a linha da listagem destacada em
+  negrito+itálico com fundo cinza bem claro (`.row--cancelado`), mesmo tratamento visual que a listagem de
+  Encontreiros já dava à equipe "N/A" — cujo destaque, aliás, ganhou negrito e o fundo cinza (antes só
+  itálico)
+- Na tela de atrelar um lançamento a uma ficha (pick de lançamentos), a coluna "Frm Pgto" passa a mostrar o
+  número de parcelas pra cartão de crédito ou débito parcelado em mais de 1x (ex.: "Cartão de
+  Crédito(2x)") — `FormaPagamento.getDescriptionComParcelas` passou a cobrir também Cartão de Débito, não
+  só Crédito
+
+### Alterado
+- Tooltip do botão "Ver lançamentos vinculados" (Encontreiros/Encontristas), quando a ficha ainda não tem
+  nenhum lançamento vinculado, diferencia "ainda não auditada" de "cancelada — considerada auditada
+  automaticamente", já que uma ficha cancelada não depende de vínculo pra constar como auditada
+
 ## [0.4.0] — 2026-08-15
 
 ### Adicionado
