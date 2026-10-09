@@ -22,6 +22,10 @@
   <app-upload-erros-table [erros]="errosDetalhados" />
 } @else if (temDuplicados && tabelaAtiva === 'duplicados') {
   <app-upload-duplicados-table [duplicados]="duplicadosDetalhados" />
+} @else if (temIgnorados && tabelaAtiva === 'ignorados') {
+  <app-upload-ignorados-table [ignorados]="ignoradosDetalhados" />
+} @else if (temInseridos && tabelaAtiva === 'inseridos') {
+  <app-upload-inseridos-table [inseridos]="inseridosDetalhados" />
 } @else if (!resumo.length) {
   <p class="sem-resumo">Ainda não há um resumo disponível para este arquivo.</p>
 }

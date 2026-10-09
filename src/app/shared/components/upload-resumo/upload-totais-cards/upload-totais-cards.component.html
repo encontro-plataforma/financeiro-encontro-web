@@ -7,6 +7,8 @@
         [class.totais-card--clicavel]="clicavel(item)"
         [class.totais-card--erro]="clicavel(item) && tipoCard(item) === 'erros'"
         [class.totais-card--duplicado]="clicavel(item) && tipoCard(item) === 'duplicados'"
+        [class.totais-card--inserido]="clicavel(item) && tipoCard(item) === 'inseridos'"
+        [class.totais-card--ignorado]="clicavel(item) && tipoCard(item) === 'ignorados'"
         [class.totais-card--ativo]="clicavel(item) && tabelaAtiva === tipoCard(item)"
         [attr.role]="clicavel(item) ? 'button' : null"
         [attr.tabindex]="clicavel(item) ? 0 : null"
