@@ -30,6 +30,8 @@
 
   &--erro { @include c.status-chip('error'); }
   &--duplicado { @include c.status-chip('duplicado'); }
+  &--inserido { @include c.status-chip('success'); }
+  &--ignorado { @include c.status-chip('warning'); }
 
   // Card selecionado no momento (a tabela embaixo mostra os dados dele).
   &--ativo {

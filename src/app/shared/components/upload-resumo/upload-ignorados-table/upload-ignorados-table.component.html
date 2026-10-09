@@ -1,0 +1,31 @@
+@if (ignorados.length) {
+  <mat-table [dataSource]="pagedIgnorados" class="upload-ignorados-table">
+
+    <ng-container matColumnDef="linha">
+      <mat-header-cell *matHeaderCellDef class="col-linha">Linha</mat-header-cell>
+      <mat-cell *matCellDef="let item" class="col-linha">{{ item.linha ?? '-' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="idCsv">
+      <mat-header-cell *matHeaderCellDef class="col-id-csv">ID no CSV</mat-header-cell>
+      <mat-cell *matCellDef="let item" class="col-id-csv">{{ item.idCsv ?? '-' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="existenteId">
+      <mat-header-cell *matHeaderCellDef class="col-existente">Já cadastrado como</mat-header-cell>
+      <mat-cell *matCellDef="let item" class="col-existente">#{{ item.existenteId ?? '-' }}</mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="upload-ignorados-header" />
+    <mat-row *matRowDef="let item; columns: displayedColumns" />
+  </mat-table>
+
+  @if (ignorados.length > pageSize) {
+    <mat-paginator
+      [length]="ignorados.length"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [hidePageSize]="true"
+      (page)="onPage($event)" />
+  }
+}

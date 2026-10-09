@@ -161,6 +161,10 @@ export class ArquivosComponent extends ListFilterBase implements OnInit, AfterVi
         return 'Extrato de Espécie';
       case 'CARTAO':
         return 'Extrato de Cartão';
+      case 'ENCONTREIRO':
+        return 'Inscrição Encontreiro';
+      case 'ENCONTRISTA':
+        return 'Inscrição Encontrista';
       default:
         return '—';
     }

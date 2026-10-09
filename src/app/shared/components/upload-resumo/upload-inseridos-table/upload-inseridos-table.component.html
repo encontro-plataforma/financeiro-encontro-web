@@ -1,0 +1,36 @@
+@if (inseridos.length) {
+  <mat-table [dataSource]="pagedInseridos" class="upload-inseridos-table">
+
+    <ng-container matColumnDef="linha">
+      <mat-header-cell *matHeaderCellDef class="col-linha">Linha</mat-header-cell>
+      <mat-cell *matCellDef="let item" class="col-linha">{{ item.linha ?? '-' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="descricao">
+      <mat-header-cell *matHeaderCellDef class="col-descricao">Descrição</mat-header-cell>
+      <mat-cell *matCellDef="let item" class="col-descricao">{{ item.descricao ?? '(sem descrição)' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="valor">
+      <mat-header-cell *matHeaderCellDef class="col-valor">Valor</mat-header-cell>
+      <mat-cell *matCellDef="let item" class="col-valor">{{ item.valor !== null ? (item.valor | currency:'BRL') : '-' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="data">
+      <mat-header-cell *matHeaderCellDef class="col-data">Data</mat-header-cell>
+      <mat-cell *matCellDef="let item" class="col-data">{{ item.data ? (item.data | date:'dd/MM/yyyy') : '-' }}</mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="upload-inseridos-header" />
+    <mat-row *matRowDef="let item; columns: displayedColumns" />
+  </mat-table>
+
+  @if (inseridos.length > pageSize) {
+    <mat-paginator
+      [length]="inseridos.length"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [hidePageSize]="true"
+      (page)="onPage($event)" />
+  }
+}
