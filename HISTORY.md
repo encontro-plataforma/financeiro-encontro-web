@@ -1,5 +1,15 @@
 # Histórico de Versões
 
+## [0.7.0] — 2026-10-09
+
+### Adicionado
+- Tela de Arquivos Enviados: coluna "Tipo" passa a exibir "Inscrição Encontreiro"/"Inscrição Encontrista"
+  para uploads desses dois fluxos (antes sempre "—", já que o backend não diferenciava)
+- Resumo de upload: os cards "Inseridos" e "Ignorados" (este, hoje só no fluxo de Encontreiro) ficam
+  clicáveis como "Erros"/"Duplicados" já eram, abrindo uma tabela com o detalhe de cada linha
+  (`UploadInseridosTableComponent`/`UploadIgnoradosTableComponent`); quando não há erro/duplicado/ignorado
+  pra mostrar, a tabela abre direto em "Inseridos"
+
 ## [0.6.0] — 2026-10-01
 
 ### Adicionado
